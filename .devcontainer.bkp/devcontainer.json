@@ -1,0 +1,351 @@
+// .devcontainer/devcontainer.json
+{
+  "name": "Phantom Monorepo Environment",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+    // "args": { "NODE_VERSION": "20" } // TODO: Pass build args to Dockerfile
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": { "version": "latest", "moby": true },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // --- Editor Behavior & Style ---
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.suggestSelection": "first",
+        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.bracketPairs": "active",
+        "editor.guides.bracketPairsHorizontal": true,
+        "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+        "editor.rulers": [80, 120],
+        "editor.linkedEditing": true,
+        "editor.suggest.insertMode": "replace",
+        "editor.inlineSuggest.enabled": true,
+        "editor.codeLens": true,
+        "editor.unicodeHighlight.ambiguousCharacters": true,
+        "editor.unicodeHighlight.invisibleCharacters": true,
+
+        // --- UI Preferences ---
+        "editor.fontFamily": "'Fira Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
+        "editor.fontLigatures": true,
+        "editor.fontSize": 14,
+        "editor.lineHeight": 1.6,
+        "editor.wordWrap": "on",
+        "editor.minimap.enabled": false,
+        "editor.cursorBlinking": "smooth",
+        "editor.cursorSmoothCaretAnimation": "on",
+        "editor.smoothScrolling": true,
+        "workbench.colorTheme": "Tokyo Night",
+        "workbench.iconTheme": "material-icon-theme",
+        "workbench.editor.labelFormat": "short",
+        "workbench.editor.limit.enabled": true,
+        "workbench.editor.limit.value": 15,
+        "workbench.panel.defaultLocation": "bottom",
+        "workbench.startupEditor": "none",
+        "explorer.compactFolders": true,
+        "problems.autoReveal": true,
+        "problems.showCurrentInStatus": true,
+
+        // --- Files & Search ---
+        "files.encoding": "utf8",
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "files.exclude": {
+          "**/.git": true,
+          "**/.svn": true,
+          "**/.hg": true,
+          "**/CVS": true,
+          "**/.DS_Store": true,
+          "**/Thumbs.db": true,
+          "**/node_modules": true,
+          "**/__pycache__": true,
+          "**/.venv": true,
+          "**/.ruff_cache": true,
+          "**/.mypy_cache": true,
+          "**/.pytest_cache": true,
+          "**/dist": true,
+          "**/build": true,
+          "**/.next": true,
+          "**/out": true,
+          "**/*.egg-info": true,
+          "**/.turbo": true,
+          "**/.vitepress/cache": true
+        },
+        "search.exclude": {
+          "**/.git": true,
+          "**/.svn": true,
+          "**/.hg": true,
+          "**/CVS": true,
+          "**/.DS_Store": true,
+          "**/Thumbs.db": true,
+          "**/node_modules": true,
+          "**/__pycache__": true,
+          "**/.venv": true,
+          "**/.ruff_cache": true,
+          "**/.mypy_cache": true,
+          "**/.pytest_cache": true,
+          "**/dist": true,
+          "**/build": true,
+          "**/.next": true,
+          "**/out": true,
+          "**/bower_components": true,
+          "**/*.code-search": true,
+          "**/package-lock.json": true,
+          "**/.turbo": true,
+          "**/.vitepress/cache": true,
+          "**/*.egg-info": true
+        },
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/.hg/store/**": true,
+          "**/__pycache__": true,
+          "**/.pytest_cache": true,
+          "**/.mypy_cache": true,
+          "**/.ruff_cache": true
+        },
+
+        // --- Formatting & Linting ---
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "prettier.requireConfig": true,
+        "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+        "eslint.useFlatConfig": true,
+        "stylelint.validate": ["css", "scss", "postcss"],
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.fixAll.stylelint": "explicit"
+        },
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll": "explicit",
+            "source.organizeImports": "explicit"
+          }
+        },
+        "[shellscript]": {
+          "editor.defaultFormatter": "foxundermoon.shell-format",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.shellcheck": "explicit" // Requires shellcheck feature/install
+          }
+        },
+        "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "files.trimTrailingWhitespace": false,
+          "editor.formatOnSave": true
+         },
+        "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+        "[yaml]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
+        "[scala]": { "editor.defaultFormatter": "scalameta.metals" },
+
+        // --- Python Specific ---
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.indexing": true,
+        "python.analysis.inlayHints.functionReturnTypes": true,
+        "python.analysis.inlayHints.variableTypes": true,
+        "python.linting.enabled": true,
+        "python.linting.ruffEnabled": true,
+        "python.linting.mypyEnabled": false,
+        "python.formatting.provider": "none",
+        "ruff.importStrategy": "fromEnvironment",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.testing.pytestArgs": [ "tests" ],
+
+        // --- TypeScript / JavaScript Specific ---
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        "typescript.suggest.autoImports": true,
+        "javascript.suggest.autoImports": true,
+        "typescript.inlayHints.parameterNames.enabled": "all",
+        "javascript.inlayHints.parameterNames.enabled": "all",
+        "typescript.inlayHints.variableTypes.enabled": true,
+        "javascript.inlayHints.variableTypes.enabled": true,
+
+        // --- Tailwind CSS ---
+        "tailwindCSS.includeLanguages": { "typescript": "javascript", "typescriptreact": "javascript" },
+        "tailwindCSS.emmetCompletions": true,
+        "files.associations": { "*.css": "tailwindcss" },
+        "tailwindCSS.experimental.classRegex": [
+            ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+            ["cva\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+        ],
+
+        // --- Database ---
+        "sqltools.connections": [],
+        "redis-console.host": "localhost",
+        "redis-console.port": 6379,
+        "redis-console.password": "",
+
+        // --- Markdown ---
+        "markdown.mermaid.theme": "dark",
+        "markdown.preview.scrollEditorWithPreview": true,
+        "markdown.preview.scrollPreviewWithEditor": true,
+
+        // --- Spell Checker ---
+        "cSpell.customDictionaries": {
+          "project-dictionary": {
+              "name": "project-dictionary",
+              "path": "${workspaceFolder}/.vscode/dictionary.txt",
+              "addWords": true,
+              "scope": "workspace"
+          }
+      },
+      "cSpell.dictionaries": [
+          "project-dictionary"
+      ],
+        "cSpell.enabled": true,
+        "cSpell.validateDirectives": true,
+        "cSpell.ignorePaths": [
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/coverage/**",
+            "**/.git/**",
+            "package-lock.json",
+            "pnpm-lock.yaml",
+            "**/*.svg",
+            "**/*.ttf",
+            "**/*.woff",
+            "**/*.woff2",
+            "**/.turbo/**",
+            "**/.vitepress/cache/**",
+            "**/__pycache__/**",
+            "**/.venv/**",
+            "**/.ruff_cache/**",
+            "**/.mypy_cache/**",
+            "**/.pytest_cache/**"
+        ],
+
+        // --- Terminal ---
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.cursorBlinking": true,
+        "terminal.integrated.smoothScrolling": true,
+
+        // --- Testing ---
+        "jest.jestCommandLine": "pnpm test",
+        "jest.runMode": "on-demand",
+
+        // --- Git ---
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "git.autofetch": true,
+        "git.ignoreLimitWarning": true,
+        "gitlens.codeLens.enabled": true,
+        "gitlens.currentLine.enabled": true,
+        "gitlens.hovers.currentLine.over": "line",
+
+        // --- Jupyter / Data Science ---
+        "jupyter.interactiveWindow.creationMode": "perFile",
+        "jupyter.interactiveWindow.textEditor.executeSelection": true,
+        "jupyter.disableJupyterAutoStart": false,
+        "notebook.cellToolbarLocation": { "default": "right", "jupyter-notebook": "right" },
+        "notebook.lineNumbers": "on",
+        "notebook.output.scrolling": true,
+        "notebook.formatOnSave.enabled": false
+
+      },
+      "extensions": [
+        // --- Core & General ---
+        "ms-vscode-remote.remote-containers",
+        "EditorConfig.EditorConfig",
+        "eamodio.gitlens",
+        "github.vscode-pull-request-github",
+        "github.vscode-github-actions",
+        "streetsidesoftware.code-spell-checker",
+        "Gruntfuggly.todo-tree",
+        "aaron-bond.better-comments",
+        "mikestead.dotenv",
+        "christian-kohler.path-intellisense",
+        "enkia.tokyo-night",
+        "pkief.material-icon-theme",
+
+        // --- JavaScript / TypeScript / Web ---
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "stylelint.vscode-stylelint",
+        "bradlc.vscode-tailwindcss",
+        "csstools.postcss",
+        "ms-vscode.vscode-typescript-next",
+        "formulahendry.auto-rename-tag",
+        "ritwickdey.LiveServer",
+        "ecmel.vscode-html-css",
+        "zignd.html-css-class-completion",
+        "htmlhint.vscode-htmlhint",
+        "DigitalBrainstem.javascript-ejs-support",
+        "Vue.volar",
+        "steoates.autoimport",
+
+        // --- Scala ---
+        "scalameta.metals",
+        "scala-lang.scala",
+
+        // --- Database ---
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "cweijan.vscode-postgresql-client2",
+        "cweijan.vscode-redis-client",
+        "Postman.postman-for-vscode",
+
+        // --- Python / Data Science ---
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-renderers",
+        "njpwerner.autodocstring",
+        "kevinrose.vsc-python-indent",
+        "mechatroner.rainbow-csv",
+        "GrapeCity.gc-excelviewer",
+
+        // --- Docker ---
+        "ms-azuretools.vscode-containers",
+
+        // --- Markdown / YAML / TOML / SVG / Other ---
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "bierner.markdown-mermaid",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "jock.svg",
+        "hediet.vscode-drawio",
+
+        // --- Shell Scripting ---
+        "timonwong.shellcheck",
+        "foxundermoon.shell-format"
+      ]
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  // "postStartCommand": "sh ./scripts/setup-dev.sh", // Uncomment if you have a setup script to run on start
+  // "postAttachCommand": "",
+  "remoteUser": "vscode", // Should match the user created in Dockerfile
+  "forwardPorts": [ 3000, 8888, 5432, 6379, 6333, 9000, 9001 ], // Common ports: Web App, Jupyter, Postgres, Redis, Qdrant, MinIO
+  "portsAttributes": {
+      "3000": { "label": "Web App Dev Server" },
+      "8888": { "label": "Jupyter" },
+      "5432": { "label": "PostgreSQL" },
+      "6379": { "label": "Redis" },
+      "6333": { "label": "Qdrant API" },
+      "6334": { "label": "Qdrant Web UI" },
+      "9000": { "label": "MinIO API" },
+      "9001": { "label": "MinIO Console" }
+  }
+}

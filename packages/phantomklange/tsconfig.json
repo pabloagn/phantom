@@ -1,0 +1,84 @@
+// packages/phantomklange/tsconfig.json
+
+// {
+//   "$schema": "https://json.schemastore.org/tsconfig",
+//   "extends": "../../tsconfig.base.json",
+//   "compilerOptions": {
+//     "target": "es5",
+//     "lib": ["dom", "dom.iterable", "esnext"],
+//     "allowJs": true,
+//     "skipLibCheck": true,
+//     "strict": true,
+//     "noEmit": true,
+//     "esModuleInterop": true,
+//     "module": "esnext",
+//     "moduleResolution": "bundler",
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "jsx": "preserve",
+//     "incremental": true,
+//     "plugins": [
+//       {
+//         "name": "next"
+//       }
+//     ],
+//     "paths": {
+//       "@/*": ["./src/*"],
+//       "@phantom/core": ["../phantom-core/src/index.ts"],
+//       "@phantom/core/*": ["../phantom-core/src/*"],
+//       "@phantom-design/*": ["../phantom-core/src/*"],
+//       "@phantom-components/*": ["../phantom-core/src/components/*"],
+//       "@phantom-tokens/*": ["../phantom-core/src/tokens/*"],
+//       "@phantom-themes/*": ["../phantom-core/src/themes/*"],
+//       "@phantom-utils/*": ["../phantom-core/src/utils/*"],
+//       "@phantom-types/*": ["../phantom-core/src/types/*"]
+//     }
+//   },
+//   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../../packages/phantom-core/src/types/**/*.d.ts"],
+//   "exclude": ["node_modules"]
+// }
+
+// packages/phantomklange/tsconfig.json
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.base.json", // Inherit base settings
+  "compilerOptions": {
+    // --- Overrides & Additions for phantomklange ---
+    "target": "es5", // Keep target as es5 for Next.js compatibility if needed
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true, // Keep skipLibCheck due to complexity
+    "strict": true, // Keep strict mode
+    "noEmit": true, // Next.js handles emission
+    "esModuleInterop": true,
+    "module": "esnext", // Required for Next.js
+    "moduleResolution": "bundler", // Use modern resolution
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve", // Required for Next.js
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".", // Set baseUrl relative to THIS tsconfig.json
+    "paths": {
+      "@/*": ["./src/*"] // Now correctly maps to packages/phantomklange/src/*
+      // REMOVED explicit paths for @phantom/core/* - Let Node resolution handle it
+    },
+    "composite": true // Good practice in monorepos
+  },
+  "references": [
+    // Helps TS understand the dependency on the core package build
+    { "path": "../phantom-core" }
+  ],
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts", // Include src directory
+    "src/**/*.tsx",
+    ".next/types/**/*.ts"
+    // Removed direct include of phantom-core types - rely on package resolution
+  ],
+  "exclude": ["node_modules", ".next", "build", "dist"] // Standard excludes
+}

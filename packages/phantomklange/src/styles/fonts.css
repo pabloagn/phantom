@@ -1,0 +1,54 @@
+/* packages/phantomklange/src/styles/fonts.css */
+
+/**
+ * Font face declarations for custom fonts
+ * This ensures fonts are properly loaded regardless of the CSS variable setup
+ */
+
+/* Hanken Grotesk will be loaded via Next.js Font system in layout.tsx */
+/* This is a fallback if that fails */
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/HankenGrotesk-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hanken Grotesk';
+  src: url('/fonts/HankenGrotesk-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/fonts/Libre_Baskerville/LibreBaskerville-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/fonts/Libre_Baskerville/LibreBaskerville-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  src: url('/fonts/Libre_Baskerville/LibreBaskerville-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Explicitly add CSS variable fallback for the sans-alt font */
+:root {
+  --font-sans-alt: 'Hanken Grotesk', var(--font-sans);
+  --font-serif-alt: 'Libre Baskerville', var(--font-serif);
+}

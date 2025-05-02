@@ -1,0 +1,53 @@
+# Core dependencies
+fastapi>=0.95.0
+uvicorn>=0.22.0
+celery>=5.3.0
+pydantic>=2.0.0
+sqlalchemy>=2.0.0
+alembic>=1.11.0
+psycopg2-binary>=2.9.6
+redis>=4.5.5
+
+# PDF processing
+pypdf>=3.15.0
+pdfminer.six>=20221105
+pdf2image>=1.16.3
+pyMuPDF>=1.22.5
+pdfplumber>=0.9.0
+
+# OCR and text processing
+pytesseract>=0.3.10
+# opencv-python>=4.7.0
+spacy>=3.5.3
+nltk>=3.8.1
+
+# E-book creation and manipulation
+ebooklib>=0.18.0
+lxml>=4.9.2
+beautifulsoup4>=4.12.0
+weasyprint>=59.0
+
+# Image processing
+pillow>=9.5.0
+scikit-image>=0.20.0
+numpy>=1.24.3
+opencv-python-headless>=4.7.0
+
+# Utilities
+python-dotenv>=1.0.0
+python-multipart>=0.0.6
+rich>=13.3.5
+typer>=0.9.0
+tqdm>=4.65.0
+httpx>=0.24.0
+tenacity>=8.2.2
+jinja2>=3.1.2
+aiofiles>=23.1.0
+
+# Development and testing
+pytest>=7.3.1
+black>=23.3.0
+flake8>=6.0.0
+mypy>=1.3.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0

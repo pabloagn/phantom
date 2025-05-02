@@ -1,0 +1,35 @@
+/* packages/phantom-core/src/tokens/css/border-radius.css */
+
+:root {
+  /* Base border radius scale */
+  --border-radius-none: 0px;
+  --border-radius-xs: 2px;
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-2xl: 16px;
+  --border-radius-3xl: 24px;
+  --border-radius-full: 9999px;
+
+  /* Component-specific border radius (defaults to the scale above) */
+  --border-radius-button: var(--border-radius-md);
+  --border-radius-input: var(--border-radius-md);
+  --border-radius-card: var(--border-radius-lg);
+  --border-radius-modal: var(--border-radius-lg);
+  --border-radius-badge: var(--border-radius-sm);
+  --border-radius-tooltip: var(--border-radius-sm);
+  --border-radius-checkbox: var(--border-radius-sm);
+  --border-radius-switch: var(--border-radius-full);
+  --border-radius-avatar: var(--border-radius-full);
+  --border-radius-toast: var(--border-radius-md);
+  --border-radius-popover: var(--border-radius-md);
+  --border-radius-tag: var(--border-radius-md);
+}
+
+/* Dark mode overrides if needed */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Any dark mode specific changes would go here */
+  }
+}

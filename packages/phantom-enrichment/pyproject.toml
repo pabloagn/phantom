@@ -1,0 +1,49 @@
+# pyproject.toml
+
+[tool.poetry]
+name = "phantom-enrichment"
+version = "0.1.0"
+description = "Enrichment engine for digital & physical media library."
+authors = ["Pablo Aguirre <main@pabloagn.com>"]
+readme = "README.md"
+packages = [{include = "phantom_enrichment"}]
+
+# Main project dependencies
+[tool.poetry.dependencies]
+python = "^3.10"
+typer = {extras = ["rich"], version = "^0.12.3"} # CLI framework with rich text support
+pandas = "^2.2.2"
+openpyxl = "^3.1.2"
+python-dotenv = "^1.0.1"
+pydantic = "^2.7.1" # Data validation and settings management
+pydantic-settings = "^2.2.1" # For loading settings from .env and files
+requests = "^2.31.0" # Standard HTTP requests (useful for GraphQL/REST)
+gql = {extras = ["requests"], version = "^3.5.0"} # GraphQL client library
+loguru = "^0.7.2" # Simple and powerful logging
+matplotlib = "^3.8.3" # Plotting
+seaborn = "^0.13.2" # Plotting
+plotly = "^5.19.0" # Plotting
+rapidfuzz = "^3.13.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+ruff = "^0.4.4" # Linter and formatter
+mypy = "^1.10.0" # Static type checker
+
+# EDA dependencies
+[tool.poetry.group.notebook.dependencies]
+jupyter = "^1.0.0"
+notebook = "^7.0.6"
+ipykernel = "^6.29.0"
+jupyterlab = "^4.1.0"
+nbconvert = "^7.16.0"
+ipywidgets = "^8.1.2"
+nbformat = "^5.10.3"
+jupyter-black = "^0.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+phantom-enrichment = "phantom_enrichment.main:app" # Defines the CLI command entry point

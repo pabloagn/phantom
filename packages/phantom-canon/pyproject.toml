@@ -1,0 +1,36 @@
+# pyproject.toml
+
+[tool.poetry]
+name = "phantom-canon"
+version = "0.1.0"
+description = "Processing and enrichment for the Phantom knowledge base"
+authors = ["Pablo Aguirre <main@pabloagn.com>"]
+readme = "README.md"
+packages = [{include = "phantom_canon"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pandas = "^2.2.3"
+openpyxl = "^3.1.5"
+pyarrow = "^19.0.1"
+rich = "^14.0.0"
+ipython = "^9.1.0"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.1.1"
+black = "^25.1.0"
+isort = "^6.0.1"
+ruff = "^0.1.0"
+mypy = "^1.0.0"
+
+[tool.ruff]
+line-length = 88
+select = ["E", "W", "F", "I", "UP"]
+ignore = []
+
+[tool.ruff.isort]
+known-first-party = ["phantom_canon"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

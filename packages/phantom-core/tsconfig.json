@@ -1,0 +1,33 @@
+// packages/phantom-core/tsconfig.json
+
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "rootDir": "src",
+    "outDir": "dist/esm",
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "src",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "paths": {
+      "@phantom/core": ["./src/index.ts"],
+      "@phantom/core/*": ["./src/*"],
+      "@phantom-design/*": ["./src/*"],
+      "@phantom-components/*": ["src/components/*"],
+      "@phantom-tokens/*": ["./src/tokens/*"],
+      "@phantom-themes/*": ["./src/themes/*"],
+      "@phantom-utils/*": ["./src/utils/*"],
+      "@phantom-types/*": ["./src/types/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "config", ".turbo", "scripts"]
+}

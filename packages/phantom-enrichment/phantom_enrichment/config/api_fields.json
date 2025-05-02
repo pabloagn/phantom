@@ -1,0 +1,48 @@
+{
+    "source_comment": "Maps desired output field names to provider-specific field names.",
+    "media_types": {
+      "books": {
+        "isbndb": {
+          "comment": "Fields extracted from ISBNDB GET /books/{query} or GET /book/{isbn} responses.",
+          "fields_to_extract": {
+            "ISBN13": "isbn13",
+            "ISBN10": "isbn10",
+            "Edition_Title": "title",
+            "Edition_Title_Long": "title_long",
+            "Edition_Authors": "authors",
+            "Publisher": "publisher",
+            "Published_Date": "date_published",
+            "Pages": "pages",
+            "Language": "language",
+            "Binding": "binding",
+            "Edition_Info": "edition",
+            "Synopsis": "synopsis",
+            "Cover_Image_URL": "image",
+            "Cover_Image_URL_Original": "image_original",
+            "MSRP": "msrp",
+            "Dimensions_Raw": "dimensions",
+            "Dimensions_Structured": "dimensions_structured",
+            "Subjects": "subjects"
+          },
+          "list_fields": ["Edition_Authors", "Subjects"],
+          "object_fields": ["Dimensions_Structured"]
+        },
+        "hardcover": {
+          "comment": "Placeholder for Hardcover fields (if we revisit).",
+          "fields_to_extract": {
+          },
+          "list_fields": [],
+          "object_fields": []
+        }
+      },
+      "films": {
+        "tmdb": {
+          "comment": "Placeholder for The Movie Database fields.",
+          "fields_to_extract": {
+          },
+          "list_fields": [],
+          "object_fields": []
+        }
+      }
+    }
+  }

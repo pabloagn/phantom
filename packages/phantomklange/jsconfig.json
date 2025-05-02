@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@phantom/core": ["../phantom-core/src/index.ts"],
+      "@phantom/core/*": ["../phantom-core/src/*"],
+      "@phantom-design/*": ["../phantom-core/src/*"],
+      "@phantom-components/*": ["../phantom-core/src/components/*"],
+      "@phantom-tokens/*": ["../phantom-core/src/tokens/*"],
+      "@phantom-themes/*": ["../phantom-core/src/themes/*"],
+      "@phantom-utils/*": ["../phantom-core/src/utils/*"],
+      "@phantom-types/*": ["../phantom-core/src/types/*"]
+    }
+  }
+}

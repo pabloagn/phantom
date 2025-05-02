@@ -1,0 +1,245 @@
+/* packages/phantomklange/src/styles/globals.css */
+
+/* Import custom fonts first */
+@import './fonts.css';
+
+/* Base Tailwind directives - these MUST come before other imports */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Import shared styles from @phantom/core --- */
+/* These imports MUST match exactly what's exported in package.json */
+@import '@phantom/core/global.css';
+
+/* Import token CSS files directly using the proper paths */
+@import '@phantom/core/tokens/colors.css';
+@import '@phantom/core/tokens/typography.css';
+@import '@phantom/core/tokens/spacing.css';
+@import '@phantom/core/tokens/shadows.css';
+@import '@phantom/core/tokens/breakpoints.css';
+
+/* Add phantomklange-specific global styles below */
+/* These styles will override phantom-core styles if there are conflicts */
+
+/* Site Background Settings - uses the semantic CSS variables from colors.css */
+:root {
+  /* PhantomKlange theme - deep, modern, gothic aesthetic */
+  --site-background: var(--color-carbon-990);
+  --site-foreground: var(--color-neutral-50);
+  --site-accent: var(--color-accent-400);
+  --site-accent-glow: var(--color-gothic-glow);
+  --site-primary: var(--color-primary-400);
+
+  /* Custom depths for layering elements */
+  --site-depth-1: var(--color-carbon-980);
+  --site-depth-2: var(--color-carbon-950);
+  --site-depth-3: var(--color-neutral-900);
+
+  /* Gothic design accents */
+  --site-separator-color: var(--color-accent-700);
+  --site-separator-glow: 0 0 15px var(--color-accent-900);
+}
+
+html, body {
+  background-color: var(--site-background);
+  color: var(--site-foreground);
+  min-height: 100%;
+}
+
+/* Theme-specific classes (these will take precedence over the core theme variables) */
+.light-theme {
+  --site-background: var(--color-neutral-50);
+  --site-foreground: var(--color-neutral-900);
+  --site-accent: var(--color-accent-500);
+  --site-accent-glow: rgba(223, 168, 79, 0.1);
+  --site-primary: var(--color-primary-500);
+
+  /* Custom depths for layering elements in light mode */
+  --site-depth-1: var(--color-neutral-100);
+  --site-depth-2: var(--color-neutral-200);
+  --site-depth-3: var(--color-neutral-300);
+
+  /* Gothic design accents */
+  --site-separator-color: var(--color-accent-500);
+  --site-separator-glow: 0 0 10px var(--color-accent-200);
+}
+
+.dark-theme {
+  --site-background: var(--color-carbon-990);
+  --site-foreground: var(--color-neutral-50);
+  --site-accent: var(--color-accent-400);
+  --site-accent-glow: var(--color-gothic-glow);
+  --site-primary: var(--color-primary-400);
+
+  /* Custom depths for layering elements in dark mode */
+  --site-depth-1: var(--color-carbon-980);
+  --site-depth-2: var(--color-carbon-950);
+  --site-depth-3: var(--color-neutral-900);
+
+  /* Gothic design accents */
+  --site-separator-color: var(--color-accent-700);
+  --site-separator-glow: 0 0 15px var(--color-accent-900);
+}
+
+/* Theme-specific overrides for deeper blacks in specific dark theme contexts */
+.dark-theme .footer,
+.dark-theme footer {
+  background-color: var(--color-carbon-black);
+}
+
+/* Separators */
+.phantom-separator {
+  @apply flex items-center justify-center w-full my-8;
+}
+
+.phantom-separator::before,
+.phantom-separator::after {
+  content: '';
+  @apply h-px w-16 bg-white;
+}
+
+.phantom-separator-diamond {
+  @apply mx-4 w-2 h-2 border border-white rotate-45 bg-white;
+  box-shadow: var(--site-separator-glow);
+}
+
+/* Additional font definitions to ensure they're loaded */
+.font-serif-alt {
+  font-family: var(--font-serif-alt, 'Playfair Display', serif);
+}
+
+.font-sans-alt {
+  font-family: var(--font-sans-alt, 'Hanken Grotesk', sans-serif);
+}
+
+/* Special text treatments for a more sophisticated look */
+.gothic-title {
+  @apply font-serif-alt tracking-widest text-neutral-50 font-light;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.gothic-subtitle {
+  @apply font-serif-alt italic text-neutral-300;
+}
+
+/* Card and image treatments for the gothic aesthetic */
+.gothic-card {
+  @apply bg-phantom-carbon-950 border border-phantom-neutral-800;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gothic-card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 15px var(--site-accent-glow);
+  @apply border-phantom-neutral-700;
+}
+
+/* Subtle glow effects for highlights */
+.accent-glow {
+  box-shadow: 0 0 15px var(--site-accent-glow);
+}
+
+/* Improve text readability with subtle text-shadows */
+.text-shadow-sm {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.text-shadow-md {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.7);
+}
+
+/* Add these animations at the end of the file */
+
+/* Animations */
+@keyframes scrollDown {
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(10px);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Animation utility classes */
+.animate-scrollDown {
+  animation: scrollDown 2s ease-in-out infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.8s ease-out forwards;
+}
+
+.animate-pulse {
+  animation: pulse 3s ease-in-out infinite;
+}
+
+/* Radial gradient backgrounds */
+.bg-radial-gradient-dark {
+  background: radial-gradient(circle at center, rgba(25, 110, 145, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+}
+
+.bg-radial-gradient-accent {
+  background: radial-gradient(circle at center, rgba(223, 168, 79, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+}

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for the phantom system
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: phantom
+      POSTGRES_PASSWORD: phantom
+      POSTGRES_DB: phantom
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U phantom"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Web server for static content and reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./services/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./services/nginx/conf.d:/etc/nginx/conf.d
+      - ../docs:/usr/share/nginx/html
+    depends_on:
+      - phantomklange
+
+  # Phantom central hub documentation and assets
+  phantom:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ..:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Phantom database service
+  phantom-db:
+    build:
+      context: ../../phantom-db
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ../../phantom-db:/app
+      - /app/node_modules
+    environment:
+      - DATABASE_URL=postgresql://phantom:phantom@postgres:5432/phantom
+      - NODE_ENV=development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run dev
+
+  # Phantom digital catalogue
+  phantomklange:
+    build:
+      context: ../../phantomklange
+      dockerfile: docker/Dockerfile.dev
+    volumes:
+      - ../../phantomklange:/app
+      - /app/node_modules
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://phantom:phantom@postgres:5432/phantom
+      - NODE_ENV=development
+    command: npm run dev
+    depends_on:
+      - phantom-db
+      - postgres
+
+volumes:
+  postgres-data:
+    driver: local

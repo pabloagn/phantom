@@ -1,0 +1,100 @@
+# packages/phantom-visuals/pyproject.toml
+
+[tool.poetry]
+name = "phantom-visuals"
+version = "0.1.0"
+description = "Advanced image manipulation toolkit for the Phantom ecosystem"
+authors = ["Pablo Aguirre <main@pabloagn.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "phantom_visuals"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pillow = "^10.0.0"
+numpy = "^1.24.0"
+scikit-image = "^0.21.0"
+opencv-python = "^4.8.0"
+click = "^8.1.0"
+typer = "^0.9.0"
+rich = "^13.4.0"
+pydantic = "^2.0.0"
+colorama = "^0.4.6"
+torch = "^2.0.0"
+torchvision = "^0.15.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+mypy = "^1.3.0"
+ruff = "^0.1.0"
+
+[tool.poetry.scripts]
+phantom-visuals = "phantom_visuals.cli:app"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "C4",  # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "ANN", # flake8-annotations
+    "N",   # pep8-naming
+    "D",   # pydocstyle
+    "UP",  # pyupgrade
+    "TID", # flake8-tidy-imports
+    "RUF", # Ruff-specific rules
+    "PYI", # flake8-pyi
+    "PT",  # flake8-pytest-style
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "ERA", # eradicate
+    "ARG", # flake8-unused-arguments
+    "PL",  # pylint
+    "TRY", # tryceratops
+]
+ignore = [
+    "D203",  # One blank line required before class docstring
+    "D213",  # Multi-line docstring summary should start at the second line
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = [
+    "D",     # No docstrings needed in tests
+    "ANN",   # Type annotations not needed in tests
+]
+"__init__.py" = [
+    "F401",  # Imported but unused
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.pycodestyle]
+max-line-length = 88
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+xvs_output = "native"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true

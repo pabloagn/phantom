@@ -1,0 +1,63 @@
+/* packages/phantom-core/src/styles/global.css */
+
+/* Global styles for the Phantom design system */
+
+/* Import Tailwind base styles */
+@import 'tailwind.css';
+
+/* Phantom-specific component variables that reference the token systems */
+:root {
+  /* Color variables */
+  --phantom-background: var(--color-background);
+  --phantom-foreground: var(--color-foreground);
+  --phantom-primary: var(--color-primary-400);
+  --phantom-primary-foreground: var(--color-background);
+  --phantom-secondary: var(--color-secondary-400);
+  --phantom-secondary-foreground: var(--color-background);
+  --phantom-accent: var(--color-accent-400);
+  --phantom-accent-foreground: var(--color-background);
+  --phantom-muted: var(--color-muted);
+  --phantom-muted-foreground: var(--color-muted-foreground);
+  --phantom-card: var(--color-card);
+  --phantom-card-foreground: var(--color-card-foreground);
+  --phantom-border: var(--color-border);
+  --phantom-input: var(--color-input);
+  --phantom-ring: var(--color-ring);
+
+  /* Gothic design elements */
+  --phantom-gothic-glow: var(--color-gothic-glow, rgba(223, 168, 79, 0.15));
+  --phantom-gothic-shadow: var(--color-gothic-shadow, rgba(0, 0, 0, 0.6));
+
+  /* Spacing */
+  --phantom-radius-sm: var(--radius-sm);
+  --phantom-radius-md: var(--radius-md);
+  --phantom-radius-lg: var(--radius-lg);
+  --phantom-radius-xl: var(--radius-xl);
+
+  /* Animation */
+  --phantom-transition-fast: var(--transition-fast);
+  --phantom-transition-default: var(--transition-default);
+  --phantom-transition-slow: var(--transition-slow);
+}
+
+/* TODO: Implement global styles (complete pending items) */
+/* Global styles */
+body {
+  /* Colors from color system */
+  background-color: var(--phantom-background);
+  color: var(--phantom-foreground);
+
+  /* Typography from typography system - these are already set in typography.css */
+  /* This is just for reference - the body styles in typography.css will apply */
+  /*
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  */
+}
+
+/* Additional global styles can be added here */

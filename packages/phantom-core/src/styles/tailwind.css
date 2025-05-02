@@ -1,0 +1,24 @@
+/* packages/phantom-core/src/styles/tailwind.css */
+
+/* Main CSS entry point for Tailwind directives */
+/* TODO: Implement Tailwind directives */
+
+/* For Tailwind v3 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* For Tailwind v4 compatibility */
+/* Uncomment these when upgrading to v4
+@import "tailwindcss/preflight";
+@tailwind utilities;
+*/
+
+/* Add any custom base styles or component layers here */
+/* Example:
+@layer base {
+  body {
+    @apply bg-background text-foreground; // Assuming background/foreground defined in tokens/preset
+  }
+}
+*/

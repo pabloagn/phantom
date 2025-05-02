@@ -1,0 +1,29 @@
+# Phantom Intake Configuration
+
+# Directory paths
+input_dir: input
+output_dir: outputs
+log_dir: logs
+
+# File settings
+urls_file: download.txt
+
+# Network settings
+max_retries: 3
+timeout_seconds: 30
+delay_seconds: 2
+user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+
+# LibGen specific settings
+libgen_domains:
+  - libgen.is
+  - libgen.li
+  - libgen.rs
+  - libgen.gs
+
+# IPFS settings
+use_ipfs_gateway: true
+ipfs_gateway_urls:
+  - https://ipfs.io/ipfs/
+  - https://dweb.link/ipfs/
+  - https://gateway.pinata.cloud/ipfs/
