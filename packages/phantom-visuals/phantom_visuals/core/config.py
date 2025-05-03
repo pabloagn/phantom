@@ -48,7 +48,26 @@ class StyleVariant(str, Enum):
     GHOST_TRAILS = "ghost_trails"
     # Long exposure phantasmagoric style
     PHANTOM_FLOW = "phantom_flow"
-
+    TOPOGRAPHIC_WAVE = "topographic_wave" # Implementation for the first example (Joy Division style)
+    SLIT_SCAN_DISTORT = "slit_scan_distort" # Implementation for the second/third examples (Slit-scan simulation)
+    # Long exposure phantasmagoric style - Second run
+    SMUDGE_FLOW = "smudge_flow" # Implementation for smear/smudge effects
+    TOPOGRAPHIC_REFINED = "topographic_refined" # Refined Joy Division style
+    LONG_EXPOSURE_SCAN = "long_exposure_scan"  # Slit-scan / Temporal blur simulation
+    GHOSTLY_SMEAR = "ghostly_smear"
+    # Third run
+    TOPOGRAPHIC_DEPTH = "topographic_depth"
+    TEMPORAL_FLOW = "temporal_flow"
+    LIQUID_GHOST = "liquid_ghost"
+    # Fourth Run
+    TOPOGRAPHIC_MESH = "topographic_mesh"
+    TEMPORAL_STREAK = "temporal_streak"
+    ETHEREAL_SMUDGE = "ethereal_smudge"
+    # Fifth Run
+    PLOTTER_MESH_V3 = "plotter_mesh_v3"
+    STREAK_ACCUMULATE_V3 = "streak_accumulate_v3"
+    FLOW_SMUDGE_V3 = "flow_smudge_v3"
+    CELESTIAL_DRIFT_V4 = "celestial_drift_v4"
 
 class ColorScheme(str, Enum):
     """Color schemes available for transformations."""
