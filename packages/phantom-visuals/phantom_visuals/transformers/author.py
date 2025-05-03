@@ -336,6 +336,8 @@ class AuthorTransformer:
             self._add_flow_field_blur_style()
         elif style_variant == "masked_diffusion_smear":
             self._add_masked_diffusion_smear_style()
+        elif style_variant == "mesh_overlay_fusion":
+            self._add_mesh_overlay_fusion_style()
 
         else:
             # Default to phantom style
@@ -346,6 +348,181 @@ class AuthorTransformer:
 
         # Process the image
         return self.engine.transform(input_path, output_path)
+
+    def _add_mesh_overlay_fusion_style(self) -> None:
+        """Combines Plotter Mesh with the original image using advanced techniques."""
+        effects = EffectChain()
+        # No global pre-processing here, handled inside the main function
+
+        def apply_mesh_overlay_fusion(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed_base = cfg.effect_params.seed + 801
+            else:
+                seed_base = random.randint(0, 1000000)
+            np.random.seed(seed_base)
+            random.seed(seed_base)
+
+            params = cfg.effect_params
+            height, width = img.shape[:2]
+            is_color_input = img.ndim == 3
+
+            if is_color_input:
+                gray_base = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray_base = img.copy()
+
+            clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+            gray_enhanced = clahe.apply(gray_base)
+            alpha_contrast = 1.5 + params.intensity * 0.5
+            beta_contrast = -alpha_contrast * 127 + 127
+            gray_enhanced = cv2.convertScaleAbs(
+                gray_enhanced, alpha=alpha_contrast, beta=beta_contrast
+            )
+            base_img_gray_float = gray_enhanced.astype(np.float32)
+
+            mesh_line_count = int(70 + params.intensity * 50)
+            mesh_line_count = max(1, mesh_line_count)
+            mesh_amplitude = 20 + params.distortion * 60
+            mesh_noise_pos = params.noise_level * 1.5
+            mesh_thickness = 1
+            mesh_blur_k = int(5 + params.blur_radius * 0.6) * 2 + 1
+            mesh_vert_focus = 0.95
+            mesh_color_factor = 1.5
+            mesh_bg_color = (5, 5, 10)
+            mesh_line_color = (230, 230, 255)
+
+            mesh_canvas = np.full((height, width, 3), mesh_bg_color, dtype=np.uint8)
+            gray_shape_mesh = cv2.GaussianBlur(gray_base, (mesh_blur_k, mesh_blur_k), 0)
+            start_y_mesh = int(height * (1.0 - mesh_vert_focus) / 2.0)
+            end_y_mesh = int(height * (1.0 + mesh_vert_focus) / 2.0)
+            total_draw_height = end_y_mesh - start_y_mesh
+            line_spacing_mesh = max(1.0, total_draw_height / float(mesh_line_count))
+            horizon_line = np.full(width, height + 100, dtype=np.int32)
+            mesh_displacement_map = np.zeros((height, width), dtype=np.float32)
+
+            np.random.seed(seed_base + 1)
+            random.seed(seed_base + 1)
+            for i in range(mesh_line_count - 1, -1, -1):
+                y_base = start_y_mesh + int(round(i * line_spacing_mesh))
+                if y_base >= height:
+                    continue
+                sample_y = min(y_base, height - 1)
+                brightness_wave_row = gray_shape_mesh[sample_y, :]
+                segment_points: List[Tuple[int, int]] = []
+                for x in range(width):
+                    brightness_s = brightness_wave_row[x] / 255.0
+                    displacement = (brightness_s**1.6) * mesh_amplitude
+                    y_disp_f = y_base - displacement
+                    mesh_displacement_map[min(y_base, height - 1), x] = displacement
+                    x_noise, y_noise = np.random.randn(2) * mesh_noise_pos
+                    x_rnd, y_rnd = (
+                        int(round(x + x_noise)),
+                        int(round(y_disp_f + y_noise)),
+                    )
+                    x_clamped, y_clamped = (
+                        min(max(0, x_rnd), width - 1),
+                        min(max(0, y_rnd), height - 1),
+                    )
+                    is_visible = 0 <= y_rnd < horizon_line[x_clamped]
+                    if is_visible:
+                        segment_points.append((x_clamped, y_clamped))
+                        horizon_line[x_clamped] = min(horizon_line[x_clamped], y_rnd)
+                    else:
+                        if len(segment_points) > 1:
+                            cv2.polylines(
+                                mesh_canvas,
+                                [np.array(segment_points, dtype=np.int32)],
+                                False,
+                                mesh_line_color,
+                                mesh_thickness,
+                                cv2.LINE_AA,
+                            )
+                        segment_points = []
+                if len(segment_points) > 1:
+                    cv2.polylines(
+                        mesh_canvas,
+                        [np.array(segment_points, dtype=np.int32)],
+                        False,
+                        mesh_line_color,
+                        mesh_thickness,
+                        cv2.LINE_AA,
+                    )
+
+            mesh_canvas_float = mesh_canvas.astype(np.float32)
+
+            base_norm = base_img_gray_float[:, :, np.newaxis] / 255.0
+            mesh_norm = mesh_canvas_float / 255.0
+            screen_blend = (1.0 - (1.0 - base_norm) * (1.0 - mesh_norm)) * 255.0
+            screen_blend = np.clip(screen_blend, 0, 255)
+
+            displacement_strength = params.distortion * 10.0
+            mesh_disp_smooth = cv2.GaussianBlur(mesh_displacement_map, (11, 11), 0)
+            disp_norm = (mesh_disp_smooth / (mesh_amplitude * 0.5 + 1e-6)) - 1.0
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
+            map_x = map_base_x + disp_norm * displacement_strength
+            map_y = map_base_y
+            map_x = np.clip(map_x, 0, width - 1)
+            warped_original_gray = cv2.remap(
+                gray_enhanced,
+                map_x,
+                map_y,
+                interpolation=cv2.INTER_LINEAR,
+                borderMode=cv2.BORDER_REFLECT,
+            )
+            warped_original_float = warped_original_gray.astype(np.float32)
+
+            luminance_mask = base_norm ** (1.5 + (1.0 - params.intensity) * 2.0)
+            alpha_mask = luminance_mask
+            final_composite_float = (
+                screen_blend * (1.0 - alpha_mask)
+                + warped_original_float[:, :, np.newaxis] * alpha_mask
+            )
+
+            apply_glitch = params.noise_level > 0.1
+            if apply_glitch:
+                mesh_gray_float = cv2.cvtColor(mesh_canvas_float, cv2.COLOR_RGB2GRAY)
+                _, mesh_line_mask_gray = cv2.threshold(
+                    mesh_gray_float, 30, 255, cv2.THRESH_BINARY
+                )
+                mesh_line_mask = mesh_line_mask_gray[:, :, np.newaxis] / 255.0
+                glitch_shift = int(params.noise_level * 15)
+                shifted_composite = np.roll(final_composite_float, glitch_shift, axis=1)
+                final_composite_float = (
+                    final_composite_float * (1.0 - mesh_line_mask)
+                    + shifted_composite * mesh_line_mask
+                )
+
+            final_result = np.clip(final_composite_float, 0, 255).astype(np.uint8)
+            if final_result.ndim == 3:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
+
+            return final_result
+
+        # --- End apply_mesh_overlay_fusion ---
+
+        effects.add(apply_mesh_overlay_fusion)
+        # Add final grain/vignette
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.25,
+                    monochrome=True,
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.3
+                )
+            )
+        self.engine.add_transformation(effects)
 
     def _add_enhanced_particle_weave_style(self) -> None:
         """(V5 - Fixed NameErrors) Advanced Particle Weave aiming for robustness and elegance."""
@@ -718,9 +895,9 @@ class AuthorTransformer:
                             blurred_tile = tile
                         # Place blurred tile back, handle boundaries
                         h_tile, w_tile = tile.shape
-                        blurred_accumulator_step[r : r + h_tile, c : c + w_tile] = (
-                            blurred_tile
-                        )
+                        blurred_accumulator_step[
+                            r : r + h_tile, c : c + w_tile
+                        ] = blurred_tile
 
                 # --- Blend the globally blurred result back ---
                 # accumulator = cv2.addWeighted(accumulator, 1.0 - step_blend_alpha, blurred_accumulator_step, step_blend_alpha, 0)
@@ -1500,9 +1677,9 @@ class AuthorTransformer:
                 current_x[active_idx] = x_next
                 current_y[active_idx] = y_next
                 # --- V4 Variable Name Used ---
-                current_brightness[active_idx] *= (
-                    brightness_fade_factor  # <<< USED HERE (V4 NAME) <<<
-                )
+                current_brightness[
+                    active_idx
+                ] *= brightness_fade_factor  # <<< USED HERE (V4 NAME) <<<
                 off_screen = (
                     (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
                 )
@@ -3146,11 +3323,11 @@ class AuthorTransformer:
                         # Apply update smoothly across a small width to avoid single pixel spikes
                         hw = 1  # Half-width for horizon smoothing
                         update_y = y_displaced
-                        horizon_line[max(0, x - hw) : min(width, x + hw + 1)] = (
-                            np.minimum(
-                                horizon_line[max(0, x - hw) : min(width, x + hw + 1)],
-                                update_y,
-                            )
+                        horizon_line[
+                            max(0, x - hw) : min(width, x + hw + 1)
+                        ] = np.minimum(
+                            horizon_line[max(0, x - hw) : min(width, x + hw + 1)],
+                            update_y,
                         )
                     else:
                         # Point is hidden or off-canvas, draw previous segment if any

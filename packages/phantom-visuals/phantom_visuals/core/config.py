@@ -1,5 +1,7 @@
 # packages/phantom-visuals/phantom_visuals/core/config.py
 
+"""Configuration for the Phantom Visuals system."""
+
 import json
 import os
 import random
@@ -10,8 +12,10 @@ from typing import Optional, Union
 from pydantic import BaseModel, Field
 
 
-# --- StyleVariant Enum (Should contain all your defined styles) ---
+# --- StyleVariant Enum ---
 class StyleVariant(str, Enum):
+    """Style variants for the Phantom Visuals system."""
+
     PHANTOM = "phantom"
     MINIMAL = "minimal"
     DUOTONE = "duotone"
@@ -40,30 +44,34 @@ class StyleVariant(str, Enum):
     SPECTRAL_VEIL = "spectral_veil"
     GHOST_TRAILS = "ghost_trails"
     PHANTOM_FLOW = "phantom_flow"
-    TOPOGRAPHIC_WAVE = "topographic_wave"  # V1
-    SLIT_SCAN_DISTORT = "slit_scan_distort"  # V1
-    SMUDGE_FLOW = "smudge_flow"  # V1
-    TOPOGRAPHIC_REFINED = "topographic_refined"  # V1.5
-    LONG_EXPOSURE_SCAN = "long_exposure_scan"  # V1.5
-    GHOSTLY_SMEAR = "ghostly_smear"  # V1.5
-    TOPOGRAPHIC_DEPTH = "topographic_depth"  # V2
-    TEMPORAL_FLOW = "temporal_flow"  # V2
-    LIQUID_GHOST = "liquid_ghost"  # V2
-    TOPOGRAPHIC_MESH = "topographic_mesh"  # V2 attempt
-    TEMPORAL_STREAK = "temporal_streak"  # V2 attempt
-    ETHEREAL_SMUDGE = "ethereal_smudge"  # V2 attempt
-    PLOTTER_MESH_V3 = "plotter_mesh_v3"  # V3 inverted
-    STREAK_ACCUMULATE_V3 = "streak_accumulate_v3"  # V3 streak
-    FLOW_SMUDGE_V3 = "flow_smudge_v3"  # V3 smudge
-    CELESTIAL_DRIFT_V4 = "celestial_drift_v4"  # V4 streak
-    PLOTTER_MESH_V3B = "plotter_mesh_v3b"  # V3b fixed mesh
-    TOPO_STREAK_WEAVE = "topo_streak_weave"  # V4 combined
-    ENHANCED_PARTICLE_WEAVE = "enhanced_particle_weave"  # V5 Streak+Mesh
-    FLOW_FIELD_BLUR = "flow_field_blur"  # V5 Flow Blur
-    MASKED_DIFFUSION_SMEAR = "masked_diffusion_smear"  # V5 Diffusion Smear
+    TOPOGRAPHIC_WAVE = "topographic_wave"
+    SLIT_SCAN_DISTORT = "slit_scan_distort"
+    SMUDGE_FLOW = "smudge_flow"
+    TOPOGRAPHIC_REFINED = "topographic_refined"
+    LONG_EXPOSURE_SCAN = "long_exposure_scan"
+    GHOSTLY_SMEAR = "ghostly_smear"
+    TOPOGRAPHIC_DEPTH = "topographic_depth"
+    TEMPORAL_FLOW = "temporal_flow"
+    LIQUID_GHOST = "liquid_ghost"
+    TOPOGRAPHIC_MESH = "topographic_mesh"
+    TEMPORAL_STREAK = "temporal_streak"
+    ETHEREAL_SMUDGE = "ethereal_smudge"
+    PLOTTER_MESH_V3 = "plotter_mesh_v3"
+    STREAK_ACCUMULATE_V3 = "streak_accumulate_v3"
+    FLOW_SMUDGE_V3 = "flow_smudge_v3"
+    CELESTIAL_DRIFT_V4 = "celestial_drift_v4"
+    PLOTTER_MESH_V3B = "plotter_mesh_v3b"
+    TOPO_STREAK_WEAVE = "topo_streak_weave"
+    ENHANCED_PARTICLE_WEAVE = "enhanced_particle_weave"
+    FLOW_FIELD_BLUR = "flow_field_blur"
+    MASKED_DIFFUSION_SMEAR = "masked_diffusion_smear"
+    MESH_OVERLAY_FUSION = "mesh_overlay_fusion"
+
 
 # --- ColorScheme Enum ---
 class ColorScheme(str, Enum):
+    """Color schemes for the Phantom Visuals system."""
+
     DEFAULT = "default"
     LIGHT = "light"
     DARK = "dark"
@@ -78,6 +86,8 @@ class ColorScheme(str, Enum):
 
 # --- OutputFormat Enum ---
 class OutputFormat(str, Enum):
+    """Output formats for the Phantom Visuals system."""
+
     PNG = "png"
     JPEG = "jpeg"
     WEBP = "webp"
@@ -86,6 +96,8 @@ class OutputFormat(str, Enum):
 
 # --- EffectParameters Model (Ensure all tunable params are listed with defaults) ---
 class EffectParameters(BaseModel):
+    """Effect parameters for the Phantom Visuals system."""
+
     intensity: float = Field(0.75, ge=0.0, le=1.0)
     blur_radius: float = Field(0.0, ge=0.0, le=50.0)
     noise_level: float = Field(0.0, ge=0.0, le=1.0)
@@ -102,7 +114,9 @@ class EffectParameters(BaseModel):
     invert: bool = False
     seed: Optional[int] = None
 
-    def with_seed(self, seed: Optional[int] = None) -> "EffectParameters":
+    def with_seed(
+        self: "EffectParameters", seed: Optional[int] = None
+    ) -> "EffectParameters":
         """Create a copy with a specific seed."""
         params = self.model_copy()
         params.seed = seed if seed is not None else random.randint(0, 999999)
@@ -121,7 +135,7 @@ class Configuration(BaseModel):
     effect_params: EffectParameters = Field(default_factory=EffectParameters)
 
     @property
-    def random_seed(self) -> int:
+    def random_seed(self: "Configuration") -> int:
         """Get the random seed for reproducible effects."""
         # Generate a seed only if needed and not set
         if self.effect_params.seed is None:
@@ -143,7 +157,7 @@ class Configuration(BaseModel):
             # Log error here if logger is accessible
             raise OSError(f"Error reading or parsing config file {path}: {e}") from e
 
-    def to_file(self, path: Union[str, Path]) -> None:
+    def to_file(self: "Configuration", path: Union[str, Path]) -> None:
         """Save configuration to a JSON file."""
         path = Path(path)
         os.makedirs(path.parent, exist_ok=True)
@@ -154,6 +168,6 @@ class Configuration(BaseModel):
             # Log error here if logger is accessible
             raise OSError(f"Error writing config file {path}: {e}") from e
 
-    def clone(self) -> "Configuration":
+    def clone(self: "Configuration") -> "Configuration":
         """Create a deep copy of the configuration."""
         return self.model_copy(deep=True)

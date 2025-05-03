@@ -226,3 +226,14 @@ noise_level = 0.6 # Affects mesh noise, streak flow strength
 grain = 0.15
 vignette = 0.3
 seed = 501
+
+# Mesh Overlay Fusion (V6)
+# -------------------------------------
+[mesh_overlay_fusion]
+intensity = 1
+distortion = 0
+blur_radius = 50.0
+noise_level = 0
+grain = 0
+vignette = 0
+seed = 501
