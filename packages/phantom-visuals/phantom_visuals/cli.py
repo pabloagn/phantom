@@ -9,7 +9,7 @@ and creating abstract compositions using the Phantom Visuals toolkit.
 import json
 import os
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import typer
 from rich import box
@@ -45,7 +45,6 @@ app = typer.Typer(
     add_completion=False,
 )
 
-# Global logger instance
 logger = setup_logging()
 
 
@@ -182,11 +181,15 @@ def transform_images(
 
         # Load configuration from file if specified
         if load_config:
-            log_processing_step(logger, "Loading Configuration", f"From file: {load_config}")
+            log_processing_step(
+                logger, "Loading Configuration", f"From file: {load_config}"
+            )
             config = Configuration.from_file(load_config)
         else:
             # Create configuration with provided parameters
-            log_processing_step(logger, "Creating Configuration", "Using command line parameters")
+            log_processing_step(
+                logger, "Creating Configuration", "Using command line parameters"
+            )
             params = EffectParameters(
                 intensity=intensity,
                 blur_radius=blur,
@@ -209,7 +212,9 @@ def transform_images(
 
         # Save configuration if requested
         if save_config:
-            log_processing_step(logger, "Saving Configuration", f"To file: {save_config}")
+            log_processing_step(
+                logger, "Saving Configuration", f"To file: {save_config}"
+            )
             config.to_file(save_config)
             log_success(logger, "Configuration saved", {"file": save_config})
 
@@ -225,13 +230,17 @@ def transform_images(
                 os.makedirs(output_dir, exist_ok=True)
 
             # Process batch of images
-            log_processing_step(logger, "Starting Batch Processing", f"Glob pattern: {input_path}")
+            log_processing_step(
+                logger, "Starting Batch Processing", f"Glob pattern: {input_path}"
+            )
 
             # Create a progress bar
             progress = create_progress_bar("Processing batch", transient=False)
 
             with progress:
-                task = progress.add_task("[phantom]Transforming images...[/phantom]", total=None)
+                task = progress.add_task(
+                    "[phantom]Transforming images...[/phantom]", total=None
+                )
                 results = transformer.batch_transform(input_path, output_dir, style)
                 progress.update(task, completed=len(results), total=len(results))
 
@@ -242,8 +251,8 @@ def transform_images(
                 {
                     "processed": len(results),
                     "output_directory": str(output_dir),
-                    "style": style
-                }
+                    "style": style,
+                },
             )
         else:
             # Process a single image
@@ -266,31 +275,38 @@ def transform_images(
             progress = create_progress_bar("Processing image")
 
             with progress:
-                task = progress.add_task("[phantom]Transforming image...[/phantom]", total=100)
+                task = progress.add_task(
+                    "[phantom]Transforming image...[/phantom]", total=100
+                )
 
                 # Update progress to simulate processing steps
-                progress.update(task, advance=25, description="[phantom]Analyzing image...[/phantom]")
+                progress.update(
+                    task,
+                    advance=25,
+                    description="[phantom]Analyzing image...[/phantom]",
+                )
 
                 # Start the transformation
                 result_path = transformer.transform(input_path, output_file, style)
 
                 # Complete the progress
-                progress.update(task, completed=100, description="[phantom]Transformation complete![/phantom]")
+                progress.update(
+                    task,
+                    completed=100,
+                    description="[phantom]Transformation complete![/phantom]",
+                )
 
             # Log success
             log_success(
                 logger,
                 "Image processed successfully",
-                {
-                    "input": input_path,
-                    "output": str(result_path),
-                    "style": style
-                }
+                {"input": input_path, "output": str(result_path), "style": style},
             )
 
     except Exception as e:
         log_error(logger, e)
         raise typer.Exit(code=1)
+
 
 @app.command("create")
 def create_composition(
@@ -430,11 +446,15 @@ def create_composition(
 
         # Load configuration from file if specified
         if load_config:
-            log_processing_step(logger, "Loading Configuration", f"From file: {load_config}")
+            log_processing_step(
+                logger, "Loading Configuration", f"From file: {load_config}"
+            )
             config = Configuration.from_file(load_config)
         else:
             # Create configuration with provided parameters
-            log_processing_step(logger, "Creating Configuration", "Using command line parameters")
+            log_processing_step(
+                logger, "Creating Configuration", "Using command line parameters"
+            )
             params = EffectParameters(
                 intensity=intensity,
                 blur_radius=blur,
@@ -465,11 +485,15 @@ def create_composition(
             results = []
 
             # Create progress bar for multiple compositions
-            progress = create_progress_bar(f"Creating {count} compositions", total=count)
+            progress = create_progress_bar(
+                f"Creating {count} compositions", total=count
+            )
 
             with progress:
                 # Create a task for tracking progress
-                task = progress.add_task("[phantom]Generating compositions...[/phantom]", total=count)
+                task = progress.add_task(
+                    "[phantom]Generating compositions...[/phantom]", total=count
+                )
 
                 for i in range(count):
                     # Ensure unique seed for each composition if seed is provided
@@ -487,13 +511,15 @@ def create_composition(
                         output_file = output_file.with_stem(f"{stem}_{i+1}")
 
                     # Make sure the output directory exists
-                    os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+                    os.makedirs(
+                        os.path.dirname(os.path.abspath(output_file)), exist_ok=True
+                    )
 
                     # Update task description and advance progress
                     progress.update(
                         task,
                         description=f"[phantom]Generating composition {i+1} of {count}...[/phantom]",
-                        advance=1
+                        advance=1,
                     )
 
                     # Create the composition
@@ -510,13 +536,17 @@ def create_composition(
                     "width": width,
                     "height": height,
                     "style": style,
-                    "output_directory": os.path.dirname(os.path.abspath(output_file))
-                }
+                    "output_directory": os.path.dirname(os.path.abspath(output_file)),
+                },
             )
 
         else:
             # Create a single composition
-            log_processing_step(logger, "Creating Composition", f"Size: {width}x{height}, Style: {style}")
+            log_processing_step(
+                logger,
+                "Creating Composition",
+                f"Size: {width}x{height}, Style: {style}",
+            )
 
             # Make sure the output directory exists
             output_file = Path(output_path)
@@ -526,17 +556,33 @@ def create_composition(
             progress = create_progress_bar("Creating composition")
 
             with progress:
-                task = progress.add_task("[phantom]Generating artwork...[/phantom]", total=100)
+                task = progress.add_task(
+                    "[phantom]Generating artwork...[/phantom]", total=100
+                )
 
                 # Update progress to simulate processing steps
-                progress.update(task, advance=30, description="[phantom]Building base canvas...[/phantom]")
-                progress.update(task, advance=30, description="[phantom]Applying effects...[/phantom]")
+                progress.update(
+                    task,
+                    advance=30,
+                    description="[phantom]Building base canvas...[/phantom]",
+                )
+                progress.update(
+                    task,
+                    advance=30,
+                    description="[phantom]Applying effects...[/phantom]",
+                )
 
                 # Create the composition
-                result_path = composer.create_composition(width, height, output_file, style)
+                result_path = composer.create_composition(
+                    width, height, output_file, style
+                )
 
                 # Complete the progress
-                progress.update(task, completed=100, description="[phantom]Composition complete![/phantom]")
+                progress.update(
+                    task,
+                    completed=100,
+                    description="[phantom]Composition complete![/phantom]",
+                )
 
             # Log success
             log_success(
@@ -546,13 +592,14 @@ def create_composition(
                     "width": width,
                     "height": height,
                     "style": style,
-                    "output": str(result_path)
-                }
+                    "output": str(result_path),
+                },
             )
 
     except Exception as e:
         log_error(logger, e)
         raise typer.Exit(code=1)
+
 
 @app.command("styles")
 def list_styles(
@@ -584,7 +631,7 @@ def list_styles(
             row_styles=["", "dim"],
             highlight=True,
             expand=False,
-            show_header=True
+            show_header=True,
         )
 
         table.add_column("Style", style="highlight")
@@ -635,19 +682,22 @@ def list_styles(
         console.print(table)
 
         # Add some usage examples
-        console.print(Panel(
-            "[parameter]Example usage:[/parameter]\n"
-            "[dim]phantom-visuals transform input.jpg --style phantom[/dim]\n"
-            "[dim]phantom-visuals create --style abstract --width 1200 --height 1600[/dim]",
-            title="[phantom]Style Usage Examples[/phantom]",
-            border_style="cyan",
-            box=box.ROUNDED,
-            expand=False
-        ))
+        console.print(
+            Panel(
+                "[parameter]Example usage:[/parameter]\n"
+                "[dim]phantom-visuals transform input.jpg --style phantom[/dim]\n"
+                "[dim]phantom-visuals create --style abstract --width 1200 --height 1600[/dim]",
+                title="[phantom]Style Usage Examples[/phantom]",
+                border_style="cyan",
+                box=box.ROUNDED,
+                expand=False,
+            )
+        )
 
     except Exception as e:
         log_error(logger, e)
         raise typer.Exit(code=1)
+
 
 @app.command("colors")
 def list_colors(
@@ -679,7 +729,7 @@ def list_colors(
             row_styles=["", "dim"],
             highlight=True,
             expand=False,
-            show_header=True
+            show_header=True,
         )
 
         table.add_column("Scheme", style="highlight")
@@ -709,19 +759,22 @@ def list_colors(
         console.print(table)
 
         # Add some usage examples
-        console.print(Panel(
-            "[parameter]Example usage:[/parameter]\n"
-            "[dim]phantom-visuals transform input.jpg --color-scheme dark_contrast[/dim]\n"
-            "[dim]phantom-visuals create --color-scheme ethereal --style abstract[/dim]",
-            title="[phantom]Color Scheme Usage Examples[/phantom]",
-            border_style="cyan",
-            box=box.ROUNDED,
-            expand=False
-        ))
+        console.print(
+            Panel(
+                "[parameter]Example usage:[/parameter]\n"
+                "[dim]phantom-visuals transform input.jpg --color-scheme dark_contrast[/dim]\n"
+                "[dim]phantom-visuals create --color-scheme ethereal --style abstract[/dim]",
+                title="[phantom]Color Scheme Usage Examples[/phantom]",
+                border_style="cyan",
+                box=box.ROUNDED,
+                expand=False,
+            )
+        )
 
     except Exception as e:
         log_error(logger, e)
         raise typer.Exit(code=1)
+
 
 @app.command("config")
 def config_tool(
@@ -838,7 +891,11 @@ def config_tool(
         log_cli_command(logger, "config", command_args)
 
         # Create configuration with provided parameters
-        log_processing_step(logger, "Creating Configuration", f"Style: {style}, Color Scheme: {color_scheme}")
+        log_processing_step(
+            logger,
+            "Creating Configuration",
+            f"Style: {style}, Color Scheme: {color_scheme}",
+        )
         params = EffectParameters(
             intensity=intensity,
             blur_radius=blur,
@@ -879,27 +936,26 @@ def config_tool(
         log_success(
             logger,
             "Configuration saved successfully",
-            {
-                "file": config_path,
-                "style": style,
-                "color_scheme": color_scheme
-            }
+            {"file": config_path, "style": style, "color_scheme": color_scheme},
         )
 
         # Add usage example
-        console.print(Panel(
-            f"[parameter]Use this configuration with:[/parameter]\n"
-            f"[dim]phantom-visuals transform input.jpg --load-config {config_path}[/dim]\n"
-            f"[dim]phantom-visuals create --load-config {config_path}[/dim]",
-            title="[phantom]Configuration Usage Examples[/phantom]",
-            border_style="cyan",
-            box=box.ROUNDED,
-            expand=False
-        ))
+        console.print(
+            Panel(
+                f"[parameter]Use this configuration with:[/parameter]\n"
+                f"[dim]phantom-visuals transform input.jpg --load-config {config_path}[/dim]\n"
+                f"[dim]phantom-visuals create --load-config {config_path}[/dim]",
+                title="[phantom]Configuration Usage Examples[/phantom]",
+                border_style="cyan",
+                box=box.ROUNDED,
+                expand=False,
+            )
+        )
 
     except Exception as e:
         log_error(logger, e)
         raise typer.Exit(code=1)
+
 
 @app.command("explore")
 def explore_styles(
@@ -908,284 +964,248 @@ def explore_styles(
         help="Path to the input image or directory (glob pattern supported)",
     ),
     output_dir: str = typer.Option(
-        "output/styles",
+        "output/explore",  # Changed default slightly
         "--output",
         "-o",
-        help="Directory to save style explorations",
+        help="Directory to save style explorations or flavor results",
     ),
-    styles: list[str] = typer.Option(
-        None,
+    styles: List[str] = typer.Option(  # Use List from typing
+        None,  # Default changed to None (process all available for the mode)
         "--style",
         "-s",
-        help="Styles to apply (can specify multiple, omit for all styles)",
+        help="Styles to apply (omit for all available styles in the selected mode)",
     ),
-    color_schemes: list[str] = typer.Option(
+    flavor_config_path: Optional[str] = typer.Option(  # <--- NEW OPTION
+        None,
+        "--flavor-config",
+        "-fc",
+        help="Path to TOML file defining specific 'best flavor' parameters for styles. If set, other parameter flags are ignored.",
+        exists=True,  # Typer checks if file exists
+        file_okay=True,
+        dir_okay=False,
+        readable=True,
+    ),
+    # --- Parameters below are PRIMARILY for the default exploration mode ---
+    # --- They are ignored if --flavor-config is used ---
+    color_schemes: List[str] = typer.Option(  # Use List from typing
         None,
         "--color-scheme",
         "-c",
-        help="Color schemes to apply (can specify multiple, omit for default, use 'all' for all schemes)",
+        help="Color schemes for default exploration (ignored if --flavor-config is used; use 'all' for all schemes)",
     ),
     intensity: float = typer.Option(
-        0.75,
-        "--intensity",
-        "-i",
-        min=0.0,
-        max=1.0,
-        help="Effect intensity (0.0-1.0)",
+        0.75, "--intensity", "-i", help="Intensity (ignored if --flavor-config used)"
     ),
     blur: float = typer.Option(
-        0.0,
-        "--blur",
-        "-b",
-        min=0.0,
-        max=50.0,
-        help="Blur radius (0.0-50.0)",
+        0.0, "--blur", "-b", help="Blur radius (ignored if --flavor-config used)"
     ),
     distortion: float = typer.Option(
-        0.0,
-        "--distortion",
-        "-d",
-        min=0.0,
-        max=1.0,
-        help="Distortion amount (0.0-1.0)",
+        0.0, "--distortion", "-d", help="Distortion (ignored if --flavor-config used)"
     ),
     noise: float = typer.Option(
-        0.0,
-        "--noise",
-        "-n",
-        min=0.0,
-        max=1.0,
-        help="Noise level (0.0-1.0)",
+        0.0, "--noise", "-n", help="Noise level (ignored if --flavor-config used)"
     ),
     grain: float = typer.Option(
-        0.0,
-        "--grain",
-        "-g",
-        min=0.0,
-        max=1.0,
-        help="Film grain amount (0.0-1.0)",
+        0.0, "--grain", "-g", help="Grain amount (ignored if --flavor-config used)"
     ),
     vignette: float = typer.Option(
         0.0,
         "--vignette",
         "-v",
-        min=0.0,
-        max=1.0,
-        help="Vignette amount (0.0-1.0)",
+        help="Vignette amount (ignored if --flavor-config used)",
+    ),
+    # Seed is still relevant for both modes potentially
+    seed: Optional[int] = typer.Option(
+        None, "--seed", help="Global random seed override"
     ),
     output_format: str = typer.Option(
-        "png",
-        "--format",
-        "-f",
-        help="Output file format (png, jpeg, webp, tiff)",
+        "png", "--format", "-f", help="Output file format (png, jpeg, webp, tiff)"
     ),
-    seed: Optional[int] = typer.Option(
-        None,
-        "--seed",
-        help="Random seed for reproducible results",
-    ),
+    # Abstract mode - less relevant for flavors, keep for original mode
     abstract: bool = typer.Option(
         False,
         "--abstract",
         "-a",
-        help="Create abstract compositions instead of transforming images",
+        help="Create abstract compositions (default exploration mode only)",
     ),
     width: int = typer.Option(
-        1200,
-        "--width",
-        "-W",
-        min=100,
-        help="Width of abstract compositions in pixels (only used with --abstract)",
+        1200, "--width", "-W", help="Width for abstract compositions"
     ),
     height: int = typer.Option(
-        1600,
-        "--height",
-        "-H",
-        min=100,
-        help="Height of abstract compositions in pixels (only used with --abstract)",
+        1600, "--height", "-H", help="Height for abstract compositions"
     ),
-    log_level: str = typer.Option(
-        "INFO",
-        "--log-level",
-        help="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)",
-    ),
+    log_level: str = typer.Option("INFO", "--log-level", help="Logging level"),
 ) -> None:
-    """Explore multiple style variations on images or create abstract compositions.
-
-    This command applies multiple style variants to the input image(s) or
-    creates abstract compositions with different styles, making it easy to
-    compare visual treatments. Results are saved in an organized directory
-    structure.
-    """
+    """Explore style variations using default mode OR predefined 'best flavor' parameters."""
     try:
-        # Update logging level if specified
         if log_level:
             logger.setLevel(log_level.upper())
 
-        # Log command execution
-        command_args = {
-            "input_path": input_path,
-            "output_dir": output_dir,
-            "styles": styles,
-            "color_schemes": color_schemes,
-            "intensity": intensity,
-            "blur": blur,
-            "distortion": distortion,
-            "noise": noise,
-            "grain": grain,
-            "vignette": vignette,
-            "output_format": output_format,
-            "seed": seed,
-            "abstract": abstract,
-            "width": width,
-            "height": height,
-        }
-        log_cli_command(logger, "explore", command_args)
+        # --- Differentiate between modes ---
+        if flavor_config_path:
+            # --- BEST FLAVOR MODE ---
+            log_processing_step(logger, "Mode Selected", "Best Flavor Comparison")
+            command_args = {
+                "input_path": input_path,
+                "output_dir": output_dir,
+                "flavor_config_path": flavor_config_path,
+                "styles": styles if styles else "ALL (from config)",
+                "output_format": output_format,
+                # Seed is still relevant potentially if not set in TOML
+                "seed_override": seed,
+            }
+            log_cli_command(logger, "explore (flavor mode)", command_args)
 
-        # Create base configuration with provided parameters
-        log_processing_step(logger, "Creating Base Configuration", "Using command line parameters")
-        params = EffectParameters(
-            intensity=intensity,
-            blur_radius=blur,
-            distortion=distortion,
-            noise_level=noise,
-            grain=grain,
-            vignette=vignette,
-            seed=seed,
-        )
+            # Instantiate explorer (base_config less important here, output_dir is crucial)
+            # Output dir passed to run_best_flavors will be used directly
+            explorer = StyleExplorer(output_dir=output_dir)  # Pass output dir here
 
-        config = Configuration(
-            style_variant=StyleVariant("phantom"),  # Default style, will be overridden
-            color_scheme=ColorScheme("phantom_core"),  # Default scheme, will be overridden
-            output_format=OutputFormat(output_format),
-            effect_params=params,
-        )
-
-        # Log configuration
-        log_config(logger, json.loads(config.model_dump_json()))
-
-        # Create the style explorer
-        log_processing_step(logger, "Initializing Style Explorer", f"Output directory: {output_dir}")
-        explorer = StyleExplorer(base_config=config, output_dir=output_dir)
-
-        # If styles parameter not provided, use all available styles
-        if not styles:
-            log_processing_step(logger, "Using All Styles", "No specific styles requested")
-
-        # If color_schemes parameter not provided, use default
-        if not color_schemes:
-            log_processing_step(logger, "Using Default Color Scheme", "No specific color schemes requested")
-        elif "all" in color_schemes:
-            log_processing_step(logger, "Using All Color Schemes", "All color schemes requested")
-
-        # Process styles
-        if abstract:
-            # Create abstract compositions with multiple styles
-            log_processing_step(
-                logger,
-                "Creating Abstract Compositions",
-                f"Size: {width}x{height}, Output Format: {output_format}"
+            # Run the flavor comparison
+            results = explorer.run_best_flavors(
+                input_path=input_path,
+                output_dir=output_dir,  # Pass the command line output dir
+                parameter_config_path=flavor_config_path,
+                styles_to_run=styles,  # Pass None or the list
+                output_format=output_format,
+                # Maybe allow overriding default color scheme via CLI too? For now, use default in method
             )
 
-            # Create progress bar
-            progress = create_progress_bar("Exploring abstract styles")
+            # Simple summary for flavor mode
+            if results:
+                console.print(
+                    f"\n[bold green]✓[/] Best Flavor processing complete. Results saved in: [cyan]{output_dir}[/]"
+                )
+                # Optionally list generated files/styles
+                table = Table(title="Generated Flavors", box=box.MINIMAL_HEAVY_HEAD)
+                table.add_column("Style Flavor", style="green")
+                table.add_column("Output File", style="cyan")
+                for style_key, out_path in results.items():
+                    table.add_row(style_key, str(out_path))
+                console.print(table)
+            else:
+                console.print(
+                    "[yellow]No flavor images were generated (check logs for details).[/]"
+                )
 
-            with progress:
-                task = progress.add_task("[phantom]Generating abstract variations...[/phantom]", total=100)
-                progress.update(task, advance=25)
+        else:
+            # --- DEFAULT EXPLORATION MODE ---
+            log_processing_step(logger, "Mode Selected", "Default Style Exploration")
+            command_args = {
+                "input_path": input_path,
+                "output_dir": output_dir,
+                "styles": styles if styles else "ALL",
+                "color_schemes": color_schemes if color_schemes else "DEFAULT",
+                "intensity": intensity,
+                "blur": blur,
+                "distortion": distortion,
+                "noise": noise,
+                "grain": grain,
+                "vignette": vignette,
+                "output_format": output_format,
+                "seed": seed,
+                "abstract": abstract,
+                "width": width,
+                "height": height,
+            }
+            log_cli_command(logger, "explore (default mode)", command_args)
 
-                # Generate abstract compositions
+            # Create base configuration using CLI parameters OR defaults
+            params = EffectParameters(
+                intensity=intensity,
+                blur_radius=blur,
+                distortion=distortion,
+                noise_level=noise,
+                grain=grain,
+                vignette=vignette,
+                seed=seed,
+            )
+            # Base config only used to pass defaults to explore methods now
+            config = Configuration(
+                effect_params=params, output_format=OutputFormat(output_format)
+            )
+            # Note: Default style/color in base config doesn't matter much here
+
+            # Instantiate explorer, passing the base output dir for comparisons
+            explorer = StyleExplorer(base_config=config, output_dir=output_dir)
+
+            if abstract:
+                # --- Abstract Exploration ---
+                if not styles:
+                    log_info(logger, "Generating abstract for all styles.")
+                if not color_schemes:
+                    log_info(logger, "Using default color scheme for abstract.")
+
                 results = explorer.explore_abstract_styles(
                     width=width,
                     height=height,
                     styles=styles,
                     color_schemes=color_schemes,
+                    # Pass relevant params if explore_abstract_styles uses them
                     intensity=intensity,
                     output_format=output_format,
                 )
+                summary_title = "Abstract Style Exploration Summary"
+                output_location_msg = (
+                    f"Open the images in {explorer.output_dir / 'abstract'} to compare."
+                )
 
-                progress.update(task, completed=100)
+            else:
+                # --- Author Image Exploration ---
+                if not styles:
+                    log_info(logger, "Exploring all styles on images.")
+                if not color_schemes:
+                    log_info(logger, "Using default color scheme for exploration.")
 
-            # Log success
-            log_success(
-                logger,
-                "Abstract style exploration complete",
-                {
-                    "styles_applied": len(results),
-                    "output_directory": output_dir
-                }
-            )
-
-        else:
-            # Apply multiple styles to images
-            log_processing_step(
-                logger,
-                "Processing Input Images",
-                f"Path: {input_path}, Output Format: {output_format}"
-            )
-
-            # Create progress bar
-            progress = create_progress_bar("Exploring image styles")
-
-            with progress:
-                task = progress.add_task("[phantom]Applying style variations...[/phantom]", total=100)
-                progress.update(task, advance=25)
-
-                # Process images with multiple styles
+                # Call the original exploration method, passing overrides
                 results = explorer.explore_author_styles(
                     input_path=input_path,
                     styles=styles,
                     color_schemes=color_schemes,
                     intensity=intensity,
+                    blur_radius=blur,
+                    distortion=distortion,
+                    noise_level=noise,
+                    grain=grain,
+                    vignette=vignette,
+                    seed=seed,
                     output_format=output_format,
                 )
+                summary_title = "Image Style Exploration Summary"
+                # Output dir structure is now <output_dir>/<image_name>/<image>_<style>[_color].png
+                output_location_msg = f"Open the subdirectories within {explorer.output_dir} to compare styles per image."
 
-                progress.update(task, completed=100)
-
-            # Log success
-            log_success(
-                logger,
-                "Image style exploration complete",
-                {
-                    "styles_applied": len(results),
-                    "output_directory": output_dir
-                }
-            )
-
-        # Display style summary
-        style_table = Table(
-            title="[header]Style Exploration Summary[/header]",
-            box=box.ROUNDED,
-            border_style="cyan",
-            title_style="header",
-            header_style="subheader",
-            row_styles=["", "dim"],
-            highlight=True,
-            expand=False,
-            show_header=True
-        )
-
-        style_table.add_column("Style", style="highlight")
-        style_table.add_column("Files Created", style="value")
-
-        for style, paths in results.items():
-            style_table.add_row(style, str(len(paths)))
-
-        console.print(style_table)
-
-        # Display usage hint
-        console.print(Panel(
-            f"[parameter]To view the results:[/parameter]\n"
-            f"[dim]Open the images in {output_dir} to compare the different styles[/dim]",
-            title="[phantom]Next Steps[/phantom]",
-            border_style="cyan",
-            box=box.ROUNDED,
-            expand=False
-        ))
+            # Display summary table (common to both abstract/author exploration)
+            if results:
+                style_table = Table(
+                    title=f"[header]{summary_title}[/header]",
+                    box=box.ROUNDED,
+                    border_style="cyan",
+                )
+                style_table.add_column("Style Combination", style="highlight")
+                style_table.add_column("Files Created / Last Output", style="value")
+                for style_key, paths in results.items():
+                    # Show count for author, just path for abstract? Or always last path?
+                    display_val = (
+                        f"{len(paths)} files" if isinstance(paths, list) else str(paths)
+                    )
+                    style_table.add_row(style_key, display_val)
+                console.print(style_table)
+                console.print(
+                    Panel(
+                        f"[dim]{output_location_msg}[/dim]",
+                        title="[phantom]Next Steps[/phantom]",
+                        border_style="cyan",
+                    )
+                )
+            else:
+                console.print("[yellow]No exploration images were generated.[/]")
 
     except Exception as e:
-        log_error(logger, e)
+        log_error(
+            logger, f"Error during explore command: {e}"
+        )  # Show traceback for explore errors
         raise typer.Exit(code=1)
+
 
 if __name__ == "__main__":
     app()

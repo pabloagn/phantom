@@ -10,44 +10,65 @@ import glob
 import math
 import random
 from pathlib import Path
-from typing import Optional, Union, Tuple, List
+from typing import List, Optional, Tuple, Union
 
 import cv2
-import numpy as np
 import noise
+import numpy as np
 from skimage.feature import structure_tensor
-# TODO:Import specific feature if needed later, e.g., from skimage import feature
 
 # Assuming these are correctly defined and importable:
 from phantom_visuals.core.config import Configuration
 from phantom_visuals.core.engine import StyleEngine
 from phantom_visuals.core.palette import ColorPalette, RGBColor
 from phantom_visuals.effects import (
-    EffectChain, add_grain, add_noise, add_vignette, adjust_brightness,
-    adjust_contrast, adjust_saturation, apply_symmetry, blur_regions,
-    detect_edges, displace, duotone, enhance_edges, ethereal_glow,
-    ghost_trails, glitch, lens_distortion, pixel_sort, solarize,
-    threshold, wave_distortion
+    EffectChain,
+    add_grain,
+    add_noise,
+    add_vignette,
+    adjust_brightness,
+    adjust_contrast,
+    adjust_saturation,
+    apply_symmetry,
+    blur_regions,
+    detect_edges,
+    displace,
+    duotone,
+    enhance_edges,
+    ethereal_glow,
+    ghost_trails,
+    glitch,
+    lens_distortion,
+    pixel_sort,
+    solarize,
+    threshold,
+    wave_distortion,
 )
 from phantom_visuals.effects.artistic import create_glitch_blocks
 
-# Helper functions (can be moved to a utils file if preferred)
-def _calculate_rgb_color(base_color_obj: RGBColor, factor: float, mode: str = 'mult') -> Tuple[int, int, int]:
+
+# Helper Functions
+def _calculate_rgb_color(
+    base_color_obj: RGBColor, factor: float, mode: str = "mult"
+) -> Tuple[int, int, int]:
     """Manually calculate darker or lighter RGB color."""
     base_tuple = base_color_obj.as_tuple
-    if mode == 'darken': # Treat factor as retention (0.1 = 10% brightness)
+    if mode == "darken":  # Treat factor as retention (0.1 = 10% brightness)
         return tuple(max(0, int(c * factor)) for c in base_tuple)
-    elif mode == 'lighten': # Treat factor as multiplier (1.5 = 150% brightness)
-         return tuple(min(255, int(c * factor)) for c in base_tuple)
+    if mode == "lighten":  # Treat factor as multiplier (1.5 = 150% brightness)
+        return tuple(min(255, int(c * factor)) for c in base_tuple)
     # Default: multiply (can be darken or lighten based on factor)
     return tuple(max(0, min(255, int(c * factor))) for c in base_tuple)
+
 
 def _create_motion_blur_kernel(kernel_size: int, angle_degrees: float) -> np.ndarray:
     """Creates a motion blur kernel for a given size and angle."""
     if kernel_size <= 1:
-        return np.array([[1.0]]) # No blur
+        return np.array([[1.0]])  # No blur
 
-    kernel_size = max(3, kernel_size if kernel_size % 2 != 0 else kernel_size + 1) # Ensure odd size >= 3
+    kernel_size = max(
+        3, kernel_size if kernel_size % 2 != 0 else kernel_size + 1
+    )  # Ensure odd size >= 3
     kernel = np.zeros((kernel_size, kernel_size), dtype=np.float32)
     center = kernel_size // 2
 
@@ -59,21 +80,30 @@ def _create_motion_blur_kernel(kernel_size: int, angle_degrees: float) -> np.nda
     half_length = kernel_size // 2
     # Create a line on the kernel
     # Use integer coordinates by drawing line from one end to the other
-    pt1 = (center - int(round(x_dir * half_length)), center - int(round(y_dir * half_length)))
-    pt2 = (center + int(round(x_dir * half_length)), center + int(round(y_dir * half_length)))
-    cv2.line(kernel, pt1, pt2, 1.0, 1) # Draw line with thickness 1
+    pt1 = (
+        center - int(round(x_dir * half_length)),
+        center - int(round(y_dir * half_length)),
+    )
+    pt2 = (
+        center + int(round(x_dir * half_length)),
+        center + int(round(y_dir * half_length)),
+    )
+    cv2.line(kernel, pt1, pt2, 1.0, 1)  # Draw line with thickness 1
 
     # Normalize the kernel
     sum_kernel = np.sum(kernel)
-    if sum_kernel == 0: # Handle potential edge case where line is length 0
+    if sum_kernel == 0:  # Handle potential edge case where line is length 0
         kernel[center, center] = 1.0
     else:
         kernel /= sum_kernel
 
     return kernel
 
-def _normalized_gradient_magnitude(gray_img: np.ndarray, ksize:int = 3, blur_ksize:int = 5) -> np.ndarray:
-    """ Calculates normalized gradient magnitude (0=smooth, 1=edge)."""
+
+def _normalized_gradient_magnitude(
+    gray_img: np.ndarray, ksize: int = 3, blur_ksize: int = 5
+) -> np.ndarray:
+    """Calculates normalized gradient magnitude (0=smooth, 1=edge)."""
     if not isinstance(gray_img, np.ndarray) or gray_img.ndim != 2:
         raise ValueError("Input must be a 2D NumPy array (grayscale image).")
 
@@ -108,8 +138,17 @@ def _normalized_gradient_magnitude(gray_img: np.ndarray, ksize:int = 3, blur_ksi
 
     return norm_mag
 
-def _generate_perlin_flow_field(width: int, height: int, scale: float, octaves: int, persistence: float, lacunarity: float, seed: int) -> Tuple[np.ndarray, np.ndarray]:
-    """ Generates a flow field using Perlin noise. Returns (flow_x, flow_y)."""
+
+def _generate_perlin_flow_field(
+    width: int,
+    height: int,
+    scale: float,
+    octaves: int,
+    persistence: float,
+    lacunarity: float,
+    seed: int,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Generates a flow field using Perlin noise. Returns (flow_x, flow_y)."""
     flow_x = np.zeros((height, width), dtype=np.float32)
     flow_y = np.zeros((height, width), dtype=np.float32)
     # Use different seeds/offsets for x and y flow for less correlated movement
@@ -125,20 +164,39 @@ def _generate_perlin_flow_field(width: int, height: int, scale: float, octaves: 
             # noise.pnoise3 adds depth, which we map to angle or use 2 independent 2D noises
             # Option 1: Use 3D noise, z=0 for flow_x, z=1 for flow_y angle components? Less intuitive.
             # Option 2: Two independent 2D noises for x and y magnitudes/angles. Simpler.
-            angle_rad = noise.pnoise2(scaled_x, scaled_y,
-                                     octaves=octaves, persistence=persistence, lacunarity=lacunarity,
-                                     base=seed_x) * math.pi * 2.0 # Noise value maps to angle (-pi to pi roughly)
+            angle_rad = (
+                noise.pnoise2(
+                    scaled_x,
+                    scaled_y,
+                    octaves=octaves,
+                    persistence=persistence,
+                    lacunarity=lacunarity,
+                    base=seed_x,
+                )
+                * math.pi
+                * 2.0
+            )  # Noise value maps to angle (-pi to pi roughly)
 
-            magnitude = 0.5 + (noise.pnoise2(scaled_x, scaled_y, # Use different noise seed/instance for magnitude
-                                      octaves=octaves, persistence=persistence, lacunarity=lacunarity,
-                                      base=seed_y) + 1.0) / 2.0 # Normalize noise approx -1 to 1 -> 0 to 1 for magnitude scale
+            magnitude = (
+                0.5
+                + (
+                    noise.pnoise2(
+                        scaled_x,
+                        scaled_y,  # Use different noise seed/instance for magnitude
+                        octaves=octaves,
+                        persistence=persistence,
+                        lacunarity=lacunarity,
+                        base=seed_y,
+                    )
+                    + 1.0
+                )
+                / 2.0
+            )  # Normalize noise approx -1 to 1 -> 0 to 1 for magnitude scale
 
             flow_x[i, j] = math.cos(angle_rad) * magnitude
-            flow_y[i, j] = math.sin(angle_rad) * magnitude # Regular sin, y inversion handled later if needed
+            flow_y[i, j] = math.sin(angle_rad) * magnitude
 
     return flow_x, flow_y
-
-# --- End Helper Functions ---
 
 
 class AuthorTransformer:
@@ -216,16 +274,14 @@ class AuthorTransformer:
             self._add_contour_style()
         elif style_variant == "wave":
             self._add_wave_style()
-        # Mathematical styles
-        elif style_variant == "fractal":
-            self._add_fractal_style()
-        elif style_variant == "fourier":
-            self._add_fourier_style()
-        elif style_variant == "wave_function":
-            self._add_wave_function_style()
-        elif style_variant == "statistical":
-            self._add_statistical_style()
-        # New style variations
+        # elif style_variant == "fractal":
+        #     self._add_fractal_style()
+        # elif style_variant == "fourier":
+        #     self._add_fourier_style()
+        # elif style_variant == "wave_function":
+        #     self._add_wave_function_style()
+        # elif style_variant == "statistical":
+        #     self._add_statistical_style()
         elif style_variant == "gothic_subtle":
             self._add_gothic_subtle_style()
         elif style_variant == "phantom_spectral":
@@ -244,24 +300,42 @@ class AuthorTransformer:
             self._add_slit_scan_style()
         elif style_variant == "smudge_flow":
             self._add_smudge_flow_style()
-        elif style_variant == "topographic_refined": self._add_topographic_refined_style()
-        elif style_variant == "long_exposure_scan": self._add_long_exposure_scan_style()
-        elif style_variant == "ghostly_smear": self._add_ghostly_smear_style()
-        # --- NEW Refined Styles ---
-        elif style_variant == "topographic_depth": self._add_topographic_depth_style()
-        elif style_variant == "temporal_flow": self._add_temporal_flow_style()
-        elif style_variant == "liquid_ghost": self._add_liquid_ghost_style()
-        # --- NEW Methodical Styles (v2) ---
-        elif style_variant == "topographic_mesh": self._add_topographic_mesh_style()
-        elif style_variant == "temporal_streak": self._add_temporal_streak_style()
-        elif style_variant == "ethereal_smudge": self._add_ethereal_smudge_style()
-        # --- NEW METHODICAL Styles (v3) ---
-        # NOTE: Renamed again slightly to avoid collision and indicate version
-        elif style_variant == "plotter_mesh_v3": self._add_plotter_mesh_v3_style()
-        elif style_variant == "streak_accumulate_v3": self._add_streak_accumulate_v3_style()
-        elif style_variant == "flow_smudge_v3": self._add_flow_smudge_v3_style()
-        elif style_variant == "celestial_drift_v4": self._add_celestial_drift_v4_style()
-
+        elif style_variant == "topographic_refined":
+            self._add_topographic_refined_style()
+        elif style_variant == "long_exposure_scan":
+            self._add_long_exposure_scan_style()
+        elif style_variant == "ghostly_smear":
+            self._add_ghostly_smear_style()
+        elif style_variant == "topographic_depth":
+            self._add_topographic_depth_style()
+        elif style_variant == "temporal_flow":
+            self._add_temporal_flow_style()
+        elif style_variant == "liquid_ghost":
+            self._add_liquid_ghost_style()
+        elif style_variant == "topographic_mesh":
+            self._add_topographic_mesh_style()
+        elif style_variant == "temporal_streak":
+            self._add_temporal_streak_style()
+        elif style_variant == "ethereal_smudge":
+            self._add_ethereal_smudge_style()
+        elif style_variant == "plotter_mesh_v3":
+            self._add_plotter_mesh_v3_style()
+        elif style_variant == "streak_accumulate_v3":
+            self._add_streak_accumulate_v3_style()
+        elif style_variant == "flow_smudge_v3":
+            self._add_flow_smudge_v3_style()
+        elif style_variant == "celestial_drift_v4":
+            self._add_celestial_drift_v4_style()
+        elif style_variant == "plotter_mesh_v3b":
+            self._add_plotter_mesh_v3b_style()
+        elif style_variant == "topo_streak_weave":
+            self._add_topo_streak_weave_style()
+        elif style_variant == "enhanced_particle_weave":
+            self._add_enhanced_particle_weave_style()
+        elif style_variant == "flow_field_blur":
+            self._add_flow_field_blur_style()
+        elif style_variant == "masked_diffusion_smear":
+            self._add_masked_diffusion_smear_style()
 
         else:
             # Default to phantom style
@@ -273,7 +347,988 @@ class AuthorTransformer:
         # Process the image
         return self.engine.transform(input_path, output_path)
 
-    # <<< --- NEW METHODICAL IMPLEMENTATIONS (v3) --- >>>
+    def _add_enhanced_particle_weave_style(self) -> None:
+        """(V5 - Fixed NameErrors) Advanced Particle Weave aiming for robustness and elegance."""
+        effects = EffectChain()
+        # Optional pre-processing
+        # effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.8))
+
+        def apply_enhanced_particle_weave(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed_base = cfg.effect_params.seed + 701
+            else:
+                seed_base = random.randint(0, 1000000)
+            np.random.seed(seed_base)
+            random.seed(seed_base)
+
+            if img.ndim == 2:
+                color_img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            else:
+                color_img = img.copy()
+            gray = cv2.cvtColor(color_img, cv2.COLOR_RGB2GRAY)
+            current_frame_float = color_img.astype(np.float32)
+            height, width = gray.shape
+            params = cfg.effect_params
+
+            # --- Parameters ---
+            num_steps = 30 + int(params.intensity * 50)
+            max_particles = 5000 + int(params.intensity * 15000)
+            min_particle_distance = 3
+            quality_level = 0.01 + (1.0 - params.intensity) * 0.04
+            flow_strength = 0.5 + params.intensity * 1.0
+            structure_alignment_factor = 0.1 + params.distortion * 0.2
+            noise_scale = 25 + params.noise_level * 40
+            noise_influence = 0.3 + params.noise_level * 0.7
+            initial_brightness_boost = 1.8
+            brightness_fade_factor = 0.980
+            min_brightness_render = 12
+            thickness_base = 1.0  # <<< *** DEFINED HERE ***
+            max_thickness_factor = 2.5
+            bloom_strength = 0.15 + params.intensity * 0.2
+            bloom_radius = 4 + int(params.blur_radius * 0.4)
+            final_gamma = 0.85
+            color_tint_strength = 0.1 + params.distortion * 0.2  # Example tint factor
+
+            # --- Pre-processing for Features/Flow ---
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            gray_clahe = clahe.apply(gray)
+            gray_smooth_flow = cv2.GaussianBlur(gray_clahe, (5, 5), 0)
+
+            # --- Particle Seeding ---
+            seed_brightness_threshold = 20
+            corners = cv2.goodFeaturesToTrack(
+                gray_clahe,
+                max_particles,
+                quality_level,
+                min_particle_distance,
+                blockSize=7,
+                useHarrisDetector=False,
+            )  # Use CLAHE version for seeding
+            if corners is None or len(corners) == 0:
+                return img
+            initial_coords = corners.reshape(-1, 2)
+            initial_x = np.clip(initial_coords[:, 0], 0, width - 1).astype(int)
+            initial_y = np.clip(initial_coords[:, 1], 0, height - 1).astype(int)
+            initial_brightness_raw = gray[initial_y, initial_x].astype(np.float32)
+            valid_mask = initial_brightness_raw > seed_brightness_threshold
+            if not np.any(valid_mask):
+                return img
+            initial_x, initial_y = initial_x[valid_mask], initial_y[valid_mask]
+            initial_brightness_val = initial_brightness_raw[valid_mask]
+            if len(initial_x) == 0:
+                return img
+            initial_color = current_frame_float[initial_y, initial_x]
+            num_particles = len(initial_x)
+            current_brightness = initial_brightness_val * initial_brightness_boost
+            current_color = initial_color.copy()
+            current_x, current_y = (
+                initial_x.astype(np.float32),
+                initial_y.astype(np.float32),
+            )
+            active_particles = np.ones(num_particles, dtype=bool)
+
+            # --- Calculate Flow Field ---
+            sigma_structure = 3 + params.distortion * 3
+            Axx, Axy, Ayy = structure_tensor(
+                gray_smooth_flow, sigma=sigma_structure, mode="reflect", order="xy"
+            )
+            structure_angle_rad = np.arctan2(2 * Axy, Ayy - Axx + 1e-6) / 2.0
+            np.random.seed(seed_base + 1)
+            random.seed(seed_base + 1)
+            perlin_flow_x, perlin_flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=noise_scale,
+                octaves=5,
+                persistence=0.5,
+                lacunarity=2.0,
+                seed=seed_base + 1,
+            )
+
+            # --- Accumulation Canvas ---
+            accumulator = np.zeros_like(current_frame_float, dtype=np.float64)
+            accent_color_np = np.array(
+                _calculate_rgb_color(pal.accent, 1.0), dtype=np.float32
+            )
+
+            # --- Simulation Loop ---
+            for step in range(num_steps):
+                if not np.any(active_particles):
+                    break
+                active_idx = np.where(active_particles)[0]
+                x_t, y_t, brightness_t, color_t = (
+                    current_x[active_idx],
+                    current_y[active_idx],
+                    current_brightness[active_idx],
+                    current_color[active_idx],
+                )
+
+                x_int, y_int = (
+                    np.clip(np.round(x_t), 0, width - 1).astype(int),
+                    np.clip(np.round(y_t), 0, height - 1).astype(int),
+                )
+                particle_struct_angle = structure_angle_rad[y_int, x_int]
+                particle_noise_x, particle_noise_y = (
+                    perlin_flow_x[y_int, x_int],
+                    perlin_flow_y[y_int, x_int],
+                )
+                struct_flow_x, struct_flow_y = (
+                    np.cos(particle_struct_angle),
+                    -np.sin(particle_struct_angle),
+                )
+                step_flow_x = (
+                    struct_flow_x * structure_alignment_factor
+                    + particle_noise_x * (1.0 - structure_alignment_factor)
+                )
+                step_flow_y = (
+                    struct_flow_y * structure_alignment_factor
+                    + particle_noise_y * (1.0 - structure_alignment_factor)
+                )
+                flow_mag = np.sqrt(step_flow_x**2 + step_flow_y**2) + 1e-6
+                speed_brightness_norm = (
+                    np.clip(brightness_t / initial_brightness_boost, 0, 255) / 255.0
+                )
+                speed = flow_strength * (0.5 + speed_brightness_norm**0.8)
+                step_vx = (step_flow_x / flow_mag) * speed
+                step_vy = (step_flow_y / flow_mag) * speed
+
+                x_next, y_next = x_t + step_vx, y_t + step_vy
+
+                for k in range(len(active_idx)):
+                    render_brightness = brightness_t[k]
+                    if render_brightness < min_brightness_render:
+                        continue
+                    x1_rnd, y1_rnd = int(round(x_t[k])), int(round(y_t[k]))
+                    x2_rnd, y2_rnd = int(round(x_next[k])), int(round(y_next[k]))
+                    if not (0 <= x1_rnd < width and 0 <= y1_rnd < height):
+                        continue
+
+                    current_speed = np.sqrt(step_vx[k] ** 2 + step_vy[k] ** 2)
+                    norm_speed = np.clip(current_speed / (flow_strength * 1.5), 0, 1)
+                    thickness = max(
+                        1.0,
+                        thickness_base
+                        + norm_speed * (max_thickness_factor - thickness_base),
+                    )  # Use thickness_base
+
+                    color_alpha = np.clip(
+                        render_brightness / (255.0 * initial_brightness_boost), 0.0, 1.0
+                    )
+                    base_particle_color = color_t[k] * color_alpha
+                    tinted_color = (
+                        base_particle_color * (1.0 - color_tint_strength)
+                        + accent_color_np * color_tint_strength * color_alpha
+                    )
+                    line_color_float = np.clip(tinted_color, 0, 255)
+
+                    # Manual MAX blending using line coordinates
+                    rr, cc, val = line_aa_custom(y1_rnd, x1_rnd, y2_rnd, x2_rnd)
+                    valid_idx = (rr >= 0) & (rr < height) & (cc >= 0) & (cc < width)
+                    if not np.any(valid_idx):
+                        continue
+                    rr_v, cc_v, val_v = rr[valid_idx], cc[valid_idx], val[valid_idx]
+                    current_acc_val = accumulator[rr_v, cc_v]
+                    new_val = np.outer(val_v, line_color_float)
+                    accumulator[rr_v, cc_v] = np.maximum(current_acc_val, new_val)
+
+                # Update Particle State
+                current_x[active_idx] = x_next
+                current_y[active_idx] = y_next
+                current_brightness[active_idx] *= brightness_fade_factor
+                current_color[active_idx] *= brightness_fade_factor
+                off_screen = (
+                    (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
+                )
+                too_faint = current_brightness[active_idx] < (
+                    min_brightness_render * 0.5
+                )
+                active_particles[active_idx[off_screen | too_faint]] = False
+
+            # --- Post-Process Accumulator ---
+            min_acc, max_acc = np.min(accumulator), np.max(accumulator)
+            if max_acc > min_acc + 1e-6:
+                norm_acc = (accumulator - min_acc) / (max_acc - min_acc)
+            else:
+                norm_acc = np.zeros_like(accumulator)
+
+            # Bloom
+            if bloom_strength > 0 and bloom_radius > 0:
+                acc_mag = np.mean(norm_acc, axis=2)
+                bright_pixels = (acc_mag > (1.0 - bloom_strength * 0.9)).astype(
+                    np.float32
+                )  # Adjusted threshold
+                bright_pixels_3c = cv2.cvtColor(bright_pixels, cv2.COLOR_GRAY2RGB)
+                highlights = norm_acc * bright_pixels_3c
+                bloom_ksize = int(bloom_radius) * 2 + 1
+                blurred_highlights = cv2.GaussianBlur(
+                    highlights, (bloom_ksize, bloom_ksize), 0
+                )
+                bloom_layer = (
+                    blurred_highlights * bloom_strength * 2.0
+                )  # Adjusted multiplier
+                norm_acc = 1.0 - (1.0 - norm_acc) * (1.0 - bloom_layer)
+                norm_acc = np.clip(norm_acc, 0.0, 1.0)
+
+            # Gamma & Convert
+            final_result_float = np.power(norm_acc, final_gamma) * 255.0
+            final_result = np.clip(final_result_float, 0, 255).astype(np.uint8)
+
+            # Force grayscale output
+            if final_result.ndim == 3:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
+
+            return final_result
+
+        # --- End apply_enhanced_particle_weave ---
+
+        effects.add(apply_enhanced_particle_weave)
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.2
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.3
+                )
+            )
+        self.engine.add_transformation(effects)
+
+    def _add_flow_field_blur_style(self) -> None:
+        """(V5) Simulate motion/smudging using iterative flow-guided directional blur."""
+        effects = EffectChain()
+        # Initial subtle adjustments
+        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.1))
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.0)
+        )  # Force B&W
+
+        def apply_flow_blur(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed = cfg.effect_params.seed + 801
+                np.random.seed(seed)
+                random.seed(seed)
+
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
+            current_result = gray.astype(np.float32)
+            height, width = gray.shape
+            params = cfg.effect_params
+
+            # --- Parameters ---
+            num_steps = 3 + int(
+                params.intensity * 7
+            )  # Fewer steps, stronger blur per step
+            # Flow field (Perlin primary)
+            noise_scale = 40 + params.distortion * 60
+            noise_octaves = 5
+            noise_persistence = 0.6
+            noise_lacunarity = 2.0
+            # Blur control
+            base_blur_strength = (
+                5 + params.blur_radius * 1.0
+            )  # Strength mapped to kernel size directly
+            blur_strength_variance = (
+                params.intensity * 0.5
+            )  # How much kernel size varies locally
+            # Blending
+            step_blend_alpha = (
+                0.2 + params.intensity * 0.3
+            )  # How much each step contributes
+
+            # --- Generate Flow Field (Angle and Magnitude) ---
+            print("[FFB V5] Generating flow field...")
+            flow_x, flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=noise_scale,
+                octaves=noise_octaves,
+                persistence=noise_persistence,
+                lacunarity=noise_lacunarity,
+                seed=seed,
+            )
+            flow_angle_deg = np.degrees(
+                np.arctan2(-flow_y, flow_x)
+            )  # Y is inverted for angle calc
+            flow_magnitude = np.sqrt(flow_x**2 + flow_y**2)
+            # Normalize magnitude 0-1
+            max_mag = np.max(flow_magnitude)
+            min_mag = np.min(flow_magnitude)
+            if max_mag > min_mag:
+                norm_flow_mag = (flow_magnitude - min_mag) / (max_mag - min_mag)
+            else:
+                norm_flow_mag = np.zeros_like(flow_magnitude)
+
+            # --- Iterative Directional Blurring ---
+            print("[FFB V5] Applying iterative directional blur...")
+            accumulator = current_result.copy()  # Start with initial image
+
+            for step in range(num_steps):
+                print(f"[FFB V5] Step {step+1}/{num_steps}")
+                # Determine kernel size for this step - varying locally
+                # Kernel size stronger where flow magnitude is high? Or random?
+                # Let's vary based on flow magnitude and randomness
+                step_rand = np.random.uniform(
+                    1.0 - blur_strength_variance,
+                    1.0 + blur_strength_variance,
+                    size=(height, width),
+                ).astype(np.float32)
+                local_blur_strength = (
+                    base_blur_strength * (0.5 + norm_flow_mag * 1.0) * step_rand
+                )
+                # Apply directional blur based on local angle and strength
+                # Applying pixel-by-pixel kernel is too slow.
+                # Approximation: Apply multiple global blurs and blend? Or tiled approach?
+
+                # --- Tiled Approach (Compromise) ---
+                tile_size = 64  # Process in tiles
+                blurred_accumulator_step = (
+                    accumulator.copy()
+                )  # Operate on copy for this step
+
+                for r in range(0, height, tile_size):
+                    for c in range(0, width, tile_size):
+                        # Get tile and local average params
+                        tile = accumulator[r : r + tile_size, c : c + tile_size]
+                        if tile.size == 0:
+                            continue
+                        avg_angle = np.mean(
+                            flow_angle_deg[r : r + tile_size, c : c + tile_size]
+                        )
+                        avg_strength = np.mean(
+                            local_blur_strength[r : r + tile_size, c : c + tile_size]
+                        )
+                        ksize = int(round(avg_strength))
+
+                        # Create kernel and apply blur to tile
+                        kernel = _create_motion_blur_kernel(ksize, avg_angle)
+                        if kernel is not None:
+                            blurred_tile = cv2.filter2D(
+                                tile, -1, kernel, borderType=cv2.BORDER_REFLECT
+                            )
+                        else:
+                            blurred_tile = tile
+                        # Place blurred tile back, handle boundaries
+                        h_tile, w_tile = tile.shape
+                        blurred_accumulator_step[r : r + h_tile, c : c + w_tile] = (
+                            blurred_tile
+                        )
+
+                # --- Blend the globally blurred result back ---
+                # accumulator = cv2.addWeighted(accumulator, 1.0 - step_blend_alpha, blurred_accumulator_step, step_blend_alpha, 0)
+                # Using Lighten blending might be more 'ghostly'
+                accumulator = np.maximum(
+                    accumulator,
+                    blurred_accumulator_step * (0.5 + step_blend_alpha * 0.5),
+                )  # Mix of max and average
+
+            final_result = np.clip(accumulator, 0, 255).astype(np.uint8)
+            return final_result
+
+        # --- End apply_flow_blur ---
+
+        effects.add(apply_flow_blur)
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.3, monochrome=True
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.4
+                )
+            )
+        self.engine.add_transformation(effects)
+
+    def _add_masked_diffusion_smear_style(self) -> None:
+        """(V5) Structure-aware smudge using iterative masked warp/blur."""
+        effects = EffectChain()
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.0)
+        )  # B&W often works best
+        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.3))
+
+        def apply_masked_diffusion(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed = cfg.effect_params.seed + 901
+                np.random.seed(seed)
+                random.seed(seed)
+
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
+            current_result = gray.astype(np.float32)
+            height, width = gray.shape
+            params = cfg.effect_params
+
+            # --- Parameters ---
+            num_steps = 8 + int(params.intensity * 20)  # More iterations
+            # Flow: Distortion=Noise Scale, Noise=Strength
+            noise_scale = 40 + params.distortion * 60
+            noise_strength = 0.8 + params.noise_level * 2.0
+            noise_octaves = 5
+            # Warp/Smear Strength per step
+            warp_strength = 0.5 + params.intensity * 1.0
+            blur_strength = 1 + params.blur_radius * 0.15  # SMALL blur kernel size
+            # Structure Mask Control
+            structure_ksize = 3  # Sobel kernel size for structure map
+            structure_blur = 3  # Blur kernel size for structure map
+            edge_threshold = (
+                0.1 + (1.0 - params.intensity) * 0.4
+            )  # Higher threshold = preserves more edges
+
+            # --- Structure Mask (Edge Map) ---
+            print("[MDS V5] Calculating structure mask...")
+            # Low value = Edge/Detail = Preserve ; High value = Smooth = Smear
+            norm_mag = _normalized_gradient_magnitude(
+                gray, ksize=structure_ksize, blur_ksize=structure_blur
+            )
+            # Invert and threshold: pixels below threshold are edges (value 0), above are smooth (value 1)
+            smear_area_mask = (norm_mag < edge_threshold).astype(np.float32)
+            # Blur the mask heavily for very smooth transitions between smeared/original
+            smear_alpha_mask = cv2.GaussianBlur(smear_area_mask, (21, 21), 0)
+
+            # --- Generate Flow Field ---
+            print("[MDS V5] Generating flow field...")
+            flow_x, flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=noise_scale,
+                octaves=noise_octaves,
+                persistence=0.6,
+                lacunarity=2.0,
+                seed=seed,
+            )
+            # Normalize flow vectors and scale by strength
+            magnitude = np.sqrt(flow_x**2 + flow_y**2) + 1e-6
+            flow_x = (flow_x / magnitude) * noise_strength
+            flow_y = (flow_y / magnitude) * noise_strength
+
+            # --- Base Meshgrid ---
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
+
+            # --- Iterative Diffusion/Smear ---
+            print("[MDS V5] Applying diffusion smear...")
+            temp_canvas = (
+                current_result.copy()
+            )  # Use a temp canvas for intermediate step
+
+            for step in range(num_steps):
+                print(f"[MDS V5] Step {step+1}/{num_steps}")
+                # 1. Warp based on Flow
+                map_x = (
+                    map_base_x + flow_x * warp_strength
+                )  # Apply small warp each step
+                map_y = map_base_y + flow_y * warp_strength
+                warped_img = cv2.remap(
+                    current_result,
+                    map_x,
+                    map_y,
+                    interpolation=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REFLECT,
+                )
+
+                # 2. Apply Small Blur
+                if blur_strength > 0:
+                    blur_k_odd = int(round(blur_strength)) * 2 + 1  # Ensure odd kernel
+                    blurred_img = cv2.GaussianBlur(
+                        warped_img, (blur_k_odd, blur_k_odd), 0
+                    )
+                else:
+                    blurred_img = warped_img
+
+                # 3. Masked Update (Diffusion-like)
+                # Blend based on the smear_alpha_mask: Keep original where mask=0, use blurred_warped where mask=1
+                current_result = (
+                    current_result * (1.0 - smear_alpha_mask)
+                    + blurred_img * smear_alpha_mask
+                )
+
+                # Optional: Evolve flow field slightly (e.g., rotate)
+                # angle_rad = math.radians(0.5); cos_a, sin_a = math.cos(angle_rad), math.sin(angle_rad)
+                # old_fx, old_fy = flow_x.copy(), flow_y.copy(); flow_x = old_fx*cos_a-old_fy*sin_a; flow_y = old_fx*sin_a+old_fy*cos_a
+
+            # --- Final Output ---
+            final_result = np.clip(current_result, 0, 255).astype(np.uint8)
+            return final_result
+
+        # --- End apply_masked_diffusion ---
+
+        effects.add(apply_masked_diffusion)
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.4, monochrome=True
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.5
+                )
+            )
+        self.engine.add_transformation(effects)
+
+    def _add_topo_streak_weave_style(self) -> None:
+        """(NEW - Fixed IndexError) Combines plotter mesh structure with particle streaks."""
+        effects = EffectChain()
+        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 2.2))
+
+        def apply_topo_streak_weave(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed_base = cfg.effect_params.seed + 601
+            else:
+                seed_base = random.randint(0, 1000000)
+            np.random.seed(seed_base)
+            random.seed(seed_base)
+
+            if img.ndim == 2:
+                color_img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+            else:
+                color_img = img.copy()
+            gray = cv2.cvtColor(color_img, cv2.COLOR_RGB2GRAY)
+            height, width = gray.shape
+            params = cfg.effect_params
+
+            # --- Parameters ---
+            mesh_line_count = int(70 + params.intensity * 60)
+            mesh_amplitude = 15 + params.distortion * 50
+            mesh_noise_pos = params.noise_level * 1.0
+            mesh_noise_amp = params.noise_level * 0.05
+            mesh_blur_k = int(5 + params.blur_radius * 0.5) * 2 + 1
+            mesh_vert_focus = 0.95
+            mesh_thickness = 1
+            mesh_color_factor = 1.5
+            streak_steps = 20 + int(params.intensity * 30)
+            streak_particle_density = 0.05
+            streak_flow_noise_scale = 20 + params.distortion * 40
+            streak_flow_noise_oct = 4 + int(params.distortion * 2)
+            streak_flow_strength = 0.8 + params.noise_level * 1.2
+            streak_struct_align = 0.2 + params.distortion * 0.3
+            streak_fade = 0.98
+            streak_min_bright = 10
+            streak_thick_base = 1.0
+            streak_thick_mult = 2.0
+            streak_bloom_strength = 0.15 + params.intensity * 0.2
+            streak_bloom_radius = 3 + int(params.blur_radius * 0.3)
+            streak_gamma = 0.75
+
+            # === Generate Mesh Data (Fixed Clipping) ===
+            print("[topo_streak_weave] Generating mesh vertices...")
+            mesh_vertices_by_line: List[List[Tuple[int, int]]] = [
+                [] for _ in range(mesh_line_count)
+            ]
+            all_mesh_points = []  # Store all valid, visible points here
+
+            gray_shape = cv2.GaussianBlur(gray, (mesh_blur_k, mesh_blur_k), 0)
+            start_y = int(height * (1.0 - mesh_vert_focus) / 2.0)
+            end_y_for_spacing = int(height * (1.0 + mesh_vert_focus) / 2.0)
+            total_draw_height = end_y_for_spacing - start_y
+            mesh_line_count = max(1, mesh_line_count)
+            line_spacing = max(1.0, total_draw_height / float(mesh_line_count))
+            min_visible_y = np.full(width, height + 100, dtype=np.int32)
+
+            np.random.seed(seed_base + 1)
+            random.seed(seed_base + 1)
+            for i in range(mesh_line_count - 1, -1, -1):
+                y_base = start_y + int(round(i * line_spacing))
+                if y_base >= height:
+                    continue
+                sample_y = min(y_base, height - 1)
+                brightness_wave_row = gray_shape[sample_y, :]
+                current_line_points = []
+                for x in range(width):
+                    brightness_s = brightness_wave_row[x] / 255.0
+                    amp_noise = 1.0 + (random.random() - 0.5) * mesh_noise_amp
+                    displacement = (brightness_s**1.6) * mesh_amplitude * amp_noise
+                    y_disp_f = y_base - displacement
+                    x_noise, y_noise = np.random.randn(2) * mesh_noise_pos
+                    # Calculate coordinates THEN clamp before adding to list
+                    x_calc = x + x_noise
+                    y_calc = y_disp_f + y_noise
+                    x_rnd = int(round(x_calc))
+                    y_rnd = int(round(y_calc))
+
+                    # *** FIX: Clamp x_rnd before adding to lists ***
+                    x_clamped = min(max(0, x_rnd), width - 1)  # Clamp x coordinate HERE
+                    y_clamped = min(
+                        max(0, y_rnd), height - 1
+                    )  # Clamp y too just to be safe
+
+                    is_visible = (
+                        0 <= y_rnd < min_visible_y[x_clamped]
+                    )  # Use clamped x for horizon check
+
+                    if is_visible:
+                        min_visible_y[x_clamped] = y_rnd
+                        # Add CLAMPED coordinates to lists
+                        current_line_points.append((x_clamped, y_clamped))
+                        all_mesh_points.append((x_clamped, y_clamped))
+                if current_line_points:
+                    mesh_vertices_by_line[i] = current_line_points
+
+            # === Seed Particles from Mesh ===
+            print(
+                f"[topo_streak_weave] Seeding particles from {len(all_mesh_points)} mesh points..."
+            )
+            if not all_mesh_points:
+                return img
+            num_particles = max(10, int(len(all_mesh_points) * streak_particle_density))
+            # Ensure we don't request more samples than available points
+            num_particles = min(num_particles, len(all_mesh_points))
+            if num_particles == 0:
+                return img  # Safety check
+
+            seed_indices = np.random.choice(
+                len(all_mesh_points), num_particles, replace=False
+            )
+            initial_coords = np.array([all_mesh_points[idx] for idx in seed_indices])
+            initial_x_int = initial_coords[:, 0]  # Already clamped integers
+            initial_y_int = initial_coords[:, 1]
+
+            # --- GET INITIAL VALUES USING *CLAMPED* INDICES ---
+            initial_gray_brightness = gray[initial_y_int, initial_x_int].astype(
+                np.float32
+            )
+            initial_color = color_img.astype(np.float32)[initial_y_int, initial_x_int]
+            current_brightness = initial_gray_brightness * 1.5
+            current_color = initial_color.copy()
+            current_x = initial_x_int.astype(
+                np.float32
+            )  # Start simulation with integer coords
+            current_y = initial_y_int.astype(np.float32)
+            active_particles = np.ones(num_particles, dtype=bool)
+
+            # === Calculate Flow Field (Perlin + Structure) (Same as before) ===
+            print("[topo_streak_weave] Calculating flow field...")
+            gray_smooth_flow = cv2.GaussianBlur(gray, (5, 5), 0)
+            Axx, Axy, Ayy = structure_tensor(
+                gray_smooth_flow, sigma=3, mode="reflect", order="xy"
+            )
+            structure_angle_rad = np.arctan2(2 * Axy, Ayy - Axx + 1e-6) / 2.0
+            np.random.seed(seed_base + 2)
+            random.seed(seed_base + 2)
+            perlin_flow_x, perlin_flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=streak_flow_noise_scale,
+                octaves=streak_flow_noise_oct,
+                persistence=0.5,
+                lacunarity=2.0,
+                seed=seed_base + 2,
+            )
+
+            # === Particle Advection & Streak Accumulation (Same as before) ===
+            print("[topo_streak_weave] Simulating particle streaks...")
+            streak_accumulator = np.zeros(
+                (height, width, 3), dtype=np.float64
+            )  # Color accumulator
+            for step in range(streak_steps):
+                if not np.any(active_particles):
+                    break
+                active_idx = np.where(active_particles)[0]
+                x_t, y_t = current_x[active_idx], current_y[active_idx]
+                brightness_t = current_brightness[active_idx]
+                color_t = current_color[active_idx]
+
+                # *** Ensure indexing uses clamped integers ***
+                x_int = np.clip(np.round(x_t), 0, width - 1).astype(int)
+                y_int = np.clip(np.round(y_t), 0, height - 1).astype(int)
+                # (Rest of flow calculation is the same...)
+                particle_struct_angle = structure_angle_rad[y_int, x_int]
+                particle_noise_x, particle_noise_y = (
+                    perlin_flow_x[y_int, x_int],
+                    perlin_flow_y[y_int, x_int],
+                )
+                struct_flow_x, struct_flow_y = (
+                    np.cos(particle_struct_angle),
+                    -np.sin(particle_struct_angle),
+                )
+                step_flow_x = struct_flow_x * streak_struct_align + particle_noise_x * (
+                    1.0 - streak_struct_align
+                )
+                step_flow_y = struct_flow_y * streak_struct_align + particle_noise_y * (
+                    1.0 - streak_struct_align
+                )
+                flow_mag = np.sqrt(step_flow_x**2 + step_flow_y**2) + 1e-6
+                speed = streak_flow_strength * (
+                    0.6 + (brightness_t / (1.5 * 255)) ** 0.7
+                )
+                step_vx = (step_flow_x / flow_mag) * speed
+                step_vy = (step_flow_y / flow_mag) * speed
+
+                x_next, y_next = x_t + step_vx, y_t + step_vy
+
+                # Draw Streaks (Uses rounded integers, cv2.line clips internally)
+                for k in range(len(active_idx)):
+                    render_brightness = brightness_t[k]
+                    if render_brightness < streak_min_bright:
+                        continue
+                    # Round before passing to cv2.line
+                    x1_rnd, y1_rnd = int(round(x_t[k])), int(round(y_t[k]))
+                    x2_rnd, y2_rnd = int(round(x_next[k])), int(round(y_next[k]))
+
+                    # Minimal bound check needed only if cv2.line behavior is suspect
+                    # if not (0 <= x1_rnd < width and 0 <= y1_rnd < height): continue
+
+                    norm_brightness = render_brightness / (1.5 * 255)
+                    thickness = max(
+                        1.0,
+                        streak_thick_base
+                        + norm_brightness * (streak_thick_mult - streak_thick_base),
+                    )
+                    line_color_float = color_t[k] * (render_brightness / (1.5 * 255))
+
+                    cv2.line(
+                        streak_accumulator,
+                        (x1_rnd, y1_rnd),
+                        (x2_rnd, y2_rnd),
+                        line_color_float.tolist(),
+                        thickness=max(1, int(round(thickness))),
+                        lineType=cv2.LINE_AA,
+                    )
+
+                # Update Particle State (Same logic)
+                current_x[active_idx] = x_next
+                current_y[active_idx] = y_next
+                current_brightness[active_idx] *= streak_fade
+                current_color[active_idx] *= streak_fade
+                off_screen = (
+                    (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
+                )
+                too_faint = current_brightness[active_idx] < (streak_min_bright * 0.5)
+                active_particles[active_idx[off_screen | too_faint]] = False
+
+            # === Post-Process Streaks (Same logic) ===
+            print("[topo_streak_weave] Post-processing streaks...")
+            streak_canvas_8u = np.zeros_like(color_img, dtype=np.uint8)
+            # (Normalization, Bloom, Gamma conversion logic is the same...)
+            min_acc, max_acc = np.min(streak_accumulator), np.max(streak_accumulator)
+            if max_acc > min_acc + 1e-6:
+                norm_acc = (streak_accumulator - min_acc) / (max_acc - min_acc)
+                if streak_bloom_strength > 0 and streak_bloom_radius > 0:
+                    acc_mag = np.mean(norm_acc, axis=2)
+                    bright_pixels = (
+                        acc_mag > (1.0 - streak_bloom_strength * 0.8)
+                    ).astype(np.float32)
+                    bright_pixels_3c = cv2.cvtColor(bright_pixels, cv2.COLOR_GRAY2RGB)
+                    highlights = norm_acc * bright_pixels_3c
+                    bloom_ksize = int(streak_bloom_radius) * 2 + 1
+                    blurred_highlights = cv2.GaussianBlur(
+                        highlights, (bloom_ksize, bloom_ksize), 0
+                    )
+                    bloom_layer = blurred_highlights * streak_bloom_strength * 3.0
+                    norm_acc = 1.0 - (1.0 - norm_acc) * (1.0 - bloom_layer)
+                    norm_acc = np.clip(norm_acc, 0.0, 1.0)
+                final_streaks_float = np.power(norm_acc, streak_gamma) * 255.0
+                streak_canvas_8u = np.clip(final_streaks_float, 0, 255).astype(np.uint8)
+
+            # === Draw Base Mesh & Composite (Same logic) ===
+            print("[topo_streak_weave] Drawing base mesh and compositing...")
+            final_canvas = np.full((height, width, 3), (0, 0, 0), dtype=np.uint8)
+            mesh_line_color = _calculate_rgb_color(
+                pal.secondary, mesh_color_factor, "lighten"
+            )
+            for line_index, vertices in enumerate(mesh_vertices_by_line):
+                if len(vertices) > 1:
+                    pts_np = np.array(vertices, dtype=np.int32)
+                    cv2.polylines(
+                        final_canvas,
+                        [pts_np],
+                        isClosed=False,
+                        color=mesh_line_color,
+                        thickness=mesh_thickness,
+                        lineType=cv2.LINE_AA,
+                    )
+            final_canvas = cv2.add(final_canvas, streak_canvas_8u)
+            final_result_gray = cv2.cvtColor(final_canvas, cv2.COLOR_RGB2GRAY)
+
+            return final_result_gray
+
+        # --- End apply_topo_streak_weave ---
+
+        effects.add(apply_topo_streak_weave)
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.2
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.3
+                )
+            )
+        self.engine.add_transformation(effects)
+
+    def _add_plotter_mesh_v3b_style(self) -> None:
+        """(V3b) Plotter/Topographic style with CORRECTED depth (bright=peak)."""
+        effects = EffectChain()
+        # Keep pre-processing contrast boost
+        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 2.5))
+
+        def apply_plotter_mesh_fixed_depth(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            if cfg.effect_params.seed is not None:
+                seed = cfg.effect_params.seed + 203  # Use same base seed as original v3
+                np.random.seed(seed)
+                random.seed(seed)
+
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
+            height, width = gray.shape
+            params = cfg.effect_params
+
+            # --- Parameters (same as original v3) ---
+            line_count = int(65 + params.intensity * 60)
+            amplitude_factor = 18 + params.distortion * 65
+            base_thickness = 1
+            thickness_multiplier_low = 0.8
+            thickness_multiplier_high = 2.8
+            noise_pos_scale = params.noise_level * 1.8
+            noise_amp_scale = params.noise_level * 0.1
+            vertical_focus_start = 0.05
+            vertical_focus_end = 0.90
+
+            # --- Blurring (same as original v3) ---
+            blur_k_shape = int(5 + params.blur_radius * 1.0) * 2 + 1
+            blur_k_detail = 7
+            gray_shape = cv2.GaussianBlur(gray, (blur_k_shape, blur_k_shape), 0)
+            gray_detail = cv2.GaussianBlur(gray, (blur_k_detail, blur_k_detail), 0)
+
+            # --- Colors (same as original v3) ---
+            bg_color_tuple = _calculate_rgb_color(pal.primary, 0.02, "darken")
+            line_color_tuple = _calculate_rgb_color(pal.accent, 1.9, "lighten")
+
+            # --- Canvas & Occlusion (same as original v3) ---
+            canvas = np.full((height, width, 3), bg_color_tuple, dtype=np.uint8)
+            start_y = int(height * vertical_focus_start)
+            end_y_for_spacing = int(height * vertical_focus_end)
+            total_draw_height = end_y_for_spacing - start_y
+            line_count = max(1, line_count)
+            line_spacing = max(1.0, total_draw_height / float(line_count))
+            horizon_line = np.full(width, height + 100, dtype=np.int32)
+
+            # --- Wave Generation (Back to Front) ---
+            for i in range(line_count - 1, -1, -1):
+                y_base = start_y + int(round(i * line_spacing))
+                if y_base >= height:
+                    continue
+                sample_y = min(y_base, height - 1)
+                brightness_wave_row = gray_shape[sample_y, :]
+                brightness_detail_row = gray_detail[sample_y, :]
+                segment_points: List[Tuple[int, int]] = []
+                segment_weights: List[float] = []
+
+                for x in range(width):
+                    brightness_s = (
+                        brightness_wave_row[x] / 255.0
+                    )  # For displacement (shape)
+                    brightness_d = (
+                        brightness_detail_row[x] / 255.0
+                    )  # For thickness (detail)
+                    amp_noise = 1.0 + (random.random() - 0.5) * noise_amp_scale
+                    displacement = (
+                        (brightness_s**1.6) * amplitude_factor * amp_noise
+                    )  # NEW (bright = peak)
+                    y_disp_f = (
+                        y_base - displacement
+                    )  # Still subtract: larger displacement means higher UP the canvas
+
+                    # Thickness modulation: Brighter details = thicker
+                    # Keep this logic, as higher displacement now correlates with brightness
+                    thickness_norm_disp = np.clip(
+                        displacement / amplitude_factor if amplitude_factor > 0 else 0,
+                        0,
+                        1,
+                    )
+                    thickness_norm_bright = brightness_d**0.7
+                    # Blend brightness and displacement contribution to thickness
+                    thickness_mod = (
+                        thickness_norm_bright * 0.6 + thickness_norm_disp * 0.4
+                    )
+                    thickness = base_thickness * (
+                        thickness_multiplier_low
+                        + thickness_mod
+                        * (thickness_multiplier_high - thickness_multiplier_low)
+                    )
+
+                    # Positional noise (same as before)
+                    x_noise, y_noise = np.random.randn(2) * noise_pos_scale
+                    x_rnd, y_rnd = (
+                        int(round(x + x_noise)),
+                        int(round(y_disp_f + y_noise)),
+                    )
+
+                    # Occlusion & Segment Handling (same as before)
+                    x_check = min(max(0, x_rnd), width - 1)
+                    is_visible = 0 <= y_rnd < horizon_line[x_check]
+                    if is_visible:
+                        segment_points.append((x_rnd, y_rnd))
+                        segment_weights.append(thickness)
+                        horizon_line[x_check] = min(horizon_line[x_check], y_rnd)
+                    else:
+                        if len(segment_points) > 1:
+                            avg_thick = max(1, int(round(np.mean(segment_weights))))
+                            cv2.polylines(
+                                canvas,
+                                [np.array(segment_points, dtype=np.int32)],
+                                False,
+                                line_color_tuple,
+                                avg_thick,
+                                cv2.LINE_AA,
+                            )
+                        segment_points, segment_weights = [], []
+
+                # Draw final segment (same as before)
+                if len(segment_points) > 1:
+                    avg_thick = max(1, int(round(np.mean(segment_weights))))
+                    cv2.polylines(
+                        canvas,
+                        [np.array(segment_points, dtype=np.int32)],
+                        False,
+                        line_color_tuple,
+                        avg_thick,
+                        cv2.LINE_AA,
+                    )
+
+            return canvas
+
+        effects.add(apply_plotter_mesh_fixed_depth)
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.08
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.15
+                )
+            )
+        self.engine.add_transformation(effects)
 
     def _add_celestial_drift_v4_style(self) -> None:
         """(V4) Advanced particle advection aiming for elegant, celestial streaks."""
@@ -283,15 +1338,20 @@ class AuthorTransformer:
         effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.8))
         # Keep color info for now
 
-        def apply_celestial_drift(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_celestial_drift(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 501
-                np.random.seed(seed); random.seed(seed)
+                np.random.seed(seed)
+                random.seed(seed)
 
             if img.ndim == 2:
-                gray = img; current_frame_color = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
+                gray = img
+                current_frame_color = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             else:
-                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY); current_frame_color = img.copy()
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+                current_frame_color = img.copy()
 
             current_frame_float = current_frame_color.astype(np.float32)
             gray_float = gray.astype(np.float32)
@@ -302,7 +1362,7 @@ class AuthorTransformer:
             num_steps = 30 + int(params.intensity * 50)
             max_particles = 5000 + int(params.intensity * 15000)
             min_particle_distance = 3
-            quality_level = 0.01 + (1.0-params.intensity) * 0.04
+            quality_level = 0.01 + (1.0 - params.intensity) * 0.04
             flow_strength = 0.5 + params.intensity * 1.0
             structure_alignment_factor = 0.5 + params.distortion * 0.4
             noise_scale = 25 + params.noise_level * 40
@@ -318,8 +1378,11 @@ class AuthorTransformer:
             final_gamma = 0.8
 
             # --- Particle Seeding ---
-            corners = cv2.goodFeaturesToTrack(gray, max_particles, quality_level, min_particle_distance, blockSize=5)
-            if corners is None or len(corners) == 0: return img
+            corners = cv2.goodFeaturesToTrack(
+                gray, max_particles, quality_level, min_particle_distance, blockSize=5
+            )
+            if corners is None or len(corners) == 0:
+                return img
             initial_coords = corners.reshape(-1, 2)
             initial_x, initial_y = initial_coords[:, 0], initial_coords[:, 1]
             initial_x = np.clip(initial_x, 0, width - 1).astype(int)
@@ -328,37 +1391,78 @@ class AuthorTransformer:
             valid_start = initial_gray_brightness > 10
             initial_x, initial_y = initial_x[valid_start], initial_y[valid_start]
             initial_gray_brightness = initial_gray_brightness[valid_start]
-            if len(initial_x) == 0: return img
+            if len(initial_x) == 0:
+                return img
             initial_color = current_frame_float[initial_y, initial_x]
-            current_brightness = np.mean(initial_color, axis=1) * initial_brightness_boost
+            current_brightness = (
+                np.mean(initial_color, axis=1) * initial_brightness_boost
+            )
             current_color = initial_color.copy()
-            current_x, current_y = initial_x.astype(np.float32), initial_y.astype(np.float32)
+            current_x, current_y = (
+                initial_x.astype(np.float32),
+                initial_y.astype(np.float32),
+            )
             active_particles = np.ones(len(initial_x), dtype=bool)
 
             # --- Flow Field Calculation ---
-            sigma_structure= 3 + params.distortion * 3
-            Axx, Axy, Ayy = structure_tensor(gray, sigma=sigma_structure, mode='reflect', order='xy')
-            structure_angle_rad = np.arctan2(2 * Axy, Ayy - Axx + 1e-6) / 2.0 # Add epsilon
-            perlin_flow_x, perlin_flow_y = _generate_perlin_flow_field(width, height, scale=noise_scale, octaves=5, persistence=0.5, lacunarity=2.0, seed=seed+1)
+            sigma_structure = 3 + params.distortion * 3
+            Axx, Axy, Ayy = structure_tensor(
+                gray, sigma=sigma_structure, mode="reflect", order="xy"
+            )
+            structure_angle_rad = (
+                np.arctan2(2 * Axy, Ayy - Axx + 1e-6) / 2.0
+            )  # Add epsilon
+            perlin_flow_x, perlin_flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=noise_scale,
+                octaves=5,
+                persistence=0.5,
+                lacunarity=2.0,
+                seed=seed + 1,
+            )
 
             # --- Accumulation Canvas ---
             accumulator = np.zeros_like(current_frame_float, dtype=np.float64)
 
             # --- Simulation Loop ---
             for step in range(num_steps):
-                if not np.any(active_particles): break
+                if not np.any(active_particles):
+                    break
                 active_idx = np.where(active_particles)[0]
-                x_t, y_t, brightness_t, color_t = current_x[active_idx], current_y[active_idx], current_brightness[active_idx], current_color[active_idx]
+                x_t, y_t, brightness_t, color_t = (
+                    current_x[active_idx],
+                    current_y[active_idx],
+                    current_brightness[active_idx],
+                    current_color[active_idx],
+                )
 
                 # Calculate Flow
-                x_int, y_int = np.clip(np.round(x_t), 0, width-1).astype(int), np.clip(np.round(y_t), 0, height-1).astype(int)
+                x_int, y_int = (
+                    np.clip(np.round(x_t), 0, width - 1).astype(int),
+                    np.clip(np.round(y_t), 0, height - 1).astype(int),
+                )
                 particle_struct_angle = structure_angle_rad[y_int, x_int]
-                particle_noise_x, particle_noise_y = perlin_flow_x[y_int, x_int], perlin_flow_y[y_int, x_int]
-                struct_flow_x, struct_flow_y = np.cos(particle_struct_angle), -np.sin(particle_struct_angle)
-                step_flow_x = (struct_flow_x * structure_alignment_factor + particle_noise_x * noise_influence)
-                step_flow_y = (struct_flow_y * structure_alignment_factor + particle_noise_y * noise_influence)
+                particle_noise_x, particle_noise_y = (
+                    perlin_flow_x[y_int, x_int],
+                    perlin_flow_y[y_int, x_int],
+                )
+                struct_flow_x, struct_flow_y = (
+                    np.cos(particle_struct_angle),
+                    -np.sin(particle_struct_angle),
+                )
+                step_flow_x = (
+                    struct_flow_x * structure_alignment_factor
+                    + particle_noise_x * noise_influence
+                )
+                step_flow_y = (
+                    struct_flow_y * structure_alignment_factor
+                    + particle_noise_y * noise_influence
+                )
                 flow_mag = np.sqrt(step_flow_x**2 + step_flow_y**2) + 1e-6
-                speed = flow_strength * (0.5 + (brightness_t / (initial_brightness_boost*255))**0.5)
+                speed = flow_strength * (
+                    0.5 + (brightness_t / (initial_brightness_boost * 255)) ** 0.5
+                )
                 step_vx = (step_flow_x / flow_mag) * speed
                 step_vy = (step_flow_y / flow_mag) * speed
 
@@ -368,48 +1472,93 @@ class AuthorTransformer:
                 # Draw Streaks
                 for k in range(len(active_idx)):
                     render_brightness = brightness_t[k]
-                    if render_brightness < min_brightness_render: continue
+                    if render_brightness < min_brightness_render:
+                        continue
                     x1_rnd, y1_rnd = int(round(x_t[k])), int(round(y_t[k]))
                     x2_rnd, y2_rnd = int(round(x_next[k])), int(round(y_next[k]))
-                    if not (0 <= x1_rnd < width and 0 <= y1_rnd < height): continue
-                    norm_brightness = render_brightness / (initial_brightness_boost * 255)
-                    thickness = max(1.0, base_thickness + norm_brightness * (max_thickness_factor - base_thickness))
-                    line_value = np.array([render_brightness]*3, dtype=np.float32)
-                    cv2.line(accumulator, (x1_rnd, y1_rnd), (x2_rnd, y2_rnd), line_value.tolist(), thickness=max(1, int(round(thickness))), lineType=cv2.LINE_AA)
+                    if not (0 <= x1_rnd < width and 0 <= y1_rnd < height):
+                        continue
+                    norm_brightness = render_brightness / (
+                        initial_brightness_boost * 255
+                    )
+                    thickness = max(
+                        1.0,
+                        base_thickness
+                        + norm_brightness * (max_thickness_factor - base_thickness),
+                    )
+                    line_value = np.array([render_brightness] * 3, dtype=np.float32)
+                    cv2.line(
+                        accumulator,
+                        (x1_rnd, y1_rnd),
+                        (x2_rnd, y2_rnd),
+                        line_value.tolist(),
+                        thickness=max(1, int(round(thickness))),
+                        lineType=cv2.LINE_AA,
+                    )
 
                 # Update Particle State
                 current_x[active_idx] = x_next
                 current_y[active_idx] = y_next
-                 # --- V4 Variable Name Used ---
-                current_brightness[active_idx] *= brightness_fade_factor # <<< USED HERE (V4 NAME) <<<
-                off_screen = (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
-                too_faint = current_brightness[active_idx] < (min_brightness_render * 0.5)
+                # --- V4 Variable Name Used ---
+                current_brightness[active_idx] *= (
+                    brightness_fade_factor  # <<< USED HERE (V4 NAME) <<<
+                )
+                off_screen = (
+                    (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
+                )
+                too_faint = current_brightness[active_idx] < (
+                    min_brightness_render * 0.5
+                )
                 active_particles[active_idx[off_screen | too_faint]] = False
 
             # --- Post-Process Accumulator ---
             min_acc, max_acc = np.min(accumulator), np.max(accumulator)
             if max_acc > min_acc + 1e-6:
                 norm_acc = (accumulator - min_acc) / (max_acc - min_acc)
-            else: norm_acc = np.zeros_like(accumulator)
+            else:
+                norm_acc = np.zeros_like(accumulator)
 
             # Bloom
             if bloom_strength > 0 and bloom_radius > 0:
-                 bright_pixels = (norm_acc > (1.0 - bloom_strength * 0.8)).astype(np.float32); highlights = norm_acc * bright_pixels
-                 bloom_ksize = int(bloom_radius) * 2 + 1; blurred_highlights = cv2.GaussianBlur(highlights, (bloom_ksize, bloom_ksize), 0)
-                 bloom_layer = blurred_highlights * bloom_strength * 3.0
-                 norm_acc = 1.0 - (1.0 - norm_acc) * (1.0 - bloom_layer); norm_acc = np.clip(norm_acc, 0.0, 1.0)
+                bright_pixels = (norm_acc > (1.0 - bloom_strength * 0.8)).astype(
+                    np.float32
+                )
+                highlights = norm_acc * bright_pixels
+                bloom_ksize = int(bloom_radius) * 2 + 1
+                blurred_highlights = cv2.GaussianBlur(
+                    highlights, (bloom_ksize, bloom_ksize), 0
+                )
+                bloom_layer = blurred_highlights * bloom_strength * 3.0
+                norm_acc = 1.0 - (1.0 - norm_acc) * (1.0 - bloom_layer)
+                norm_acc = np.clip(norm_acc, 0.0, 1.0)
 
             # Gamma & Convert
             final_result_float = np.power(norm_acc, final_gamma) * 255.0
             final_result = np.clip(final_result_float, 0, 255).astype(np.uint8)
-            if final_result.ndim == 3: final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
+            if final_result.ndim == 3:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
 
             return final_result
+
         # --- End apply_celestial_drift ---
 
         effects.add(apply_celestial_drift)
-        if self.config.effect_params.grain > 0: effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.25, monochrome=True))
-        if self.config.effect_params.vignette > 0: effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.35))
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.25,
+                    monochrome=True,
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.35
+                )
+            )
         self.engine.add_transformation(effects)
 
     def _add_plotter_mesh_v3_style(self) -> None:
@@ -417,17 +1566,22 @@ class AuthorTransformer:
         effects = EffectChain()
         effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 2.5))
 
-        def apply_plotter_mesh(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_plotter_mesh(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             # (Implementation is exactly as provided in my previous full message)
             # Starts with seed setting, parameter definition, blurring...
             # ... includes the back-to-front loop with occlusion check ...
             # ... ends with returning the 'canvas' np.ndarray ...
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 203
-                np.random.seed(seed); random.seed(seed)
+                np.random.seed(seed)
+                random.seed(seed)
 
-            if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             height, width = gray.shape
             params = cfg.effect_params
 
@@ -449,8 +1603,8 @@ class AuthorTransformer:
             gray_detail = cv2.GaussianBlur(gray, (blur_k_detail, blur_k_detail), 0)
 
             # Colors
-            bg_color_tuple = _calculate_rgb_color(pal.primary, 0.02, 'darken')
-            line_color_tuple = _calculate_rgb_color(pal.accent, 1.9, 'lighten')
+            bg_color_tuple = _calculate_rgb_color(pal.primary, 0.02, "darken")
+            line_color_tuple = _calculate_rgb_color(pal.accent, 1.9, "lighten")
 
             # Canvas & Occlusion
             canvas = np.full((height, width, 3), bg_color_tuple, dtype=np.uint8)
@@ -464,7 +1618,8 @@ class AuthorTransformer:
             # Wave Generation
             for i in range(line_count - 1, -1, -1):
                 y_base = start_y + int(round(i * line_spacing))
-                if y_base >= height: continue
+                if y_base >= height:
+                    continue
                 sample_y = min(y_base, height - 1)
                 brightness_wave_row = gray_shape[sample_y, :]
                 brightness_detail_row = gray_detail[sample_y, :]
@@ -474,13 +1629,26 @@ class AuthorTransformer:
                     brightness_s = brightness_wave_row[x] / 255.0
                     brightness_d = brightness_detail_row[x] / 255.0
                     amp_noise = 1.0 + (random.random() - 0.5) * noise_amp_scale
-                    displacement = ((1.0 - brightness_s) ** 1.6) * amplitude_factor * amp_noise
+                    displacement = (
+                        ((1.0 - brightness_s) ** 1.6) * amplitude_factor * amp_noise
+                    )
                     y_disp_f = y_base - displacement
-                    thickness_norm = np.clip(displacement / amplitude_factor if amplitude_factor > 0 else 0, 0, 1)
-                    thickness = base_thickness * (thickness_multiplier_low + thickness_norm * (thickness_multiplier_high - thickness_multiplier_low))
-                    x_noise, y_noise = (np.random.randn(2) * noise_pos_scale)
-                    x_rnd, y_rnd = int(round(x + x_noise)), int(round(y_disp_f + y_noise))
-                    x_check = min(max(0, x_rnd), width-1)
+                    thickness_norm = np.clip(
+                        displacement / amplitude_factor if amplitude_factor > 0 else 0,
+                        0,
+                        1,
+                    )
+                    thickness = base_thickness * (
+                        thickness_multiplier_low
+                        + thickness_norm
+                        * (thickness_multiplier_high - thickness_multiplier_low)
+                    )
+                    x_noise, y_noise = np.random.randn(2) * noise_pos_scale
+                    x_rnd, y_rnd = (
+                        int(round(x + x_noise)),
+                        int(round(y_disp_f + y_noise)),
+                    )
+                    x_check = min(max(0, x_rnd), width - 1)
                     is_visible = 0 <= y_rnd < horizon_line[x_check]
                     if is_visible:
                         segment_points.append((x_rnd, y_rnd))
@@ -489,19 +1657,43 @@ class AuthorTransformer:
                     else:
                         if len(segment_points) > 1:
                             avg_thick = max(1, int(round(np.mean(segment_weights))))
-                            cv2.polylines(canvas, [np.array(segment_points, dtype=np.int32)], False, line_color_tuple, avg_thick, cv2.LINE_AA)
+                            cv2.polylines(
+                                canvas,
+                                [np.array(segment_points, dtype=np.int32)],
+                                False,
+                                line_color_tuple,
+                                avg_thick,
+                                cv2.LINE_AA,
+                            )
                         segment_points, segment_weights = [], []
                 if len(segment_points) > 1:
-                     avg_thick = max(1, int(round(np.mean(segment_weights))))
-                     cv2.polylines(canvas, [np.array(segment_points, dtype=np.int32)], False, line_color_tuple, avg_thick, cv2.LINE_AA)
+                    avg_thick = max(1, int(round(np.mean(segment_weights))))
+                    cv2.polylines(
+                        canvas,
+                        [np.array(segment_points, dtype=np.int32)],
+                        False,
+                        line_color_tuple,
+                        avg_thick,
+                        cv2.LINE_AA,
+                    )
             return canvas
+
         # --- End apply_plotter_mesh ---
 
         effects.add(apply_plotter_mesh)
-        if self.config.effect_params.grain > 0: effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.08))
-        if self.config.effect_params.vignette > 0: effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.15))
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.08
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.15
+                )
+            )
         self.engine.add_transformation(effects)
-
 
     def _add_streak_accumulate_v3_style(self) -> None:
         """(V3) Simulates long exposure streaks via particle advection/accumulation."""
@@ -509,17 +1701,22 @@ class AuthorTransformer:
         effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 3.0))
         effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.0))
 
-        def apply_temporal_streak(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_temporal_streak(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             # (Implementation is exactly as provided in my previous full message)
             # Starts with seed setting, parameter definition, particle selection...
             # ... includes the iterative simulation loop with flow calculation and drawing...
             # ... ends with post-processing the accumulator and returning final_result ...
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 303
-                np.random.seed(seed); random.seed(seed)
+                np.random.seed(seed)
+                random.seed(seed)
 
-            if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             height, width = gray.shape
             params = cfg.effect_params
 
@@ -530,48 +1727,72 @@ class AuthorTransformer:
             angle_variation = params.distortion * 60
             flow_noise_scale = 30 + params.noise_level * 50
             flow_noise_strength = params.noise_level * 1.0
-            brightness_threshold = int(150 + (1.0-params.intensity) * 80)
+            brightness_threshold = int(150 + (1.0 - params.intensity) * 80)
             streak_fade_factor = 0.98
             min_brightness = 20
             initial_brightness_scale = 1.5
 
             # Particle Selection
-            _, thresh_img = cv2.threshold(gray, brightness_threshold, 255, cv2.THRESH_BINARY)
+            _, thresh_img = cv2.threshold(
+                gray, brightness_threshold, 255, cv2.THRESH_BINARY
+            )
             particle_coords = np.argwhere(thresh_img > 0)
-            if len(particle_coords) == 0: return img
+            if len(particle_coords) == 0:
+                return img
             initial_y, initial_x = particle_coords[:, 0], particle_coords[:, 1]
-            initial_brightness = gray[initial_y, initial_x].astype(np.float32) * initial_brightness_scale
+            initial_brightness = (
+                gray[initial_y, initial_x].astype(np.float32) * initial_brightness_scale
+            )
             current_x = initial_x.astype(np.float32)
             current_y = initial_y.astype(np.float32)
             current_brightness = initial_brightness.copy()
             active_particles = np.ones(len(initial_x), dtype=bool)
 
             # Flow Field
-            gray_smooth = cv2.GaussianBlur(gray, (7,7), 0)
+            gray_smooth = cv2.GaussianBlur(gray, (7, 7), 0)
             grad_x = cv2.Sobel(gray_smooth, cv2.CV_32F, 1, 0, ksize=5)
             grad_y = cv2.Sobel(gray_smooth, cv2.CV_32F, 0, 1, ksize=5)
             base_angle_rad = math.radians(base_angle)
             grad_angle_rad = np.arctan2(-grad_x, grad_y)
             # Ensure _generate_perlin_flow_field is available in the scope
-            flow_noise_x, flow_noise_y = _generate_perlin_flow_field(width, height, scale=flow_noise_scale, octaves=4, persistence=0.5, lacunarity=2.0, seed=seed+1)
+            flow_noise_x, flow_noise_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=flow_noise_scale,
+                octaves=4,
+                persistence=0.5,
+                lacunarity=2.0,
+                seed=seed + 1,
+            )
 
             # Accumulation Canvas
             accumulator = np.zeros((height, width), dtype=np.float64)
 
             # Simulation Loop
             for step in range(num_steps):
-                if not np.any(active_particles): break
+                if not np.any(active_particles):
+                    break
                 active_idx = np.where(active_particles)[0]
                 x_t, y_t = current_x[active_idx], current_y[active_idx]
                 brightness_t = current_brightness[active_idx]
 
                 # Calculate Flow
-                x_int, y_int = np.clip(np.round(x_t), 0, width-1).astype(int), np.clip(np.round(y_t), 0, height-1).astype(int)
+                x_int, y_int = (
+                    np.clip(np.round(x_t), 0, width - 1).astype(int),
+                    np.clip(np.round(y_t), 0, height - 1).astype(int),
+                )
                 particle_grad_angle = grad_angle_rad[y_int, x_int]
                 particle_noise_x = flow_noise_x[y_int, x_int]
                 particle_noise_y = flow_noise_y[y_int, x_int]
-                step_random_angle = np.random.uniform(-angle_variation, angle_variation, size=len(active_idx)) * (math.pi / 180.0)
-                step_angle_rad = base_angle_rad + particle_grad_angle * params.distortion + particle_noise_y * flow_noise_strength * 2.0 + step_random_angle
+                step_random_angle = np.random.uniform(
+                    -angle_variation, angle_variation, size=len(active_idx)
+                ) * (math.pi / 180.0)
+                step_angle_rad = (
+                    base_angle_rad
+                    + particle_grad_angle * params.distortion
+                    + particle_noise_y * flow_noise_strength * 2.0
+                    + step_random_angle
+                )
 
                 step_flow_mag = flow_strength * random.uniform(0.8, 1.2)
                 step_vx = np.cos(step_angle_rad) * step_flow_mag
@@ -587,20 +1808,31 @@ class AuthorTransformer:
                     x2, y2 = int(round(x_next[k])), int(round(y_next[k]))
                     color_val = brightness_t[k]
                     if 0 <= x1 < width and 0 <= y1 < height:
-                         cv2.line(accumulator, (x1, y1), (x2, y2), float(color_val), thickness=1, lineType=cv2.LINE_AA)
+                        cv2.line(
+                            accumulator,
+                            (x1, y1),
+                            (x2, y2),
+                            float(color_val),
+                            thickness=1,
+                            lineType=cv2.LINE_AA,
+                        )
 
                 # Update Particle State
                 current_x[active_idx] = x_next
                 current_y[active_idx] = y_next
                 current_brightness[active_idx] *= streak_fade_factor
-                off_screen = (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
+                off_screen = (
+                    (x_next < 0) | (x_next >= width) | (y_next < 0) | (y_next >= height)
+                )
                 too_faint = current_brightness[active_idx] < min_brightness
                 active_particles[active_idx[off_screen | too_faint]] = False
 
             # Post-Process Accumulator
             final_blur_ksize = int(1 + params.blur_radius * 0.3) * 2 + 1
             if final_blur_ksize > 1:
-                accumulator = cv2.GaussianBlur(accumulator, (final_blur_ksize, final_blur_ksize), 0)
+                accumulator = cv2.GaussianBlur(
+                    accumulator, (final_blur_ksize, final_blur_ksize), 0
+                )
 
             min_acc, max_acc = np.min(accumulator), np.max(accumulator)
             if max_acc > min_acc:
@@ -611,15 +1843,26 @@ class AuthorTransformer:
 
             final_result = np.clip(norm_acc, 0, 255).astype(np.uint8)
 
-            if final_result.ndim == 3: final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
+            if final_result.ndim == 3:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
             return final_result
+
         # --- End apply_temporal_streak ---
 
         effects.add(apply_temporal_streak)
-        if self.config.effect_params.grain > 0: effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.3))
-        if self.config.effect_params.vignette > 0: effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.4))
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.3
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.4
+                )
+            )
         self.engine.add_transformation(effects)
-
 
     def _add_flow_smudge_v3_style(self) -> None:
         """(V3) Fluid smudge using iterative warping based on Perlin noise flow fields."""
@@ -628,15 +1871,18 @@ class AuthorTransformer:
         effects.add(lambda img, cfg, pal: adjust_brightness(img, cfg, pal, 1.1))
         effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.1))
 
-        def apply_flow_smudge(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
-             # (Implementation is exactly as provided in my previous full message)
-             # Starts with seed setting, parameter definition, structure mask calc...
-             # ... includes Perlin flow field generation using _generate_perlin_flow_field...
-             # ... includes iterative warp/blur/blend loop...
-             # ... ends with returning final_result ...
+        def apply_flow_smudge(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
+            # (Implementation is exactly as provided in my previous full message)
+            # Starts with seed setting, parameter definition, structure mask calc...
+            # ... includes Perlin flow field generation using _generate_perlin_flow_field...
+            # ... includes iterative warp/blur/blend loop...
+            # ... ends with returning final_result ...
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 403
-                np.random.seed(seed); random.seed(seed)
+                np.random.seed(seed)
+                random.seed(seed)
 
             current_result = img.astype(np.float32)
             height, width = current_result.shape[:2]
@@ -650,62 +1896,112 @@ class AuthorTransformer:
             noise_persistence = 0.4 + params.intensity * 0.25
             noise_lacunarity = 2.0
             flow_strength = 1.5 + params.intensity * 4.0
-            structure_preservation = 0.3 + (1.0-params.intensity) * 0.6
+            structure_preservation = 0.3 + (1.0 - params.intensity) * 0.6
             blur_ksize = 3 + int(params.blur_radius * 0.4)
             step_opacity = 0.1 + params.intensity * 0.2
 
             # Structure Mask
-            if is_color: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
-            structure_map = _normalized_gradient_magnitude(gray, ksize=3, blur_ksize=1) # Uses helper
-            effect_mask = (1.0 - structure_map**(0.8 + structure_preservation*1.0))**1.2
-            effect_mask = cv2.GaussianBlur(effect_mask,(9,9),0)
-            if is_color: effect_mask = cv2.cvtColor(effect_mask, cv2.COLOR_GRAY2RGB)
+            if is_color:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
+            structure_map = _normalized_gradient_magnitude(
+                gray, ksize=3, blur_ksize=1
+            )  # Uses helper
+            effect_mask = (
+                1.0 - structure_map ** (0.8 + structure_preservation * 1.0)
+            ) ** 1.2
+            effect_mask = cv2.GaussianBlur(effect_mask, (9, 9), 0)
+            if is_color:
+                effect_mask = cv2.cvtColor(effect_mask, cv2.COLOR_GRAY2RGB)
 
             # Generate Base Flow Field
             # Ensure _generate_perlin_flow_field is available
-            flow_x, flow_y = _generate_perlin_flow_field(width, height, scale=noise_scale, octaves=noise_octaves, persistence=noise_persistence, lacunarity=noise_lacunarity, seed=seed)
+            flow_x, flow_y = _generate_perlin_flow_field(
+                width,
+                height,
+                scale=noise_scale,
+                octaves=noise_octaves,
+                persistence=noise_persistence,
+                lacunarity=noise_lacunarity,
+                seed=seed,
+            )
             magnitude = np.sqrt(flow_x**2 + flow_y**2) + 1e-6
             max_mag = np.max(magnitude)
-            if max_mag > 0: norm_flow_x, norm_flow_y = (flow_x / max_mag) * flow_strength, (flow_y / max_mag) * flow_strength
-            else: norm_flow_x, norm_flow_y = flow_x, flow_y
+            if max_mag > 0:
+                norm_flow_x, norm_flow_y = (
+                    (flow_x / max_mag) * flow_strength,
+                    (flow_y / max_mag) * flow_strength,
+                )
+            else:
+                norm_flow_x, norm_flow_y = flow_x, flow_y
 
             # Base Meshgrid
-            map_base_x, map_base_y = np.meshgrid(np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32))
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
 
             # Iterative Smudging
             for step in range(num_steps):
-                 # Warp
-                 map_x = np.clip(map_base_x + norm_flow_x, 0, width - 1) # Use same flow field? Or evolve it? Let's keep simple for now.
-                 map_y = np.clip(map_base_y + norm_flow_y, 0, height - 1)
-                 warped_img = cv2.remap(current_result, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+                # Warp
+                map_x = np.clip(
+                    map_base_x + norm_flow_x, 0, width - 1
+                )  # Use same flow field? Or evolve it? Let's keep simple for now.
+                map_y = np.clip(map_base_y + norm_flow_y, 0, height - 1)
+                warped_img = cv2.remap(
+                    current_result,
+                    map_x,
+                    map_y,
+                    interpolation=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REFLECT,
+                )
 
-                 # Blur
-                 if blur_ksize > 1:
-                      blur_k_odd = blur_ksize if blur_ksize % 2 != 0 else blur_ksize + 1
-                      blurred_img = cv2.GaussianBlur(warped_img, (blur_k_odd, blur_k_odd), 0)
-                 else: blurred_img = warped_img
+                # Blur
+                if blur_ksize > 1:
+                    blur_k_odd = blur_ksize if blur_ksize % 2 != 0 else blur_ksize + 1
+                    blurred_img = cv2.GaussianBlur(
+                        warped_img, (blur_k_odd, blur_k_odd), 0
+                    )
+                else:
+                    blurred_img = warped_img
 
-                 # Blend
-                 alpha = step_opacity * effect_mask
-                 current_result = current_result * (1.0 - alpha) + blurred_img * alpha
+                # Blend
+                alpha = step_opacity * effect_mask
+                current_result = current_result * (1.0 - alpha) + blurred_img * alpha
 
-                 # Optional: Evolve flow field slightly?
-                 # angle_rad = math.radians(1.0)
-                 # cos_a, sin_a = math.cos(angle_rad), math.sin(angle_rad)
-                 # old_fx, old_fy = norm_flow_x.copy(), norm_flow_y.copy()
-                 # norm_flow_x = old_fx * cos_a - old_fy * sin_a
-                 # norm_flow_y = old_fx * sin_a + old_fy * cos_a
+                # Optional: Evolve flow field slightly?
+                # angle_rad = math.radians(1.0)
+                # cos_a, sin_a = math.cos(angle_rad), math.sin(angle_rad)
+                # old_fx, old_fy = norm_flow_x.copy(), norm_flow_y.copy()
+                # norm_flow_x = old_fx * cos_a - old_fy * sin_a
+                # norm_flow_y = old_fx * sin_a + old_fy * cos_a
 
             # Final Output
             final_result = np.clip(current_result, 0, 255).astype(np.uint8)
-            if is_color: final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
+            if is_color:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
             return final_result
+
         # --- End apply_flow_smudge ---
 
         effects.add(apply_flow_smudge)
-        if self.config.effect_params.grain > 0: effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.5, monochrome=True, grain_size=0.9))
-        if self.config.effect_params.vignette > 0: effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.5))
+        if self.config.effect_params.grain > 0:
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.5,
+                    monochrome=True,
+                    grain_size=0.9,
+                )
+            )
+        if self.config.effect_params.vignette > 0:
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.5
+                )
+            )
         self.engine.add_transformation(effects)
 
     # V2
@@ -713,37 +2009,49 @@ class AuthorTransformer:
         """(V2) Topographic style with focus on depth, weight, and mesh-like quality."""
         effects = EffectChain()
 
-        def apply_topographic_mesh(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_topographic_mesh(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             if cfg.effect_params.seed is not None:
-                seed = cfg.effect_params.seed + 202 # Distinct seed
+                seed = cfg.effect_params.seed + 202  # Distinct seed
                 np.random.seed(seed)
                 random.seed(seed)
 
-            if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             height, width = gray.shape
             params = cfg.effect_params
 
             # --- Parameters ---
-            line_count = int(65 + params.intensity * 60) # Density control
-            amplitude_factor = 18 + params.distortion * 65 # Wave height
+            line_count = int(65 + params.intensity * 60)  # Density control
+            amplitude_factor = 18 + params.distortion * 65  # Wave height
             base_thickness = 1
-            thickness_multiplier_low = 0.8 # Thinner in troughs
-            thickness_multiplier_high = 2.8 # Thicker on peaks/brightness
-            noise_pos_scale = params.noise_level * 1.8 # Noise added to vertex positions
-            noise_amp_scale = params.noise_level * 0.1 # Noise added to amplitude
+            thickness_multiplier_low = 0.8  # Thinner in troughs
+            thickness_multiplier_high = 2.8  # Thicker on peaks/brightness
+            noise_pos_scale = (
+                params.noise_level * 1.8
+            )  # Noise added to vertex positions
+            noise_amp_scale = params.noise_level * 0.1  # Noise added to amplitude
             vertical_focus_start = 0.05
             vertical_focus_end = 0.90
 
             # --- Blurring ---
-            blur_k_shape = int(5 + params.blur_radius * 1.0) * 2 + 1 # Blur for wave shape
-            blur_k_detail = 5 # Constant small blur for thickness modulation
+            blur_k_shape = (
+                int(5 + params.blur_radius * 1.0) * 2 + 1
+            )  # Blur for wave shape
+            blur_k_detail = 5  # Constant small blur for thickness modulation
             gray_shape = cv2.GaussianBlur(gray, (blur_k_shape, blur_k_shape), 0)
             gray_detail = cv2.GaussianBlur(gray, (blur_k_detail, blur_k_detail), 0)
 
             # --- Colors ---
-            bg_color_tuple = _calculate_rgb_color(pal.primary, 0.02, 'darken') # Almost black BG
-            line_color_tuple = _calculate_rgb_color(pal.accent, 1.9, 'lighten') # Bright lines
+            bg_color_tuple = _calculate_rgb_color(
+                pal.primary, 0.02, "darken"
+            )  # Almost black BG
+            line_color_tuple = _calculate_rgb_color(
+                pal.accent, 1.9, "lighten"
+            )  # Bright lines
 
             # --- Canvas & Occlusion ---
             canvas = np.full((height, width, 3), bg_color_tuple, dtype=np.uint8)
@@ -752,33 +2060,54 @@ class AuthorTransformer:
             total_draw_height = end_y_for_spacing - start_y
             # Ensure line_count > 0 to avoid division error
             line_count = max(1, line_count)
-            line_spacing = max(1, total_draw_height / line_count) # Allow float spacing for base calc
-            horizon_line = np.full(width, height + 100, dtype=np.int32) # Horizon starts well below screen
+            line_spacing = max(
+                1, total_draw_height / line_count
+            )  # Allow float spacing for base calc
+            horizon_line = np.full(
+                width, height + 100, dtype=np.int32
+            )  # Horizon starts well below screen
 
             # --- Wave Generation (Back to Front) ---
             for i in range(line_count - 1, -1, -1):
-                y_base = start_y + int(i * line_spacing) # Use int for base pixel row
-                if y_base >= height: continue
+                y_base = start_y + int(i * line_spacing)  # Use int for base pixel row
+                if y_base >= height:
+                    continue
 
                 sample_y = min(y_base, height - 1)
                 brightness_wave_row = gray_shape[sample_y, :]
                 brightness_detail_row = gray_detail[sample_y, :]
 
                 current_segment_points: List[Tuple[int, int]] = []
-                current_segment_weights: List[float] = [] # Store displacement or brightness for thickness avg
+                current_segment_weights: List[
+                    float
+                ] = []  # Store displacement or brightness for thickness avg
 
                 for x in range(width):
                     # Displacement based on smooth shape
                     brightness_shape = brightness_wave_row[x] / 255.0
                     amp_noise = 1.0 + (random.random() - 0.5) * noise_amp_scale
-                    displacement = ((1.0 - brightness_shape) ** 1.6) * amplitude_factor * amp_noise
+                    displacement = (
+                        ((1.0 - brightness_shape) ** 1.6) * amplitude_factor * amp_noise
+                    )
                     y_displaced_float = y_base - displacement
 
                     # Thickness modulation based on detail brightness & displacement
                     brightness_detail = brightness_detail_row[x] / 255.0
                     # Higher brightness (lighter) OR higher displacement (peak) -> thicker line
-                    thickness_mod = (brightness_detail**0.7 + (displacement / amplitude_factor if amplitude_factor > 0 else 0)**0.5) / 2.0
-                    thickness = base_thickness * (thickness_multiplier_low + thickness_mod * (thickness_multiplier_high - thickness_multiplier_low))
+                    thickness_mod = (
+                        brightness_detail**0.7
+                        + (
+                            displacement / amplitude_factor
+                            if amplitude_factor > 0
+                            else 0
+                        )
+                        ** 0.5
+                    ) / 2.0
+                    thickness = base_thickness * (
+                        thickness_multiplier_low
+                        + thickness_mod
+                        * (thickness_multiplier_high - thickness_multiplier_low)
+                    )
 
                     # Positional noise
                     x_noise = (random.random() - 0.5) * noise_pos_scale
@@ -787,61 +2116,101 @@ class AuthorTransformer:
                     y_displaced_rnd = int(round(y_displaced_float + y_noise))
 
                     # Visibility & Occlusion Check (more robust index check)
-                    x_check = min(max(0, x_perturbed_rnd), width-1)
-                    is_visible = y_displaced_rnd >= 0 and y_displaced_rnd < horizon_line[x_check]
+                    x_check = min(max(0, x_perturbed_rnd), width - 1)
+                    is_visible = (
+                        y_displaced_rnd >= 0 and y_displaced_rnd < horizon_line[x_check]
+                    )
 
                     # Segment Handling
                     if is_visible:
-                        current_segment_points.append((x_perturbed_rnd, y_displaced_rnd))
+                        current_segment_points.append(
+                            (x_perturbed_rnd, y_displaced_rnd)
+                        )
                         current_segment_weights.append(thickness)
                         # Update horizon smoothly
-                        horizon_line[x_check] = min(horizon_line[x_check], y_displaced_rnd)
+                        horizon_line[x_check] = min(
+                            horizon_line[x_check], y_displaced_rnd
+                        )
                         # Optional wider horizon update:
                         # hw=1; update_slice = slice(max(0, x_check - hw), min(width, x_check + hw + 1))
                         # horizon_line[update_slice] = np.minimum(horizon_line[update_slice], y_displaced_rnd)
-                    else: # Point occluded or off screen
+                    else:  # Point occluded or off screen
                         if len(current_segment_points) > 1:
-                            avg_thickness = max(1, int(round(np.mean(current_segment_weights))))
+                            avg_thickness = max(
+                                1, int(round(np.mean(current_segment_weights)))
+                            )
                             pts_np = np.array(current_segment_points, dtype=np.int32)
-                            cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color_tuple, thickness=avg_thickness, lineType=cv2.LINE_AA)
+                            cv2.polylines(
+                                canvas,
+                                [pts_np],
+                                isClosed=False,
+                                color=line_color_tuple,
+                                thickness=avg_thickness,
+                                lineType=cv2.LINE_AA,
+                            )
                         current_segment_points = []
                         current_segment_weights = []
 
                 # Draw final segment for this line
                 if len(current_segment_points) > 1:
-                     avg_thickness = max(1, int(round(np.mean(current_segment_weights))))
-                     pts_np = np.array(current_segment_points, dtype=np.int32)
-                     cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color_tuple, thickness=avg_thickness, lineType=cv2.LINE_AA)
+                    avg_thickness = max(1, int(round(np.mean(current_segment_weights))))
+                    pts_np = np.array(current_segment_points, dtype=np.int32)
+                    cv2.polylines(
+                        canvas,
+                        [pts_np],
+                        isClosed=False,
+                        color=line_color_tuple,
+                        thickness=avg_thickness,
+                        lineType=cv2.LINE_AA,
+                    )
 
             return canvas
+
         # --- End apply_topographic_mesh ---
 
         effects.add(apply_topographic_mesh)
         if self.config.effect_params.grain > 0:
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.1, monochrome=True))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.1, monochrome=True
+                )
+            )
         if self.config.effect_params.vignette > 0:
-            effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.2))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.2
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_temporal_streak_style(self) -> None:
         """(V2) Simulates temporal effects with motion flow and weighted accumulation."""
         effects = EffectChain()
 
         # Pre-processing: High contrast, B&W is common for the reference look
-        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 2.0 + cfg.effect_params.intensity * 0.5))
-        effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.0)) # Force B&W
+        effects.add(
+            lambda img, cfg, pal: adjust_contrast(
+                img, cfg, pal, 2.0 + cfg.effect_params.intensity * 0.5
+            )
+        )
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.0)
+        )  # Force B&W
 
-        def apply_temporal_streak(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_temporal_streak(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 302
                 np.random.seed(seed)
                 random.seed(seed)
 
             # Ensure input is grayscale float32 for accumulation
-            if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             current_frame = gray.astype(np.float32)
             height, width = current_frame.shape
             params = cfg.effect_params
@@ -849,36 +2218,52 @@ class AuthorTransformer:
             # --- Parameters ---
             num_steps = 10 + int(params.intensity * 20)
             # Flow control: distortion affects angle/randomness, intensity affects strength/length
-            flow_strength = 1.0 + params.intensity * 4.0 # Pixels per step potential
-            base_angle = 90 # Vertical default
-            angle_variation = params.distortion * 45 # Degrees variation
-            noise_flow_influence = params.noise_level * 0.8 # How much noise affects flow direction
+            flow_strength = 1.0 + params.intensity * 4.0  # Pixels per step potential
+            base_angle = 90  # Vertical default
+            angle_variation = params.distortion * 45  # Degrees variation
+            noise_flow_influence = (
+                params.noise_level * 0.8
+            )  # How much noise affects flow direction
             # Blur controls streak softness
-            blur_kernel_size = 3 + int(params.blur_radius * 0.7) # Base kernel size
-            blur_increase_factor = 1.1 # Kernel size increases slightly each step
+            blur_kernel_size = 3 + int(params.blur_radius * 0.7)  # Base kernel size
+            blur_increase_factor = 1.1  # Kernel size increases slightly each step
             # Accumulation control
-            persistence = 0.05 + (1.0 - params.intensity) * 0.2 # Alpha for weighted average (lower alpha = longer trails)
-
+            persistence = (
+                0.05 + (1.0 - params.intensity) * 0.2
+            )  # Alpha for weighted average (lower alpha = longer trails)
 
             # --- Initialize Accumulator & Flow ---
-            accumulator = current_frame.copy() * persistence # Start with dimmed original
+            accumulator = (
+                current_frame.copy() * persistence
+            )  # Start with dimmed original
             total_weight = persistence
-            map_base_x, map_base_y = np.meshgrid(np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32))
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
             current_map_x = map_base_x.copy()
             current_map_y = map_base_y.copy()
 
             # --- Iterative Process ---
             for step in range(num_steps):
                 # --- Calculate Flow for this step ---
-                step_angle_deg = base_angle + random.uniform(-angle_variation, angle_variation)
+                step_angle_deg = base_angle + random.uniform(
+                    -angle_variation, angle_variation
+                )
                 # Add noise influence, scaled by step
-                step_noise_angle_rad = (np.random.randn(height, width) * noise_flow_influence * math.pi * ((step+1)/num_steps)).astype(np.float32)
+                step_noise_angle_rad = (
+                    np.random.randn(height, width)
+                    * noise_flow_influence
+                    * math.pi
+                    * ((step + 1) / num_steps)
+                ).astype(np.float32)
                 current_angle_rad = math.radians(step_angle_deg) + step_noise_angle_rad
 
                 # Base flow vector for this step (magnitude based on intensity)
                 step_flow_mag = flow_strength * random.uniform(0.7, 1.3) / num_steps
                 step_flow_x = np.cos(current_angle_rad) * step_flow_mag
-                step_flow_y = -np.sin(current_angle_rad) * step_flow_mag # Y is inverted
+                step_flow_y = (
+                    -np.sin(current_angle_rad) * step_flow_mag
+                )  # Y is inverted
 
                 # --- Update Total Displacement Map ---
                 current_map_x += step_flow_x
@@ -889,18 +2274,30 @@ class AuthorTransformer:
 
                 # --- Warp Original Image ---
                 # Warp the *original* grayscale image to avoid accumulating blur artefacts
-                warped_original = cv2.remap(gray, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+                warped_original = cv2.remap(
+                    gray,
+                    map_x,
+                    map_y,
+                    interpolation=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REFLECT,
+                )
 
                 # --- Apply Directional Blur ---
-                current_blur_ksize = int(blur_kernel_size * (blur_increase_factor**step))
-                motion_kernel = _create_motion_blur_kernel(current_blur_ksize, step_angle_deg)
+                current_blur_ksize = int(
+                    blur_kernel_size * (blur_increase_factor**step)
+                )
+                motion_kernel = _create_motion_blur_kernel(
+                    current_blur_ksize, step_angle_deg
+                )
                 if motion_kernel is not None:
-                     processed_frame = cv2.filter2D(warped_original, cv2.CV_32F, motion_kernel)
+                    processed_frame = cv2.filter2D(
+                        warped_original, cv2.CV_32F, motion_kernel
+                    )
                 else:
-                     processed_frame = warped_original.astype(np.float32)
+                    processed_frame = warped_original.astype(np.float32)
 
                 # --- Accumulate using weighted average ---
-                alpha = (1.0 - persistence) / num_steps # Distribute remaining weight
+                alpha = (1.0 - persistence) / num_steps  # Distribute remaining weight
                 accumulator += processed_frame * alpha
                 # total_weight += alpha # Optional: track actual total weight if alpha varies more
 
@@ -915,30 +2312,50 @@ class AuthorTransformer:
             # Convert back to color if original was color? For B&W effect, keep gray.
             # if img.ndim == 3: final_result = cv2.cvtColor(final_result, cv2.COLOR_GRAY2RGB)
             # Let's force output to be grayscale for this style
-            if final_result.ndim == 3: # If accumulation made it color somehow
+            if final_result.ndim == 3:  # If accumulation made it color somehow
                 final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
 
             return final_result
+
         # --- End apply_temporal_streak ---
 
         effects.add(apply_temporal_streak)
         if self.config.effect_params.grain > 0:
-             effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.35, monochrome=True))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.35,
+                    monochrome=True,
+                )
+            )
         if self.config.effect_params.vignette > 0:
-             effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.45))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.45
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_ethereal_smudge_style(self) -> None:
         """(V2) Ghostly/Liquid smudge effect using masked iterative warp/blur."""
         effects = EffectChain()
 
         # Pre-processing: Generally less contrast initially, allow smudge to create it
-        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.1 + cfg.effect_params.intensity * 0.2))
-        effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.1)) # Near B&W
+        effects.add(
+            lambda img, cfg, pal: adjust_contrast(
+                img, cfg, pal, 1.1 + cfg.effect_params.intensity * 0.2
+            )
+        )
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.1)
+        )  # Near B&W
 
-        def apply_ethereal_smudge(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_ethereal_smudge(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 402
                 np.random.seed(seed)
@@ -951,63 +2368,97 @@ class AuthorTransformer:
             params = cfg.effect_params
 
             # --- Parameters ---
-            num_steps = 5 + int(params.intensity * 15) # Iterations
+            num_steps = 5 + int(params.intensity * 15)  # Iterations
             # Smudge Flow: distortion controls randomness/swirl
-            flow_noise_scale = params.distortion * 0.8 # Spatial scale of noise
-            flow_noise_strength = params.distortion * 3.0 # Magnitude of noise vectors
-            flow_base_strength = 0.5 + params.intensity * 1.0 # Base movement speed
+            flow_noise_scale = params.distortion * 0.8  # Spatial scale of noise
+            flow_noise_strength = params.distortion * 3.0  # Magnitude of noise vectors
+            flow_base_strength = 0.5 + params.intensity * 1.0  # Base movement speed
             # Smear Blur: blur_radius controls kernel size
-            smear_ksize = 3 + int(params.blur_radius * 0.6) # Smaller kernels applied iteratively
+            smear_ksize = 3 + int(
+                params.blur_radius * 0.6
+            )  # Smaller kernels applied iteratively
             # Structure Preservation: Intensity affects how much detail is kept
             structure_preservation = 0.1 + (1.0 - params.intensity) * 0.6
             # Blend Opacity: Controls ghosting strength per step
             step_opacity = 0.1 + params.intensity * 0.2
 
             # --- Calculate Structure Mask ---
-            if is_color: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if is_color:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             # Higher value = edge/detail = LESS smudging
             structure_map = _normalized_gradient_magnitude(gray, ksize=3, blur_ksize=3)
             # Invert and scale to create the mask where smudging occurs
             # Power sharpens transition: higher power = preserve edges more strictly
-            smear_mask = (1.0 - structure_map**(0.5 + structure_preservation*1.5) ) ** 1.5
-            smear_mask = cv2.GaussianBlur(smear_mask, (7,7), 0) # Blur mask for smooth transition
-            if is_color: smear_mask = cv2.cvtColor(smear_mask, cv2.COLOR_GRAY2RGB)
+            smear_mask = (
+                1.0 - structure_map ** (0.5 + structure_preservation * 1.5)
+            ) ** 1.5
+            smear_mask = cv2.GaussianBlur(
+                smear_mask, (7, 7), 0
+            )  # Blur mask for smooth transition
+            if is_color:
+                smear_mask = cv2.cvtColor(smear_mask, cv2.COLOR_GRAY2RGB)
 
             # --- Base Meshgrid for Remapping ---
-            map_base_x, map_base_y = np.meshgrid(np.arange(width, dtype=np.float32),
-                                                 np.arange(height, dtype=np.float32))
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
 
             # --- Iterative Smudging ---
             for step in range(num_steps):
                 # --- Generate Flow Field for this Step ---
                 # Create noise field (approximate Perlin/Simplex with blurred random)
-                noise_x = cv2.GaussianBlur((np.random.randn(height, width) * flow_noise_strength).astype(np.float32), (21, 21), flow_noise_scale * 10)
-                noise_y = cv2.GaussianBlur((np.random.randn(height, width) * flow_noise_strength).astype(np.float32), (21, 21), flow_noise_scale * 10)
+                noise_x = cv2.GaussianBlur(
+                    (np.random.randn(height, width) * flow_noise_strength).astype(
+                        np.float32
+                    ),
+                    (21, 21),
+                    flow_noise_scale * 10,
+                )
+                noise_y = cv2.GaussianBlur(
+                    (np.random.randn(height, width) * flow_noise_strength).astype(
+                        np.float32
+                    ),
+                    (21, 21),
+                    flow_noise_scale * 10,
+                )
                 # Combine with simple base flow (e.g., slight directional drift)
-                base_angle = math.radians(random.uniform(0, 360)) # Or parameter controlled
+                base_angle = math.radians(
+                    random.uniform(0, 360)
+                )  # Or parameter controlled
                 flow_x = noise_x + math.cos(base_angle) * flow_base_strength
-                flow_y = noise_y - math.sin(base_angle) * flow_base_strength # Y inverted
+                flow_y = (
+                    noise_y - math.sin(base_angle) * flow_base_strength
+                )  # Y inverted
 
                 # --- Apply Small Warp ---
-                step_dist = 1.0 # Small distance per step
+                step_dist = 1.0  # Small distance per step
                 map_x = map_base_x + flow_x * step_dist
                 map_y = map_base_y + flow_y * step_dist
                 # Warp the *current result*
-                warped_img = cv2.remap(current_result, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+                warped_img = cv2.remap(
+                    current_result,
+                    map_x,
+                    map_y,
+                    interpolation=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REFLECT,
+                )
 
                 # --- Apply Small Blur ---
                 if smear_ksize > 1:
-                     # Could potentially use directional blur along flow here too (slower)
-                     # avg_angle = math.degrees(np.arctan2(np.mean(-flow_y), np.mean(flow_x))) # Average direction
-                     # blur_kernel = _create_motion_blur_kernel(smear_ksize, avg_angle)
-                     # if blur_kernel is not None:
-                     #      blurred_img = cv2.filter2D(warped_img, -1, blur_kernel)
-                     # else: blurred_img = warped_img
-                     # Simpler: Gaussian blur
-                     blurred_img = cv2.GaussianBlur(warped_img, (smear_ksize, smear_ksize), 0)
+                    # Could potentially use directional blur along flow here too (slower)
+                    # avg_angle = math.degrees(np.arctan2(np.mean(-flow_y), np.mean(flow_x))) # Average direction
+                    # blur_kernel = _create_motion_blur_kernel(smear_ksize, avg_angle)
+                    # if blur_kernel is not None:
+                    #      blurred_img = cv2.filter2D(warped_img, -1, blur_kernel)
+                    # else: blurred_img = warped_img
+                    # Simpler: Gaussian blur
+                    blurred_img = cv2.GaussianBlur(
+                        warped_img, (smear_ksize, smear_ksize), 0
+                    )
                 else:
-                     blurred_img = warped_img
+                    blurred_img = warped_img
 
                 # --- Blend using Structure Mask & Opacity ---
                 # Alpha blend based on mask: result = prev * (1-alpha) + current * alpha
@@ -1025,17 +2476,26 @@ class AuthorTransformer:
             # ...
 
             # Force grayscale output? Consistent with references.
-            if is_color: final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
-
+            if is_color:
+                final_result = cv2.cvtColor(final_result, cv2.COLOR_RGB2GRAY)
 
             return final_result
+
         # --- End apply_ethereal_smudge ---
 
         effects.add(apply_ethereal_smudge)
         if self.config.effect_params.grain > 0:
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.4, monochrome=True))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.4, monochrome=True
+                )
+            )
         if self.config.effect_params.vignette > 0:
-            effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.5))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.5
+                )
+            )
 
         self.engine.add_transformation(effects)
 
@@ -1045,10 +2505,12 @@ class AuthorTransformer:
         """Add refined Topographic Wave style (v2) with better depth."""
         effects = EffectChain()
 
-        def apply_topographic_depth(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_topographic_depth(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies the v2 topographic wave effect with depth cues."""
             if cfg.effect_params.seed is not None:
-                seed = cfg.effect_params.seed + 201 # Distinct seed offset
+                seed = cfg.effect_params.seed + 201  # Distinct seed offset
                 np.random.seed(seed)
                 random.seed(seed)
 
@@ -1061,10 +2523,10 @@ class AuthorTransformer:
             params = cfg.effect_params
 
             # --- Parameters ---
-            line_count = int(60 + params.intensity * 50) # Control density
-            amplitude_factor = 15 + params.distortion * 60 # Control height/prominence
+            line_count = int(60 + params.intensity * 50)  # Control density
+            amplitude_factor = 15 + params.distortion * 60  # Control height/prominence
             base_line_thickness = 1
-            max_thickness_multiplier = 2.5 # Max thickness = base * multiplier
+            max_thickness_multiplier = 2.5  # Max thickness = base * multiplier
             # Vertical distribution focus (0 = top, 1 = full height)
             vertical_focus_end = 0.85
             vertical_focus_start = 0.1
@@ -1074,12 +2536,17 @@ class AuthorTransformer:
             ksize = blur_radius_px * 2 + 1
             gray_smooth = cv2.GaussianBlur(gray, (ksize, ksize), 0)
             # Also keep less blurred version for brightness modulation if needed
-            gray_detail = cv2.GaussianBlur(gray, (5,5), 0) if ksize > 5 else gray_smooth
-
+            gray_detail = (
+                cv2.GaussianBlur(gray, (5, 5), 0) if ksize > 5 else gray_smooth
+            )
 
             # --- Colors (Using helper) ---
-            bg_color_tuple = _calculate_rgb_color(pal.primary, 0.05, 'darken') # Very dark BG
-            line_color_tuple = _calculate_rgb_color(pal.accent, 1.7, 'lighten') # Bright lines
+            bg_color_tuple = _calculate_rgb_color(
+                pal.primary, 0.05, "darken"
+            )  # Very dark BG
+            line_color_tuple = _calculate_rgb_color(
+                pal.accent, 1.7, "lighten"
+            )  # Bright lines
 
             # --- Canvas & Occlusion Setup ---
             canvas = np.full((height, width, 3), bg_color_tuple, dtype=np.uint8)
@@ -1087,12 +2554,15 @@ class AuthorTransformer:
             end_y_for_spacing = int(height * vertical_focus_end)
             line_spacing = max(1, (end_y_for_spacing - start_y) // line_count)
             # Horizon line: keeps track of highest *visible* point per column
-            horizon_line = np.full(width, height, dtype=np.int32) # Start horizon at bottom
+            horizon_line = np.full(
+                width, height, dtype=np.int32
+            )  # Start horizon at bottom
 
             # --- Wave Generation (Back to Front) ---
             for i in range(line_count - 1, -1, -1):
                 y_base = start_y + i * line_spacing
-                if y_base >= height: continue
+                if y_base >= height:
+                    continue
 
                 sample_y = min(y_base, height - 1)
                 # Use heavily blurred image for wave shape
@@ -1106,92 +2576,155 @@ class AuthorTransformer:
                 for x in range(width):
                     # --- Displacement ---
                     brightness = brightness_wave[x] / 255.0
-                    displacement = ((1.0 - brightness) ** 1.7) * amplitude_factor # Use power for contrast
+                    displacement = (
+                        (1.0 - brightness) ** 1.7
+                    ) * amplitude_factor  # Use power for contrast
                     y_displaced_float = y_base - displacement
 
                     # --- Line Thickness ---
                     # Thicker for brighter areas (closer peaks in Joy Division) or higher displacement
                     brightness_mod_detail = brightness_detail[x] / 255.0
-                    thickness_mod = (brightness_mod_detail**0.5 + (displacement / amplitude_factor if amplitude_factor > 0 else 0)) / 2.0
-                    thickness = base_line_thickness + thickness_mod * (max_thickness_multiplier - base_line_thickness)
+                    thickness_mod = (
+                        brightness_mod_detail**0.5
+                        + (
+                            displacement / amplitude_factor
+                            if amplitude_factor > 0
+                            else 0
+                        )
+                    ) / 2.0
+                    thickness = base_line_thickness + thickness_mod * (
+                        max_thickness_multiplier - base_line_thickness
+                    )
 
                     # --- Noise Perturbation ---
                     if params.noise_level > 0:
-                         noise_scale = params.noise_level * 1.5 # Control noise strength
-                         x_perturbed = x + (random.random() - 0.5) * noise_scale
-                         y_displaced_float += (random.random() - 0.5) * noise_scale
+                        noise_scale = params.noise_level * 1.5  # Control noise strength
+                        x_perturbed = x + (random.random() - 0.5) * noise_scale
+                        y_displaced_float += (random.random() - 0.5) * noise_scale
                     else:
-                         x_perturbed = float(x)
+                        x_perturbed = float(x)
 
                     y_displaced = int(round(y_displaced_float))
                     x_rounded = int(round(x_perturbed))
 
-
                     # --- Occlusion & Segment Drawing ---
                     # Check if point is visible (above horizon and on screen)
-                    is_visible = y_displaced >= 0 and y_displaced < horizon_line[min(max(0, x_rounded), width-1)]
+                    is_visible = (
+                        y_displaced >= 0
+                        and y_displaced
+                        < horizon_line[min(max(0, x_rounded), width - 1)]
+                    )
 
                     if is_visible:
                         # Add point if segment is empty or continues visibility
-                        if not current_segment_points or horizon_line[min(max(0, x_rounded-1), width-1)] > y_displaced :
+                        if (
+                            not current_segment_points
+                            or horizon_line[min(max(0, x_rounded - 1), width - 1)]
+                            > y_displaced
+                        ):
                             current_segment_points.append((x_rounded, y_displaced))
                             current_segment_thicknesses.append(thickness)
-                        else: # Point visible but previous was occluded - start new segment
-                             if len(current_segment_points) > 1:
+                        else:  # Point visible but previous was occluded - start new segment
+                            if len(current_segment_points) > 1:
                                 # Draw previous segment first
-                                avg_thickness = int(round(np.mean(current_segment_thicknesses)))
-                                pts_np = np.array(current_segment_points, dtype=np.int32)
-                                cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color_tuple, thickness=max(1, avg_thickness), lineType=cv2.LINE_AA)
-                             # Start new segment
-                             current_segment_points = [(x_rounded, y_displaced)]
-                             current_segment_thicknesses = [thickness]
+                                avg_thickness = int(
+                                    round(np.mean(current_segment_thicknesses))
+                                )
+                                pts_np = np.array(
+                                    current_segment_points, dtype=np.int32
+                                )
+                                cv2.polylines(
+                                    canvas,
+                                    [pts_np],
+                                    isClosed=False,
+                                    color=line_color_tuple,
+                                    thickness=max(1, avg_thickness),
+                                    lineType=cv2.LINE_AA,
+                                )
+                            # Start new segment
+                            current_segment_points = [(x_rounded, y_displaced)]
+                            current_segment_thicknesses = [thickness]
 
                         # Update horizon line smoothly
                         update_y = y_displaced
-                        hw = 1 # Horizon smoothing width
-                        update_slice = slice(max(0, x_rounded - hw), min(width, x_rounded + hw + 1))
-                        horizon_line[update_slice] = np.minimum(horizon_line[update_slice], update_y)
+                        hw = 1  # Horizon smoothing width
+                        update_slice = slice(
+                            max(0, x_rounded - hw), min(width, x_rounded + hw + 1)
+                        )
+                        horizon_line[update_slice] = np.minimum(
+                            horizon_line[update_slice], update_y
+                        )
 
-                    else: # Point is occluded or off screen
+                    else:  # Point is occluded or off screen
                         if len(current_segment_points) > 1:
                             # Draw the finished segment
-                            avg_thickness = int(round(np.mean(current_segment_thicknesses)))
+                            avg_thickness = int(
+                                round(np.mean(current_segment_thicknesses))
+                            )
                             pts_np = np.array(current_segment_points, dtype=np.int32)
-                            cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color_tuple, thickness=max(1, avg_thickness), lineType=cv2.LINE_AA)
+                            cv2.polylines(
+                                canvas,
+                                [pts_np],
+                                isClosed=False,
+                                color=line_color_tuple,
+                                thickness=max(1, avg_thickness),
+                                lineType=cv2.LINE_AA,
+                            )
                         # Reset segment
                         current_segment_points = []
                         current_segment_thicknesses = []
 
-
                 # Draw final segment for the line if any points remain
                 if len(current_segment_points) > 1:
-                     avg_thickness = int(round(np.mean(current_segment_thicknesses)))
-                     pts_np = np.array(current_segment_points, dtype=np.int32)
-                     cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color_tuple, thickness=max(1, avg_thickness), lineType=cv2.LINE_AA)
+                    avg_thickness = int(round(np.mean(current_segment_thicknesses)))
+                    pts_np = np.array(current_segment_points, dtype=np.int32)
+                    cv2.polylines(
+                        canvas,
+                        [pts_np],
+                        isClosed=False,
+                        color=line_color_tuple,
+                        thickness=max(1, avg_thickness),
+                        lineType=cv2.LINE_AA,
+                    )
 
             return canvas
+
         # --- End apply_topographic_depth ---
 
         effects.add(apply_topographic_depth)
         # Add final subtle grain/vignette if desired
         if self.config.effect_params.grain > 0:
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.1, monochrome=True))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.1, monochrome=True
+                )
+            )
         if self.config.effect_params.vignette > 0:
-            effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.2))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.2
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_temporal_flow_style(self) -> None:
         """Add Temporal Flow style (v2) using flow fields and iteration."""
         effects = EffectChain()
 
         # Start with contrast and desaturation
-        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.6 + cfg.effect_params.intensity * 0.4))
-        effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.05)) # Near B&W
+        effects.add(
+            lambda img, cfg, pal: adjust_contrast(
+                img, cfg, pal, 1.6 + cfg.effect_params.intensity * 0.4
+            )
+        )
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.05)
+        )  # Near B&W
 
-
-        def apply_temporal_flow_remap(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_temporal_flow_remap(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies iterative flow, blur, and sampling."""
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 301
@@ -1200,22 +2733,28 @@ class AuthorTransformer:
 
             height, width = img.shape[:2]
             params = cfg.effect_params
-            result = img.astype(np.float32) # Work in float
+            result = img.astype(np.float32)  # Work in float
 
             # --- Parameters ---
-            num_steps = 8 + int(params.intensity * 12) # Iterations simulating time
-            flow_strength = 0.5 + params.distortion * 2.5 # Overall flow speed/distance
-            blur_strength = 1 + params.blur_radius * 0.8 # Base blur kernel radius per step
-            noise_strength = params.noise_level * 0.5 # Add turbulence to flow
+            num_steps = 8 + int(params.intensity * 12)  # Iterations simulating time
+            flow_strength = 0.5 + params.distortion * 2.5  # Overall flow speed/distance
+            blur_strength = (
+                1 + params.blur_radius * 0.8
+            )  # Base blur kernel radius per step
+            noise_strength = params.noise_level * 0.5  # Add turbulence to flow
             # Let's bias flow vertically, responding to intensity
-            base_flow_angle_deg = 90 # Vertical
-            persistence = 0.6 + (1.0 - params.intensity) * 0.3 # How much original shows through
+            base_flow_angle_deg = 90  # Vertical
+            persistence = (
+                0.6 + (1.0 - params.intensity) * 0.3
+            )  # How much original shows through
 
             # --- Calculate Base Flow Field (Gradient-based) ---
-            if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
+            if img.ndim == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
             # Smooth before gradient calculation
-            gray_smooth = cv2.GaussianBlur(gray, (5,5), 0)
+            gray_smooth = cv2.GaussianBlur(gray, (5, 5), 0)
             grad_x = cv2.Sobel(gray_smooth, cv2.CV_32F, 1, 0, ksize=3)
             grad_y = cv2.Sobel(gray_smooth, cv2.CV_32F, 0, 1, ksize=3)
             # Calculate magnitude and angle of gradient
@@ -1223,7 +2762,11 @@ class AuthorTransformer:
             # Normalize magnitude (0 to 1)
             mag_norm = cv2.normalize(magnitude, None, 0.0, 1.0, cv2.NORM_MINMAX)
             # Angle perpendicular to gradient (for flow along edges) + base vertical bias
-            angle_rad = np.arctan2(grad_y, grad_x) + math.pi / 2.0 + math.radians(base_flow_angle_deg - 90)
+            angle_rad = (
+                np.arctan2(grad_y, grad_x)
+                + math.pi / 2.0
+                + math.radians(base_flow_angle_deg - 90)
+            )
 
             # Define base flow vector field (normalized direction * flow strength * magnitude bias)
             # Stronger flow in areas of higher contrast/detail
@@ -1231,13 +2774,13 @@ class AuthorTransformer:
             flow_x = np.cos(angle_rad) * flow_scale
             flow_y = np.sin(angle_rad) * flow_scale
 
-
             # --- Iterative Process (Simulating Time) ---
             # Store intermediate frames if needed for slit-scan sampling later (optional)
             frames = [result.copy()]
             # Create base maps for remapping
-            map_base_x, map_base_y = np.meshgrid(np.arange(width, dtype=np.float32),
-                                                 np.arange(height, dtype=np.float32))
+            map_base_x, map_base_y = np.meshgrid(
+                np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32)
+            )
             # Accumulate flow map over steps
             acc_flow_x = np.zeros_like(flow_x)
             acc_flow_y = np.zeros_like(flow_y)
@@ -1250,15 +2793,20 @@ class AuthorTransformer:
             accumulator += result * persistence
             weight_sum += persistence
 
-
             for step in range(num_steps):
                 progress = (step + 1) / num_steps
 
                 # --- Update Accumulated Flow ---
                 # Add noise/turbulence that increases over time?
-                step_noise_x = (np.random.randn(height, width) * noise_strength * progress).astype(np.float32)
-                step_noise_y = (np.random.randn(height, width) * noise_strength * progress).astype(np.float32)
-                acc_flow_x += (flow_x + step_noise_x) / num_steps # Average flow increment per step
+                step_noise_x = (
+                    np.random.randn(height, width) * noise_strength * progress
+                ).astype(np.float32)
+                step_noise_y = (
+                    np.random.randn(height, width) * noise_strength * progress
+                ).astype(np.float32)
+                acc_flow_x += (
+                    flow_x + step_noise_x
+                ) / num_steps  # Average flow increment per step
                 acc_flow_y += (flow_y + step_noise_y) / num_steps
 
                 # --- Remap Image based on Accumulated Flow ---
@@ -1267,21 +2815,33 @@ class AuthorTransformer:
                 # Clip maps to stay within image bounds
                 map_x = np.clip(map_x, 0, width - 1)
                 map_y = np.clip(map_y, 0, height - 1)
-                remapped_img = cv2.remap(img, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+                remapped_img = cv2.remap(
+                    img,
+                    map_x,
+                    map_y,
+                    interpolation=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REPLICATE,
+                )
 
                 # --- Apply Motion Blur along Current Flow ---
-                current_blur_strength = int(blur_strength * progress * random.uniform(0.8, 1.2)) # Variable blur
+                current_blur_strength = int(
+                    blur_strength * progress * random.uniform(0.8, 1.2)
+                )  # Variable blur
                 if current_blur_strength > 0:
-                     # Estimate average angle for blur kernel for this step (using accumulated flow)
-                     avg_angle = np.arctan2(np.mean(acc_flow_y), np.mean(acc_flow_x))
-                     blur_kernel = _create_motion_blur_kernel(current_blur_strength, math.degrees(avg_angle))
-                     blurred_img = cv2.filter2D(remapped_img, -1, blur_kernel)
+                    # Estimate average angle for blur kernel for this step (using accumulated flow)
+                    avg_angle = np.arctan2(np.mean(acc_flow_y), np.mean(acc_flow_x))
+                    blur_kernel = _create_motion_blur_kernel(
+                        current_blur_strength, math.degrees(avg_angle)
+                    )
+                    blurred_img = cv2.filter2D(remapped_img, -1, blur_kernel)
                 else:
-                     blurred_img = remapped_img
+                    blurred_img = remapped_img
 
                 # --- Accumulate Result ---
                 # Weight decreases for later steps (older frames contribute less)
-                step_weight = (1.0 - progress) * (1.0 - persistence) # Total weight sums to (1-persistence)
+                step_weight = (1.0 - progress) * (
+                    1.0 - persistence
+                )  # Total weight sums to (1-persistence)
                 accumulator += blurred_img.astype(np.float32) * step_weight
                 weight_sum += step_weight
 
@@ -1291,10 +2851,9 @@ class AuthorTransformer:
             # Normalize accumulated result by total weight
             # Avoid division by zero if weight_sum is somehow zero
             if weight_sum > 1e-6:
-                 final_result = accumulator / weight_sum
+                final_result = accumulator / weight_sum
             else:
-                 final_result = accumulator # Should be the original * persistence
-
+                final_result = accumulator  # Should be the original * persistence
 
             # --- Post-Processing within Effect ---
             final_result = np.clip(final_result, 0, 255).astype(np.uint8)
@@ -1304,30 +2863,43 @@ class AuthorTransformer:
             # final_result = cv2.filter2D(final_result, -1, sharp_kernel)
 
             return final_result
+
         # --- End apply_temporal_flow_remap ---
 
         effects.add(apply_temporal_flow_remap)
         # Add grain/vignette after the main effect
         if self.config.effect_params.grain > 0:
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.3, monochrome=True))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.3, monochrome=True
+                )
+            )
         if self.config.effect_params.vignette > 0:
-            effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.4))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.4
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_liquid_ghost_style(self) -> None:
         """Add Liquid Ghost style (v2) using flow, masking, and blending."""
         effects = EffectChain()
 
         # Initial toning - Desaturated, maybe cool tint
-        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.4 + cfg.effect_params.intensity * 0.3))
+        effects.add(
+            lambda img, cfg, pal: adjust_contrast(
+                img, cfg, pal, 1.4 + cfg.effect_params.intensity * 0.3
+            )
+        )
         effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.05))
         # Example cool tint (adjust B channel)
         # effects.add(lambda img, cfg, pal: cool_tint(img, 1.1))
 
-
-        def apply_liquid_ghost_smear(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_liquid_ghost_smear(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies iterative, masked, flow-driven smearing and blending."""
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 401
@@ -1337,7 +2909,7 @@ class AuthorTransformer:
             height, width = img.shape[:2]
             params = cfg.effect_params
             is_color = img.ndim == 3
-            current_result = img.astype(np.float32) # Work in float
+            current_result = img.astype(np.float32)  # Work in float
 
             # --- Parameters ---
             num_steps = 6 + int(params.intensity * 10)
@@ -1347,12 +2919,16 @@ class AuthorTransformer:
             max_smear_length = int(15 + params.blur_radius * 25)
             # Intensity affects blend opacity & structure preservation
             blend_opacity = 0.15 + params.intensity * 0.20
-            structure_preservation = 0.2 + (1.0 - params.intensity) * 0.5 # Lower intensity = more structure preserved
+            structure_preservation = (
+                0.2 + (1.0 - params.intensity) * 0.5
+            )  # Lower intensity = more structure preserved
 
             # --- Calculate Structure/Gradient Mask ---
-            if is_color: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-            else: gray = img.copy()
-            gray_smooth = cv2.GaussianBlur(gray, (5,5), 0)
+            if is_color:
+                gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+            else:
+                gray = img.copy()
+            gray_smooth = cv2.GaussianBlur(gray, (5, 5), 0)
             grad_x = cv2.Sobel(gray_smooth, cv2.CV_32F, 1, 0, ksize=3)
             grad_y = cv2.Sobel(gray_smooth, cv2.CV_32F, 0, 1, ksize=3)
             magnitude = cv2.magnitude(grad_x, grad_y)
@@ -1362,10 +2938,10 @@ class AuthorTransformer:
             # Power function sharpens the transition
             smear_mask = (1.0 - mag_norm**0.8) ** (1.0 + structure_preservation * 2.0)
             # Slightly blur the mask for smoother application
-            smear_mask = cv2.GaussianBlur(smear_mask,(5,5),0)
+            smear_mask = cv2.GaussianBlur(smear_mask, (5, 5), 0)
             # Match dimensions if color image
-            if is_color: smear_mask = cv2.cvtColor(smear_mask, cv2.COLOR_GRAY2RGB)
-
+            if is_color:
+                smear_mask = cv2.cvtColor(smear_mask, cv2.COLOR_GRAY2RGB)
 
             # --- Iterative Smear Application ---
             # Base direction - could be random or parameter controlled
@@ -1377,58 +2953,97 @@ class AuthorTransformer:
                 # Use gradient angle + base angle + noise
                 angle_rad = np.arctan2(grad_y, grad_x) + math.radians(base_angle_deg)
                 if flow_noise_strength > 0:
-                    noise_angle = (np.random.randn(height, width) * math.pi * flow_noise_strength).astype(np.float32)
+                    noise_angle = (
+                        np.random.randn(height, width) * math.pi * flow_noise_strength
+                    ).astype(np.float32)
                     angle_rad += noise_angle
                 angle_deg_map = np.degrees(angle_rad)
 
                 # Calculate smear length for this step - varies with progress
-                current_smear_length = int(max_smear_length * random.uniform(0.5, 1.0) * ((step + 1) / num_steps))
+                current_smear_length = int(
+                    max_smear_length
+                    * random.uniform(0.5, 1.0)
+                    * ((step + 1) / num_steps)
+                )
 
                 # --- Apply Smear (Blur + Subtle Remap) ---
                 smeared_step = current_result.copy()
                 if current_smear_length > 1:
                     # Create locally varying motion blur kernels? Too slow. Apply average blur first.
                     avg_angle = np.mean(angle_deg_map)
-                    blur_kernel = _create_motion_blur_kernel(current_smear_length, avg_angle)
+                    blur_kernel = _create_motion_blur_kernel(
+                        current_smear_length, avg_angle
+                    )
                     smeared_step = cv2.filter2D(current_result, -1, blur_kernel)
 
                     # Add subtle displacement along the flow AFTER blur
                     remap_strength = params.distortion * 0.1 * current_smear_length
                     flow_x = np.cos(angle_rad) * remap_strength
                     flow_y = np.sin(angle_rad) * remap_strength
-                    map_base_x, map_base_y = np.meshgrid(np.arange(width, dtype=np.float32), np.arange(height, dtype=np.float32))
+                    map_base_x, map_base_y = np.meshgrid(
+                        np.arange(width, dtype=np.float32),
+                        np.arange(height, dtype=np.float32),
+                    )
                     map_x = np.clip(map_base_x + flow_x, 0, width - 1)
                     map_y = np.clip(map_base_y + flow_y, 0, height - 1)
-                    smeared_step = cv2.remap(smeared_step, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+                    smeared_step = cv2.remap(
+                        smeared_step,
+                        map_x,
+                        map_y,
+                        interpolation=cv2.INTER_LINEAR,
+                        borderMode=cv2.BORDER_REFLECT,
+                    )
 
                 # --- Blend Step Result using Screen and Mask ---
                 # Normalize for screen blending
                 smeared_norm = smeared_step / 255.0
                 base_norm = current_result / 255.0
                 # Screen blend
-                screen_blended = (1.0 - (1.0 - base_norm) * (1.0 - smeared_norm)) * 255.0
+                screen_blended = (
+                    1.0 - (1.0 - base_norm) * (1.0 - smeared_norm)
+                ) * 255.0
 
                 # Combine using smear mask and blend opacity
-                step_alpha = blend_opacity * smear_mask # Apply opacity only where mask allows
-                current_result = current_result * (1.0 - step_alpha) + screen_blended * step_alpha
+                step_alpha = (
+                    blend_opacity * smear_mask
+                )  # Apply opacity only where mask allows
+                current_result = (
+                    current_result * (1.0 - step_alpha) + screen_blended * step_alpha
+                )
 
             # --- Final Touches ---
             final_result = np.clip(current_result, 0, 255).astype(np.uint8)
             # Optional: very soft overall blur to blend artefacts
             final_blur_ksize = int(params.blur_radius * 0.1) * 2 + 1
             if final_blur_ksize > 1:
-                final_result = cv2.GaussianBlur(final_result, (final_blur_ksize, final_blur_ksize), 0)
+                final_result = cv2.GaussianBlur(
+                    final_result, (final_blur_ksize, final_blur_ksize), 0
+                )
 
             return final_result
+
         # --- End apply_liquid_ghost_smear ---
 
         effects.add(apply_liquid_ghost_smear)
         # Add grain/vignette after the main effect
         if self.config.effect_params.grain > 0:
-             # Grain adds to the analog/ghostly feel
-             effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.45, monochrome=True, grain_size=1.0))
+            # Grain adds to the analog/ghostly feel
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.45,
+                    monochrome=True,
+                    grain_size=1.0,
+                )
+            )
         if self.config.effect_params.vignette > 0:
-             effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.5))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.5
+                )
+            )
 
         self.engine.add_transformation(effects)
 
@@ -1436,7 +3051,9 @@ class AuthorTransformer:
         """Add refined Topographic Wave style transformations."""
         effects = EffectChain()
 
-        def apply_refined_topographic_wave(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_refined_topographic_wave(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies the core refined topographic wave effect."""
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 200
@@ -1453,45 +3070,58 @@ class AuthorTransformer:
 
             # --- Parameters ---
             # Fewer lines, potentially thicker, for a bolder look. Intensity controls density.
-            line_count = int(50 + params.intensity * 40) # Slightly fewer lines than before
+            line_count = int(
+                50 + params.intensity * 40
+            )  # Slightly fewer lines than before
             # Distortion affects amplitude more significantly
             amplitude_factor = 10 + params.distortion * 50
-            line_thickness = 2 # Thicker lines
+            line_thickness = 2  # Thicker lines
             # Calculate line spacing, prevent division by zero
-            line_spacing = max(1, int(height * 0.8 / line_count)) # Space lines out more, use only top 80% height maybe?
-            vertical_offset_factor = 0.1 # Start drawing lower down the canvas
+            line_spacing = max(
+                1, int(height * 0.8 / line_count)
+            )  # Space lines out more, use only top 80% height maybe?
+            vertical_offset_factor = 0.1  # Start drawing lower down the canvas
 
             # Blur source image significantly for smoother waves
-            blur_radius_px = int(2 + params.blur_radius * 1.5) # More base blur, slightly less scaling
+            blur_radius_px = int(
+                2 + params.blur_radius * 1.5
+            )  # More base blur, slightly less scaling
             ksize = blur_radius_px * 2 + 1
             gray = cv2.GaussianBlur(gray, (ksize, ksize), 0)
 
             # --- Colors ---
             primary_tuple = pal.primary.as_tuple
             # Brighter line color relative to background
-            accent_tuple = pal.accent.lighter(0.6).as_tuple if hasattr(pal.accent, 'lighter') else \
-                           tuple(min(255, int(c * 1.8)) for c in pal.accent.as_tuple)
+            accent_tuple = (
+                pal.accent.lighter(0.6).as_tuple
+                if hasattr(pal.accent, "lighter")
+                else tuple(min(255, int(c * 1.8)) for c in pal.accent.as_tuple)
+            )
             # Darker background
-            bg_color_tuple = pal.primary.darker(0.9).as_tuple if hasattr(pal.primary, 'darker') else \
-                            tuple(max(0, int(c * 0.1)) for c in primary_tuple)
+            bg_color_tuple = (
+                pal.primary.darker(0.9).as_tuple
+                if hasattr(pal.primary, "darker")
+                else tuple(max(0, int(c * 0.1)) for c in primary_tuple)
+            )
             # Slightly lighter shadow color for depth if needed (optional)
             # shadow_color = tuple(min(255, int(c*1.1)) for c in bg_color_tuple)
-
 
             # --- Canvas Setup ---
             canvas = np.full((height, width, 3), bg_color_tuple, dtype=np.uint8)
             start_y = int(height * vertical_offset_factor)
 
-
             # --- Improved Wave Generation & Occlusion ---
             # Keep track of the highest point reached for each column (basic occlusion)
-            horizon_line = np.full(width, height, dtype=np.int32) # Start horizon at the bottom
+            horizon_line = np.full(
+                width, height, dtype=np.int32
+            )  # Start horizon at the bottom
 
             # Draw lines from back to front (bottom to top) for better occlusion
             for i in range(line_count - 1, -1, -1):
                 y_base = start_y + i * line_spacing
 
-                if y_base >= height: continue # Skip lines starting off-canvas
+                if y_base >= height:
+                    continue  # Skip lines starting off-canvas
 
                 sample_y = min(y_base, height - 1)
                 brightness_values = gray[sample_y, :]
@@ -1502,50 +3132,78 @@ class AuthorTransformer:
                     # Exponent emphasizes contrast between light/dark peaks
                     displacement = ((1.0 - brightness) ** 1.8) * amplitude_factor
                     if params.noise_level > 0:
-                        displacement += (random.random() - 0.5) * params.noise_level * 5.0 # Less noise
+                        displacement += (
+                            (random.random() - 0.5) * params.noise_level * 5.0
+                        )  # Less noise
 
                     y_displaced = y_base - int(displacement)
 
                     # --- Visibility Check ---
                     # Only add point if it's above the current horizon for this column
                     if y_displaced >= 0 and y_displaced < horizon_line[x]:
-                         current_segment_points.append((x, y_displaced))
-                         # Update the horizon (lower y = higher on screen)
-                         # Apply update smoothly across a small width to avoid single pixel spikes
-                         hw = 1 # Half-width for horizon smoothing
-                         update_y = y_displaced
-                         horizon_line[max(0, x-hw) : min(width, x+hw+1)] = \
-                             np.minimum(horizon_line[max(0, x-hw) : min(width, x+hw+1)], update_y)
+                        current_segment_points.append((x, y_displaced))
+                        # Update the horizon (lower y = higher on screen)
+                        # Apply update smoothly across a small width to avoid single pixel spikes
+                        hw = 1  # Half-width for horizon smoothing
+                        update_y = y_displaced
+                        horizon_line[max(0, x - hw) : min(width, x + hw + 1)] = (
+                            np.minimum(
+                                horizon_line[max(0, x - hw) : min(width, x + hw + 1)],
+                                update_y,
+                            )
+                        )
                     else:
                         # Point is hidden or off-canvas, draw previous segment if any
                         if len(current_segment_points) > 1:
                             pts_np = np.array(current_segment_points, dtype=np.int32)
                             # Draw line slightly thicker maybe?
-                            cv2.polylines(canvas, [pts_np], isClosed=False, color=accent_tuple, thickness=line_thickness, lineType=cv2.LINE_AA)
+                            cv2.polylines(
+                                canvas,
+                                [pts_np],
+                                isClosed=False,
+                                color=accent_tuple,
+                                thickness=line_thickness,
+                                lineType=cv2.LINE_AA,
+                            )
                             # Optional: Add a subtle shadow line below for depth
                             # shadow_pts = pts_np + [0, line_thickness]
                             # cv2.polylines(canvas, [shadow_pts], False, shadow_color, 1, cv2.LINE_AA)
-                        current_segment_points = [] # Reset segment
+                        current_segment_points = []  # Reset segment
 
                 # Draw any final segment for this line
                 if len(current_segment_points) > 1:
-                     pts_np = np.array(current_segment_points, dtype=np.int32)
-                     cv2.polylines(canvas, [pts_np], isClosed=False, color=accent_tuple, thickness=line_thickness, lineType=cv2.LINE_AA)
-                     # Optional shadow line
-                     # shadow_pts = pts_np + [0, line_thickness]
-                     # cv2.polylines(canvas, [shadow_pts], False, shadow_color, 1, cv2.LINE_AA)
+                    pts_np = np.array(current_segment_points, dtype=np.int32)
+                    cv2.polylines(
+                        canvas,
+                        [pts_np],
+                        isClosed=False,
+                        color=accent_tuple,
+                        thickness=line_thickness,
+                        lineType=cv2.LINE_AA,
+                    )
+                    # Optional shadow line
+                    # shadow_pts = pts_np + [0, line_thickness]
+                    # cv2.polylines(canvas, [shadow_pts], False, shadow_color, 1, cv2.LINE_AA)
 
             return canvas
+
         # --- End of apply_refined_topographic_wave ---
 
         effects.add(apply_refined_topographic_wave)
         if self.config.effect_params.grain > 0:
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.05)) # Even more subtle grain
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.05
+                )
+            )  # Even more subtle grain
         if self.config.effect_params.vignette > 0:
-             effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.15))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.15
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_long_exposure_scan_style(self) -> None:
         """Add Long Exposure Scan style transformations.
@@ -1557,10 +3215,13 @@ class AuthorTransformer:
 
         # Apply initial high-contrast B&W conversion, similar to reference images
         effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.8))
-        effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.05)) # Near B&W
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.05)
+        )  # Near B&W
 
-
-        def apply_temporal_scan_blur(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_temporal_scan_blur(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies slit-scan simulation with motion blur layers."""
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 300
@@ -1572,24 +3233,29 @@ class AuthorTransformer:
             params = cfg.effect_params
 
             # --- Parameters ---
-            num_frames = 10 # Number of "virtual" frames to simulate motion
-            max_blur_strength = int(5 + params.blur_radius * 1.5) # Kernel size for blur
-            max_shift_amount = int(8 + params.distortion * 20) # Pixel shift between frames
+            num_frames = 10  # Number of "virtual" frames to simulate motion
+            max_blur_strength = int(
+                5 + params.blur_radius * 1.5
+            )  # Kernel size for blur
+            max_shift_amount = int(
+                8 + params.distortion * 20
+            )  # Pixel shift between frames
             # Intensity affects the opacity/contribution of blurred frames
             effect_intensity = 0.5 + params.intensity * 0.5
             # Vertical smearing bias from references
             base_angle_deg = 90 + random.uniform(-15, 15)
 
-
             # --- Generate "Motion" Frames ---
-            frames = [img.astype(np.float32)] # Start with original as frame 0
+            frames = [img.astype(np.float32)]  # Start with original as frame 0
             for i in range(1, num_frames):
                 frame_img = img.copy()
                 # Calculate progressive shift and blur for this frame
-                progress = i / (num_frames - 1) # 0 to 1
+                progress = i / (num_frames - 1)  # 0 to 1
 
                 # Shift amount increases progressively
-                shift_amount = int(max_shift_amount * progress * random.uniform(0.7, 1.0))
+                shift_amount = int(
+                    max_shift_amount * progress * random.uniform(0.7, 1.0)
+                )
                 angle_deg = base_angle_deg + random.uniform(-10, 10) * params.distortion
                 angle_rad = math.radians(angle_deg)
                 shift_x = int(math.cos(angle_rad) * shift_amount)
@@ -1597,25 +3263,42 @@ class AuthorTransformer:
 
                 # Apply shift using warpAffine
                 M = np.float32([[1, 0, shift_x], [0, 1, shift_y]])
-                frame_img = cv2.warpAffine(frame_img, M, (width, height), borderMode=cv2.BORDER_REPLICATE)
+                frame_img = cv2.warpAffine(
+                    frame_img, M, (width, height), borderMode=cv2.BORDER_REPLICATE
+                )
 
                 # Apply progressive directional motion blur
-                blur_strength = int(max_blur_strength * progress * random.uniform(0.7, 1.0))
+                blur_strength = int(
+                    max_blur_strength * progress * random.uniform(0.7, 1.0)
+                )
                 if blur_strength > 1:
-                    kernel_size = blur_strength * 2 + 1 # Ensure odd kernel size
+                    kernel_size = blur_strength * 2 + 1  # Ensure odd kernel size
                     # Create motion blur kernel along the shift direction
                     kernel = np.zeros((kernel_size, kernel_size))
                     center = kernel_size // 2
                     # Correct angle for kernel creation (-90 deg adjustment)
                     angle_rad_kernel = math.radians(angle_deg - 90)
-                    x_dir, y_dir = math.cos(angle_rad_kernel), math.sin(angle_rad_kernel)
-                    cv2.line(kernel, (center - int(x_dir*(kernel_size//2)), center - int(y_dir*(kernel_size//2))),
-                                     (center + int(x_dir*(kernel_size//2)), center + int(y_dir*(kernel_size//2))), 1.0, 1)
-                    kernel /= np.sum(kernel) # Normalize
+                    x_dir, y_dir = (
+                        math.cos(angle_rad_kernel),
+                        math.sin(angle_rad_kernel),
+                    )
+                    cv2.line(
+                        kernel,
+                        (
+                            center - int(x_dir * (kernel_size // 2)),
+                            center - int(y_dir * (kernel_size // 2)),
+                        ),
+                        (
+                            center + int(x_dir * (kernel_size // 2)),
+                            center + int(y_dir * (kernel_size // 2)),
+                        ),
+                        1.0,
+                        1,
+                    )
+                    kernel /= np.sum(kernel)  # Normalize
                     frame_img = cv2.filter2D(frame_img, -1, kernel)
 
                 frames.append(frame_img.astype(np.float32))
-
 
             # --- Slit-Scan Sampling ---
             result = np.zeros_like(img, dtype=np.float32)
@@ -1630,33 +3313,41 @@ class AuthorTransformer:
                 # Base linear progression through frames
                 base_frame_idx = norm_x * (num_frames - 1)
                 # Add non-linear warping
-                warp_factor = math.sin(norm_x * math.pi * time_freq) * params.distortion * 0.3
+                warp_factor = (
+                    math.sin(norm_x * math.pi * time_freq) * params.distortion * 0.3
+                )
                 # Add noise
                 noise_factor = (random.random() - 0.5) * time_noise_strength
                 # Final frame index, clamped
-                frame_idx = base_frame_idx + (warp_factor + noise_factor) * (num_frames - 1)
+                frame_idx = base_frame_idx + (warp_factor + noise_factor) * (
+                    num_frames - 1
+                )
                 frame_idx = np.clip(frame_idx, 0, num_frames - 1)
 
                 # Interpolate between the two nearest frames for smoother transition
                 frame_floor = int(frame_idx)
                 frame_ceil = min(frame_floor + 1, num_frames - 1)
-                interp_weight = frame_idx - frame_floor # Weight for the ceiling frame
+                interp_weight = frame_idx - frame_floor  # Weight for the ceiling frame
 
                 # Get columns from the two frames
                 col_floor = frames[frame_floor][:, x]
                 col_ceil = frames[frame_ceil][:, x]
 
                 # Perform weighted interpolation (lerp)
-                interpolated_col = col_floor * (1.0 - interp_weight) + col_ceil * interp_weight
+                interpolated_col = (
+                    col_floor * (1.0 - interp_weight) + col_ceil * interp_weight
+                )
 
                 # Blend into the result using an opacity based on intensity
                 # Fade effect slightly towards the edges maybe?
-                edge_fade = 1.0 # (1.0 - abs(norm_x - 0.5) * 0.2) # Optional edge fade
+                edge_fade = 1.0  # (1.0 - abs(norm_x - 0.5) * 0.2) # Optional edge fade
                 blend_alpha = effect_intensity * edge_fade
 
                 # Combine this column with the original image column for partial effect
-                result[:, x] = img[:, x].astype(np.float32) * (1.0 - blend_alpha) + interpolated_col * blend_alpha
-
+                result[:, x] = (
+                    img[:, x].astype(np.float32) * (1.0 - blend_alpha)
+                    + interpolated_col * blend_alpha
+                )
 
             # --- Final Touches ---
             final_result = np.clip(result, 0, 255).astype(np.uint8)
@@ -1664,20 +3355,30 @@ class AuthorTransformer:
             # Optional: Apply slight overall blur
             final_blur_ksize = int(params.blur_radius * 0.3) * 2 + 1
             if final_blur_ksize > 1:
-                final_result = cv2.GaussianBlur(final_result, (final_blur_ksize, final_blur_ksize), 0)
+                final_result = cv2.GaussianBlur(
+                    final_result, (final_blur_ksize, final_blur_ksize), 0
+                )
 
             return final_result
+
         # --- End of apply_temporal_scan_blur ---
 
         effects.add(apply_temporal_scan_blur)
         if self.config.effect_params.grain > 0:
-             # Grain suits this style well
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.4, monochrome=True))
+            # Grain suits this style well
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.4, monochrome=True
+                )
+            )
         if self.config.effect_params.vignette > 0:
-             effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.5))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.5
+                )
+            )
 
         self.engine.add_transformation(effects)
-
 
     def _add_ghostly_smear_style(self) -> None:
         """Add Ghostly Smear style transformations.
@@ -1688,12 +3389,20 @@ class AuthorTransformer:
         effects = EffectChain()
 
         # Initial contrast/toning - often B&W or heavily desaturated
-        effects.add(lambda img, cfg, pal: adjust_contrast(img, cfg, pal, 1.5 + cfg.effect_params.intensity * 0.5))
-        effects.add(lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.1)) # Start near B&W
+        effects.add(
+            lambda img, cfg, pal: adjust_contrast(
+                img, cfg, pal, 1.5 + cfg.effect_params.intensity * 0.5
+            )
+        )
+        effects.add(
+            lambda img, cfg, pal: adjust_saturation(img, cfg, pal, 0.1)
+        )  # Start near B&W
         # Optional: Apply slight blue/cool toning common in ghostly aesthetics
         # effects.add(lambda img, cfg, pal: cool_tone_effect(img, cfg, pal))
 
-        def apply_directional_smear_blend(img: np.ndarray, cfg: Configuration, pal: ColorPalette) -> np.ndarray:
+        def apply_directional_smear_blend(
+            img: np.ndarray, cfg: Configuration, pal: ColorPalette
+        ) -> np.ndarray:
             """Applies directional blur and blends layers for a ghostly smear."""
             if cfg.effect_params.seed is not None:
                 seed = cfg.effect_params.seed + 400
@@ -1702,23 +3411,33 @@ class AuthorTransformer:
 
             height, width = img.shape[:2]
             params = cfg.effect_params
-            result = img.astype(np.float32) # Work in float
+            result = img.astype(np.float32)  # Work in float
 
             # --- Parameters ---
-            num_layers = 3 + int(params.intensity * 3) # More layers for stronger effect
-            max_blur_strength = int(20 + params.blur_radius * 30) # Kernel size for blur
-            max_shift_amount = int(5 + params.distortion * 15) # Less shift, more blur focus
+            num_layers = 3 + int(
+                params.intensity * 3
+            )  # More layers for stronger effect
+            max_blur_strength = int(
+                20 + params.blur_radius * 30
+            )  # Kernel size for blur
+            max_shift_amount = int(
+                5 + params.distortion * 15
+            )  # Less shift, more blur focus
             # Angle variability - allow multiple directions for swirling effect
             angle_mean = random.uniform(0, 360)
-            angle_spread = 45 * params.distortion # How much angle varies between layers
+            angle_spread = (
+                45 * params.distortion
+            )  # How much angle varies between layers
 
             # --- Layer Generation & Blending ---
             # Start with original image slightly faded
             current_image = result * (0.6 + (1.0 - params.intensity) * 0.4)
 
             for i in range(num_layers):
-                layer_img = img.copy() # Start from original each time for cleaner layers
-                progress = (i + 1) / num_layers # Use progress for fading/effects
+                layer_img = (
+                    img.copy()
+                )  # Start from original each time for cleaner layers
+                progress = (i + 1) / num_layers  # Use progress for fading/effects
 
                 # --- Apply Layer Effects ---
                 # Random angle for this layer's smear
@@ -1730,40 +3449,62 @@ class AuthorTransformer:
                 shift_x = int(math.cos(angle_rad) * shift_amount)
                 shift_y = int(math.sin(angle_rad) * shift_amount)
                 M = np.float32([[1, 0, shift_x], [0, 1, shift_y]])
-                layer_img = cv2.warpAffine(layer_img, M, (width, height), borderMode=cv2.BORDER_REPLICATE)
+                layer_img = cv2.warpAffine(
+                    layer_img, M, (width, height), borderMode=cv2.BORDER_REPLICATE
+                )
 
                 # 2. Strong Directional Motion Blur
                 blur_strength = int(max_blur_strength * random.uniform(0.4, 1.0))
                 if blur_strength > 1:
-                    kernel_size = max(5, blur_strength * 2 + 1) # Larger kernels
+                    kernel_size = max(5, blur_strength * 2 + 1)  # Larger kernels
                     kernel = np.zeros((kernel_size, kernel_size))
                     center = kernel_size // 2
                     angle_rad_kernel = math.radians(angle_deg - 90)
-                    x_dir, y_dir = math.cos(angle_rad_kernel), math.sin(angle_rad_kernel)
-                    half_length = int((kernel_size // 2) * 0.9) # Make line slightly shorter than kernel
-                    pt1 = (center - int(x_dir*half_length), center - int(y_dir*half_length))
-                    pt2 = (center + int(x_dir*half_length), center + int(y_dir*half_length))
+                    x_dir, y_dir = (
+                        math.cos(angle_rad_kernel),
+                        math.sin(angle_rad_kernel),
+                    )
+                    half_length = int(
+                        (kernel_size // 2) * 0.9
+                    )  # Make line slightly shorter than kernel
+                    pt1 = (
+                        center - int(x_dir * half_length),
+                        center - int(y_dir * half_length),
+                    )
+                    pt2 = (
+                        center + int(x_dir * half_length),
+                        center + int(y_dir * half_length),
+                    )
                     cv2.line(kernel, pt1, pt2, 1.0, 1)
-                    kernel /= np.sum(kernel) # Normalize
+                    kernel /= np.sum(kernel)  # Normalize
                     layer_img = cv2.filter2D(layer_img, -1, kernel)
-
 
                 # 3. Masking (Optional - Feature coherence)
                 # Reduce effect on edges/features
-                use_masking = params.intensity < 0.8 # Apply masking less at high intensity
+                use_masking = (
+                    params.intensity < 0.8
+                )  # Apply masking less at high intensity
                 if use_masking:
-                    if img.ndim == 3: gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-                    else: gray = img
+                    if img.ndim == 3:
+                        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+                    else:
+                        gray = img
                     # Use Canny edges, dilated to create a wider mask
                     edges = cv2.Canny(gray, 50, 150)
-                    kernel_dilate = np.ones((5,5),np.uint8)
-                    feature_mask = cv2.dilate(edges, kernel_dilate, iterations = 1)
+                    kernel_dilate = np.ones((5, 5), np.uint8)
+                    feature_mask = cv2.dilate(edges, kernel_dilate, iterations=1)
                     feature_mask = feature_mask.astype(np.float32) / 255.0
                     # Invert mask (0 on features, 1 elsewhere)
                     smear_mask = 1.0 - feature_mask
-                    if img.ndim == 3: smear_mask = cv2.cvtColor(smear_mask, cv2.COLOR_GRAY2RGB) # Match dimensions
+                    if img.ndim == 3:
+                        smear_mask = cv2.cvtColor(
+                            smear_mask, cv2.COLOR_GRAY2RGB
+                        )  # Match dimensions
                     # Apply mask: original image * feature_mask + smeared_layer * smear_mask
-                    layer_img = img.astype(np.float32) * feature_mask + layer_img.astype(np.float32) * smear_mask
+                    layer_img = (
+                        img.astype(np.float32) * feature_mask
+                        + layer_img.astype(np.float32) * smear_mask
+                    )
 
                 # --- Blending Layer ---
                 # Use 'Screen' or 'Lighten' blend mode for ghostly effect
@@ -1776,29 +3517,46 @@ class AuthorTransformer:
                 screen_blended = 1.0 - (1.0 - base_norm) * (1.0 - layer_norm)
 
                 # Blend using addWeighted with decreasing opacity for later layers
-                layer_alpha = 0.4 / (i + 1) # Opacity decreases for subsequent layers
-                current_image = cv2.addWeighted(current_image, 1.0, (screen_blended*255), layer_alpha, 0)
+                layer_alpha = 0.4 / (i + 1)  # Opacity decreases for subsequent layers
+                current_image = cv2.addWeighted(
+                    current_image, 1.0, (screen_blended * 255), layer_alpha, 0
+                )
                 # Alternative: Just use Lighten blending?
                 # current_image = np.maximum(current_image, layer_img * (0.7 / (i + 1)))
-
 
             # --- Final Touches ---
             final_result = np.clip(current_image, 0, 255).astype(np.uint8)
             # Apply maybe a very soft Gaussian blur overall?
             final_blur_ksize = int(params.blur_radius * 0.2) * 2 + 1
             if final_blur_ksize > 1:
-                 final_result = cv2.GaussianBlur(final_result, (final_blur_ksize, final_blur_ksize), 0)
+                final_result = cv2.GaussianBlur(
+                    final_result, (final_blur_ksize, final_blur_ksize), 0
+                )
 
             return final_result
+
         # --- End of apply_directional_smear_blend ---
 
         effects.add(apply_directional_smear_blend)
         if self.config.effect_params.grain > 0:
             # Authentic film grain fits well
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.5, monochrome=True, grain_size=0.8))
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img,
+                    cfg,
+                    pal,
+                    amount=cfg.effect_params.grain * 0.5,
+                    monochrome=True,
+                    grain_size=0.8,
+                )
+            )
         if self.config.effect_params.vignette > 0:
-             # Vignette enhances the mood
-             effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.6))
+            # Vignette enhances the mood
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.6
+                )
+            )
 
         self.engine.add_transformation(effects)
 
@@ -4460,7 +6218,9 @@ class AuthorTransformer:
         effects = EffectChain()
 
         # --- Complete apply_topographic_wave function definition ---
-        def apply_topographic_wave(img: np.ndarray, cfg: Configuration, pal) -> np.ndarray:
+        def apply_topographic_wave(
+            img: np.ndarray, cfg: Configuration, pal
+        ) -> np.ndarray:
             """Applies the core topographic wave effect."""
             # Ensure reproducibility for this specific effect step
             if cfg.effect_params.seed is not None:
@@ -4482,8 +6242,8 @@ class AuthorTransformer:
             # Intensity controls density, distortion controls height
             line_count = int(60 + params.intensity * 60)
             amplitude_factor = 15 + params.distortion * 40
-            line_thickness = 1 # Keep lines thin
-            line_spacing = max(1, height // line_count) # Ensure spacing is at least 1
+            line_thickness = 1  # Keep lines thin
+            line_spacing = max(1, height // line_count)  # Ensure spacing is at least 1
 
             # --- Color Calculation Correction ---
             # Get base colors as tuples
@@ -4492,12 +6252,12 @@ class AuthorTransformer:
 
             # Calculate darker background color manually
             # Factor < 1 darkens, clamp values at 0
-            darken_factor = 0.15 # Make it very dark
+            darken_factor = 0.15  # Make it very dark
             bg_color = tuple(max(0, int(c * darken_factor)) for c in primary_tuple)
 
             # Calculate lighter line color manually
             # Factor > 1 lightens, clamp values at 255
-            lighten_factor = 1.6 # Make it brighter
+            lighten_factor = 1.6  # Make it brighter
             line_color = tuple(min(255, int(c * lighten_factor)) for c in accent_tuple)
             # --- End Color Calculation Correction ---
 
@@ -4505,7 +6265,9 @@ class AuthorTransformer:
             canvas = np.full((height, width, 3), bg_color, dtype=np.uint8)
 
             # Optional: Gaussian blur for smoother waves based on blur param
-            blur_radius_px = int(params.blur_radius * 0.5) # Convert param (0-50) to reasonable pixel value
+            blur_radius_px = int(
+                params.blur_radius * 0.5
+            )  # Convert param (0-50) to reasonable pixel value
             if blur_radius_px >= 1:
                 # Gaussian kernel size must be odd
                 ksize = blur_radius_px * 2 + 1
@@ -4515,11 +6277,12 @@ class AuthorTransformer:
             # --- Wave Generation Logic ---
             # Process horizontal lines with vertical displacement based on brightness
             for i in range(line_count):
-                y_base = i * line_spacing # Base y-position for this line
+                y_base = i * line_spacing  # Base y-position for this line
 
                 # Ensure y_base is within valid image bounds for sampling brightness
                 sample_y = min(y_base, height - 1)
-                if sample_y < 0: continue # Should not happen with line_spacing >= 1
+                if sample_y < 0:
+                    continue  # Should not happen with line_spacing >= 1
 
                 # Extract brightness values along the sampled horizontal line
                 brightness_values = gray[sample_y, :]
@@ -4527,14 +6290,18 @@ class AuthorTransformer:
                 # --- Build points for the current line segment ---
                 current_line_segment_points = []
                 for x in range(width):
-                    brightness = brightness_values[x] / 255.0 # Normalize brightness to 0-1
+                    brightness = (
+                        brightness_values[x] / 255.0
+                    )  # Normalize brightness to 0-1
                     # Invert brightness for displacement (darker areas have higher peaks)
                     # Apply exponent for sharper peaks if desired (e.g., ** 1.5 or ** 2.0)
                     displacement = ((1.0 - brightness) ** 1.5) * amplitude_factor
 
                     # Optional: Add minor random perturbation based on noise parameter
                     if params.noise_level > 0:
-                         displacement += (random.random() - 0.5) * params.noise_level * 8.0 # Scaled noise
+                        displacement += (
+                            (random.random() - 0.5) * params.noise_level * 8.0
+                        )  # Scaled noise
 
                     # Calculate final y-coordinate (displace upwards from base)
                     y_displaced = y_base - int(displacement)
@@ -4544,34 +6311,58 @@ class AuthorTransformer:
                     if y_displaced < 0:
                         if len(current_line_segment_points) > 1:
                             # Draw the completed segment before breaking
-                            pts_np = np.array(current_line_segment_points, dtype=np.int32)
-                            cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color, thickness=line_thickness, lineType=cv2.LINE_AA)
-                        current_line_segment_points = [] # Start a new empty segment
+                            pts_np = np.array(
+                                current_line_segment_points, dtype=np.int32
+                            )
+                            cv2.polylines(
+                                canvas,
+                                [pts_np],
+                                isClosed=False,
+                                color=line_color,
+                                thickness=line_thickness,
+                                lineType=cv2.LINE_AA,
+                            )
+                        current_line_segment_points = []  # Start a new empty segment
                     else:
-                         # If the point is visible, add it to the current segment
+                        # If the point is visible, add it to the current segment
                         current_line_segment_points.append((x, y_displaced))
 
                 # --- Draw any remaining points after the inner loop finishes ---
                 if len(current_line_segment_points) > 1:
                     pts_np = np.array(current_line_segment_points, dtype=np.int32)
-                    cv2.polylines(canvas, [pts_np], isClosed=False, color=line_color, thickness=line_thickness, lineType=cv2.LINE_AA)
+                    cv2.polylines(
+                        canvas,
+                        [pts_np],
+                        isClosed=False,
+                        color=line_color,
+                        thickness=line_thickness,
+                        lineType=cv2.LINE_AA,
+                    )
             # --- End Wave Generation Loop ---
 
             return canvas
-        # --- End of apply_topographic_wave function definition ---
 
+        # --- End of apply_topographic_wave function definition ---
 
         # Add the core effect function to the processing chain
         effects.add(apply_topographic_wave)
 
         # Optional: Add subtle overall grain AFTER the main effect if configured
         if self.config.effect_params.grain > 0:
-             # Keep grain very subtle for this style
-            effects.add(lambda img, cfg, pal: add_grain(img, cfg, pal, amount=cfg.effect_params.grain * 0.1))
+            # Keep grain very subtle for this style
+            effects.add(
+                lambda img, cfg, pal: add_grain(
+                    img, cfg, pal, amount=cfg.effect_params.grain * 0.1
+                )
+            )
 
         # Optional: Add a very faint vignette AFTER the main effect if configured
         if self.config.effect_params.vignette > 0:
-            effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, amount=cfg.effect_params.vignette * 0.2))
+            effects.add(
+                lambda img, cfg, pal: add_vignette(
+                    img, cfg, pal, amount=cfg.effect_params.vignette * 0.2
+                )
+            )
 
         # Add the configured effects chain to the engine for processing
         self.engine.add_transformation(effects)
@@ -4897,3 +6688,35 @@ class AuthorTransformer:
         )
 
         self.engine.add_transformation(effects)
+
+
+def line_aa_custom(r0, c0, r1, c1):
+    """Generate anti-aliased pixel coordinates for a line using Wu's algorithm or similar."""
+    # Placeholder - using basic Bresenham for now, AA is complex
+    # This part is non-trivial to implement correctly and efficiently with numpy broadcasting
+    # Consider using skimage.draw.line_aa or adapting online implementations carefully
+    # Basic Bresenham:
+    dr, dc = abs(r1 - r0), abs(c1 - c0)
+    sr = 1 if r1 > r0 else -1
+    sc = 1 if c1 > c0 else -1
+    err = dr - dc
+    rr, cc = [], []
+    r, c = r0, c0
+    while True:
+        rr.append(r)
+        cc.append(c)
+        if r == r1 and c == c1:
+            break
+        e2 = 2 * err
+        if e2 > -dc:
+            err -= dc
+            r += sr
+        if e2 < dr:
+            err += dr
+            c += sc
+    # Return coordinates and uniform weight 1.0 (no AA)
+    return (
+        np.array(rr, dtype=int),
+        np.array(cc, dtype=int),
+        np.ones(len(rr), dtype=float),
+    )

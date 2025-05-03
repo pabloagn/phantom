@@ -1,0 +1,856 @@
+# packages/phantom-visuals/style_flavors.toml
+
+# Potential Styles to Pursue
+# -------------------------------------
+# abstract
+# celestial_drift_v4
+# duotone
+# ethereal
+# ethereal_smudge
+# glitch
+# glitch_balanced
+# gothic
+# long_exposure_scan
+# phantom
+# temporal_streak
+# topo_streak_weave
+# topographic_mesh
+# topographic_wave
+
+# # Phantom
+# # -------------------------------------
+# [phantom]
+# intensity = 0.75
+# blur_radius = 5.0
+# noise_level = 0.1
+# contrast = 1.7
+# brightness = 1.0
+# saturation = 0.3
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.2
+# grain = 0.3
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1001
+
+# # Minimal
+# # -------------------------------------
+# [minimal]
+# intensity = 0.3
+# blur_radius = 0.5
+# noise_level = 0.05
+# contrast = 1.2
+# brightness = 1.05
+# saturation = 0.9
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.1
+# distortion = 0.0
+# grain = 0.1
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1002
+
+# # Duotone
+# # -------------------------------------
+# [duotone]
+# intensity = 0.8
+# blur_radius = 1.0
+# noise_level = 0.0
+# contrast = 1.8
+# brightness = 1.0
+# saturation = 1.0 # Saturation less relevant for duotone usually
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.05
+# grain = 0.15
+# vignette = 0.1
+# symmetry = false
+# invert = false
+# seed = 1003
+
+# # Abstract
+# # -------------------------------------
+# [abstract]
+# intensity = 0.8
+# blur_radius = 2.0
+# noise_level = 0.2
+# contrast = 1.5
+# brightness = 1.0
+# saturation = 0.5
+# hue_shift = 0.1
+# pixelation = 5
+# edge_detection = 0.2
+# distortion = 0.6
+# grain = 0.1
+# vignette = 0.1
+# symmetry = false
+# invert = false
+# seed = 1004
+
+# # Glitch
+# # -------------------------------------
+# [glitch]
+# intensity = 0.85
+# blur_radius = 1.0
+# noise_level = 0.4
+# contrast = 1.4
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 10
+# edge_detection = 0.1
+# distortion = 0.7
+# grain = 0.0 # Use noise instead
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1005
+
+# # Ethereal
+# # -------------------------------------
+# # NOTE: This will not work
+# [ethereal]
+# intensity = 0.7
+# blur_radius = 15.0
+# noise_level = 0.1
+# contrast = 1.1
+# brightness = 1.1
+# saturation = 0.6
+# hue_shift = 0.05
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 1
+# grain = 0.2
+# vignette = 0.3
+# symmetry = false
+# invert = false
+# seed = 1006
+
+# # Modernist
+# # -------------------------------------
+# [modernist]
+# intensity = 0.6
+# blur_radius = 0.0
+# noise_level = 0.0
+# contrast = 2.0
+# brightness = 1.0
+# saturation = 0.1
+# hue_shift = 0.0
+# pixelation = 2
+# edge_detection = 0.3
+# distortion = 0.05
+# grain = 0.1
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1007
+
+# # Gothic
+# # -------------------------------------
+# [gothic]
+# intensity = 0.8
+# blur_radius = 2.0
+# noise_level = 0.1
+# contrast = 2.0
+# brightness = 0.85
+# saturation = 0.2
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.1
+# distortion = 0.15
+# grain = 0.4
+# vignette = 0.6
+# symmetry = false
+# invert = false
+# seed = 1008
+
+# # Symmetrical
+# # -------------------------------------
+# [symmetrical]
+# intensity = 0.7
+# blur_radius = 1.0
+# noise_level = 0.1
+# contrast = 1.5
+# brightness = 1.0
+# saturation = 0.5
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.3
+# grain = 0.1
+# vignette = 0.1
+# symmetry = true # Key parameter
+# invert = false
+# seed = 1009
+
+# # Contour
+# # -------------------------------------
+# [contour]
+# intensity = 0.8 # Affects number of levels
+# blur_radius = 5.0 # Affects smoothness of contours
+# noise_level = 0.0
+# contrast = 1.5 # Pre-contrast
+# brightness = 1.0
+# saturation = 0.0 # Usually B&W
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.0 # Not directly used
+# grain = 0.1
+# vignette = 0.1
+# symmetry = false
+# invert = false
+# seed = 1010
+
+# # Wave
+# # -------------------------------------
+# [wave]
+# intensity = 0.7 # Affects line spacing/amplitude
+# blur_radius = 5.0 # Affects input smoothness
+# noise_level = 0.1 # Affects line wiggliness
+# contrast = 1.7 # Pre-contrast
+# brightness = 1.0
+# saturation = 0.1 # Usually near B&W
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.5 # Affects amplitude
+# grain = 0.15
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1011
+
+# # Minimal Organic
+# # -------------------------------------
+# [minimal_organic]
+# intensity = 0.4
+# blur_radius = 1.0
+# noise_level = 0.1
+# contrast = 1.8
+# brightness = 1.0
+# saturation = 0.95
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.2
+# distortion = 0.1
+# grain = 0.3
+# vignette = 0.05
+# symmetry = false
+# invert = false
+# seed = 1012
+
+# # Abstract Wild
+# # -------------------------------------
+# NOTE: This will not work
+# [abstract_wild]
+# intensity = 0.85
+# blur_radius = 3.0
+# noise_level = 0.3
+# contrast = 2.0
+# brightness = 1.0
+# saturation = 1.1
+# hue_shift = 0.2
+# pixelation = 8
+# edge_detection = 0.1
+# distortion = 0.8
+# grain = 0.2
+# vignette = 0.1
+# symmetry = false
+# invert = false # Or true for wilder effect?
+# seed = 1013
+
+# # Glitch Refined
+# # -------------------------------------
+# [glitch_refined]
+# intensity = 0.7
+# blur_radius = 0.5
+# noise_level = 0.1
+# contrast = 1.3
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.3 # Controls shift/block offset/count
+# grain = 0.2 # Film-like grain
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1014
+
+# # Ethereal Organic
+# # -------------------------------------
+# [ethereal_organic]
+# intensity = 0.7
+# blur_radius = 12.0
+# noise_level = 0.2
+# contrast = 1.1
+# brightness = 0.9
+# saturation = 0.7
+# hue_shift = 0.05
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4 # Controls flow field
+# grain = 0.2
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1015
+
+# # Modernist Organic
+# # -------------------------------------
+# [modernist_organic]
+# intensity = 0.65
+# blur_radius = 0.0
+# noise_level = 0.1
+# contrast = 1.8
+# brightness = 1.0
+# saturation = 0.2
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.1
+# distortion = 0.2 # Controls grid warp/curve
+# grain = 0.15
+# vignette = 0.05
+# symmetry = false
+# invert = false
+# seed = 1016
+
+# # Phantom Enhanced
+# # -------------------------------------
+# [phantom_enhanced]
+# intensity = 0.8
+# blur_radius = 8.0
+# noise_level = 0.15
+# contrast = 2.0
+# brightness = 0.95
+# saturation = 0.25
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.1
+# distortion = 0.3 # Affects lighting/trails
+# grain = 0.35
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1017
+
+# # Gothic Distorted
+# # -------------------------------------
+# [gothic_distorted]
+# intensity = 0.6 # Lower intensity for subtle
+# blur_radius = 1.0
+# noise_level = 0.1
+# contrast = 1.3
+# brightness = 0.85
+# saturation = 0.4
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4 # Controls wave amplitude
+# grain = 0.15
+# vignette = 0.5
+# symmetry = false
+# invert = false
+# seed = 1018
+
+# # Fractal
+# # -------------------------------------
+# [fractal] # Parameters might map differently here
+# intensity = 0.9 # Iterations?
+# blur_radius = 0.0
+# noise_level = 0.0
+# contrast = 1.0
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.5 # Zoom/coordinates?
+# grain = 0.05
+# vignette = 0.1
+# symmetry = false
+# invert = false
+# seed = 1019
+
+# # Fourier
+# # -------------------------------------
+# # NOTE: Parameters might map differently here
+# [fourier]
+# intensity = 0.7 # Filter strength?
+# blur_radius = 2.0 # Post-blur?
+# noise_level = 0.1 # Phase noise?
+# contrast = 1.2
+# brightness = 1.0
+# saturation = 0.8
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4 # Frequency manipulation?
+# grain = 0.1
+# vignette = 0.1
+# symmetry = false
+# invert = false
+# seed = 1020
+
+# # Wave Function
+# # -------------------------------------
+# [wave_function] # Parameters might map differently here
+# intensity = 0.8 # Complexity?
+# blur_radius = 1.0
+# noise_level = 0.2 # Randomness?
+# contrast = 1.3
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.1
+# pixelation = 0
+# edge_detection = 0.1
+# distortion = 0.5 # Wave parameters?
+# grain = 0.1
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1021
+
+# # Statistical
+# # -------------------------------------
+# [statistical] # Parameters might map differently here
+# intensity = 0.6 # Window size?
+# blur_radius = 0.0
+# noise_level = 0.0
+# contrast = 1.0 # Output contrast?
+# brightness = 1.0
+# saturation = 0.5 # Maybe forces grayscale?
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.0
+# grain = 0.05
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1022
+
+# # Gothic Subtle
+# # -------------------------------------
+# [gothic_subtle]
+# intensity = 0.5 # Lower intensity
+# blur_radius = 0.5
+# noise_level = 0.1
+# contrast = 1.3
+# brightness = 0.85
+# saturation = 0.5
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.3 # Subtle distortion
+# grain = 0.15
+# vignette = 0.5
+# symmetry = false
+# invert = false
+# seed = 1023
+
+# # Phantom Spectral
+# # -------------------------------------
+# [phantom_spectral]
+# intensity = 0.7 # Glow / trail amount
+# blur_radius = 10.0 # Base blur for glow/trails
+# noise_level = 0.05
+# contrast = 1.1
+# brightness = 1.0
+# saturation = 0.7
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.2 # Subtle spectral effect control?
+# grain = 0.1
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1024
+
+# # Glitch Balanced
+# # -------------------------------------
+# [glitch_balanced]
+# intensity = 0.6 # Overall glitch amount
+# blur_radius = 0.0
+# noise_level = 0.05 # Subtle noise base
+# contrast = 1.1
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4 # Controls shift/block subtlety
+# grain = 0.0 # Uses noise instead
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 1025
+
+# # Spectral Veil
+# # -------------------------------------
+# [spectral_veil]
+# intensity = 0.65 # Veil opacity / movement
+# blur_radius = 15.0 # Veil softness / glow blur
+# noise_level = 0.1 # Maybe affects veil pattern
+# contrast = 1.15
+# brightness = 1.0
+# saturation = 0.8
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.2 # Double exposure shift?
+# grain = 0.0
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1026
+
+# # Ghost Trails
+# # -------------------------------------
+# [ghost_trails]
+# intensity = 0.7 # Trail opacity / count
+# blur_radius = 3.0 # Trail softness
+# noise_level = 0.0
+# contrast = 1.1
+# brightness = 0.95
+# saturation = 1.0 # Color shift handles toning
+# hue_shift = 0.0
+# distortion = 0.4 # Angle variability?
+# grain = 0.1
+# vignette = 0.3
+# symmetry = false
+# invert = false
+# seed = 1027
+
+# # Phantom Flow
+# # -------------------------------------
+# # NOTE:Very intensive
+# [phantom_flow]
+# intensity = 0.8 # Smear strength / iterations
+# blur_radius = 15.0 # Kernel size for directional flow
+# noise_level = 0.2 # Flow turbulence
+# contrast = 2.5 # High contrast base
+# brightness = 1.0
+# saturation = 0.0 # Forces B&W
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.1 # Post-edge enhancement?
+# distortion = 0.4 # Flow complexity?
+# grain = 0.45 # Significant grain
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1028
+
+# # Topographic Wave
+# # -------------------------------------
+# [topographic_wave]
+# intensity = 0.6
+# blur_radius = 1.0
+# noise_level = 0.1
+# contrast = 1.0
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.5
+# grain = 0.05
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1029
+
+# # Slit Scan Distort
+# # -------------------------------------
+# # NOTE: Intensive
+# [slit_scan_distort]
+# intensity = 0.7
+# blur_radius = 2.0
+# noise_level = 0.2
+# contrast = 1.3
+# brightness = 1.0
+# saturation = 0.8
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4
+# grain = 0.3
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1030
+
+# # Smudge Flow
+# # -------------------------------------
+# [smudge_flow]
+# intensity = 0.8
+# blur_radius = 1.0 # Note: this is often small, intensity controls iterations/strength
+# noise_level = 0.1
+# contrast = 1.2
+# brightness = 1.0
+# saturation = 0.9
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.3 # Post-enhance?
+# distortion = 0.6 # Controls angle variation
+# grain = 0.35
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1031
+
+# # Topographic Refined
+# # -------------------------------------
+# [topographic_refined] # Very similar to topographic_wave v1
+# intensity = 0.6
+# blur_radius = 1.0
+# noise_level = 0.1
+# contrast = 1.0
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.5
+# grain = 0.05
+# vignette = 0.2
+# symmetry = false
+# invert = false
+# seed = 1032
+
+# # Long Exposure Scan
+# # -------------------------------------
+# [long_exposure_scan] # V1.5 temporal scan
+# intensity = 0.8
+# blur_radius = 20.0 # Blur between frames
+# noise_level = 0.2 # Time warp randomness
+# contrast = 1.8
+# brightness = 1.0
+# saturation = 0.05
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 1
+# distortion = 0.5 # Shift amount / warp function
+# grain = 1
+# vignette = 0.4
+# symmetry = false
+# invert = false
+# seed = 1033
+
+# # Ghostly Smear
+# # -------------------------------------
+# [ghostly_smear] # V1.5 smear
+# intensity = 0.75
+# blur_radius = 25.0 # Significant base blur
+# noise_level = 0.0
+# contrast = 1.6
+# brightness = 1.0
+# saturation = 0.1
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.7 # Controls angle spread
+# grain = 0.4
+# vignette = 0.5
+# symmetry = false
+# invert = false
+# seed = 1034
+
+# # Topographic Depth
+# # -------------------------------------
+# [topographic_depth] # V2 Topo attempt
+# intensity = 0.6
+# distortion = 0.7
+# blur_radius = 4.0
+# noise_level = 0.2
+# grain = 0.1
+# vignette = 0.2
+# seed = 1035
+
+# # Temporal Flow
+# # -------------------------------------
+# [temporal_flow] # V2 Temporal attempt
+# intensity = 0.7
+# distortion = 0.6
+# blur_radius = 8.0
+# noise_level = 0.3
+# grain = 0.2
+# vignette = 0.3
+# seed = 1036
+
+# # Liquid Ghost
+# # -------------------------------------
+# [liquid_ghost] # V2 Smudge attempt
+# intensity = 0.75
+# distortion = 0.5
+# blur_radius = 20.0
+# noise_level = 0.1
+# grain = 0.3
+# vignette = 0.4
+# seed = 1037
+
+# # Topographic Mesh (V2 Topo)
+# # -------------------------------------
+# [topographic_mesh]
+# intensity = 0.6
+# distortion = 0.7
+# blur_radius = 4.0
+# noise_level = 0.2
+# grain = 0.1
+# vignette = 0.2
+# seed = 1038
+
+# # Temporal Streak (V2 Temporal)
+# # -------------------------------------
+# [temporal_streak]
+# intensity = 0.7
+# distortion = 0.6
+# blur_radius = 8.0
+# noise_level = 0.3
+# grain = 0.2
+# vignette = 0.3
+# seed = 1039
+
+# # Ethereal Smudge (V2 Smudge)
+# # -------------------------------------
+# [ethereal_smudge]
+# intensity = 0.8
+# distortion = 0.5
+# blur_radius = 20.0
+# noise_level = 0.1
+# grain = 0.3
+# vignette = 0.5
+# seed = 1040
+
+# # Plotter Mesh (V3)
+# # -------------------------------------
+# [plotter_mesh_v3] # This was the inverted one, using v3b params instead
+# intensity = 0.6
+# distortion = 0.7
+# blur_radius = 3.0
+# noise_level = 0.2
+# grain = 0.1
+# vignette = 0.2
+# seed = 301 # Using v3b seed
+
+# # Streak Accumulate (V3 Streak)
+# # -------------------------------------
+# [streak_accumulate_v3] # V3 Streak (Particle Advection)
+# intensity = 0.7
+# distortion = 0.4 # Angle variation
+# blur_radius = 2.0 # Streak blur post-accumulation
+# noise_level = 0.3 # Flow turbulence
+# grain = 0.2
+# vignette = 0.3
+# seed = 302
+
+# # Flow Smudge (V3 Smudge, Iterative Warp/Blur)
+# # -------------------------------------
+# [flow_smudge_v3]
+# intensity = 0.75 # Iterations/Opacity/Structure
+# distortion = 0.6 # Flow noise scale/strength
+# blur_radius = 6.0 # Smear kernel size per step
+# noise_level = 0.0 # Not used directly, distortion covers noise
+# grain = 0.3
+# vignette = 0.4
+# seed = 303
+
+# # Celestial Drift (V4)
+# # -------------------------------------
+# [celestial_drift_v4]
+# intensity = 0.7 # Particle density / Bloom / Steps
+# distortion = 0.5 # Structure alignment / Angle variation
+# blur_radius = 3.0 # Bloom radius
+# noise_level = 0.4 # Flow noise scale/influence
+# grain = 0.1
+# vignette = 0.2
+# seed = 401
+
+# # Plotter Mesh (V3b)
+# # -------------------------------------
+# [plotter_mesh_v3b]
+# intensity = 0.6
+# distortion = 0.7
+# blur_radius = 3.0
+# noise_level = 0.2
+# grain = 0.1
+# vignette = 0.2
+# seed = 301
+
+# # Topo Streak Weave (V5)
+# # -------------------------------------
+# [topo_streak_weave] # Combined Mesh & Streak
+# intensity = 0.5 # Affects mesh lines, streak steps, bloom
+# distortion = 1 # Affects mesh amplitude, streak structure alignment, noise octaves
+# blur_radius = 2.0 # Affects mesh shape blur, streak bloom radius
+# noise_level = 0.6 # Affects mesh noise, streak flow strength
+# grain = 0.15
+# vignette = 0.3
+# seed = 501
+
+# # Enhanced Particle Weave (V5)
+# # -------------------------------------
+# [enhanced_particle_weave]
+# intensity = 1
+# blur_radius = 2.0
+# noise_level = 0.7
+# contrast = 0.5
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 1
+# grain = 0.3
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 701
+
+# # Flow Field Blur (V5)
+# # -------------------------------------
+# [flow_field_blur]
+# intensity = 0.7
+# blur_radius = 5.0
+# noise_level = 0.0
+# contrast = 1.0
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.6
+# grain = 0.0
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 801
+
+# # Masked Diffusion Smear (V5)
+# # -------------------------------------
+# [masked_diffusion_smear]
+# intensity = 0.8
+# blur_radius = 1.0
+# noise_level = 0.5
+# contrast = 1.0
+# brightness = 1.0
+# saturation = 1.0
+# hue_shift = 0.0
+# pixelation = 0
+# edge_detection = 0.0
+# distortion = 0.4
+# grain = 0.0
+# vignette = 0.0
+# symmetry = false
+# invert = false
+# seed = 901

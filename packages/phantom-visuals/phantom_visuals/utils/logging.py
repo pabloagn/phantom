@@ -26,27 +26,29 @@ from rich.traceback import install as install_rich_traceback
 install_rich_traceback(show_locals=True, width=100, word_wrap=True)
 
 # Custom theme for phantom-visuals
-PHANTOM_THEME = Theme({
-    "info": "bold cyan",
-    "warning": "bold yellow",
-    "error": "bold red",
-    "critical": "bold white on red",
-    "debug": "dim cyan",
-    "success": "bold green",
-    "highlight": "bold magenta",
-    "processing": "bold blue",
-    "parameter": "cyan",
-    "value": "bright_white",
-    "header": "bold cyan on dark_blue",
-    "subheader": "dim cyan",
-    "phantom": "bold magenta",
-    "caption": "italic bright_black",
-    "filename": "bright_blue underline",
-    "time": "bright_black",
-    "progress.description": "bright_cyan",
-    "progress.percentage": "bright_magenta",
-    "progress.remaining": "bright_black",
-})
+PHANTOM_THEME = Theme(
+    {
+        "info": "bold cyan",
+        "warning": "bold yellow",
+        "error": "bold red",
+        "critical": "bold white on red",
+        "debug": "dim cyan",
+        "success": "bold green",
+        "highlight": "bold magenta",
+        "processing": "bold blue",
+        "parameter": "cyan",
+        "value": "bright_white",
+        "header": "bold cyan on dark_blue",
+        "subheader": "dim cyan",
+        "phantom": "bold magenta",
+        "caption": "italic bright_black",
+        "filename": "bright_blue underline",
+        "time": "bright_black",
+        "progress.description": "bright_cyan",
+        "progress.percentage": "bright_magenta",
+        "progress.remaining": "bright_black",
+    }
+)
 
 # Global console for rich output with phantom theme
 console = Console(theme=PHANTOM_THEME, highlight=True)
@@ -62,6 +64,7 @@ LOG_COLORS = {
     "ERROR": "error",
     "CRITICAL": "critical",
 }
+
 
 def setup_logging(
     level: str = "INFO",
@@ -111,9 +114,21 @@ def setup_logging(
                 enable_link_path=True,
                 log_time_format="[%X]",
                 omit_repeated_times=False,
-                keywords=["ERROR", "WARNING", "INFO", "DEBUG", "CRITICAL",
-                         "Processing", "Created", "Loaded", "Saved", "Generated",
-                         "Completed", "Starting", "Finished"],
+                keywords=[
+                    "ERROR",
+                    "WARNING",
+                    "INFO",
+                    "DEBUG",
+                    "CRITICAL",
+                    "Processing",
+                    "Created",
+                    "Loaded",
+                    "Saved",
+                    "Generated",
+                    "Completed",
+                    "Starting",
+                    "Finished",
+                ],
             )
         ],
     )
@@ -146,7 +161,7 @@ def setup_logging(
         border_style="cyan",
         box=box.ROUNDED,
         expand=False,
-        padding=(1, 2)
+        padding=(1, 2),
     )
 
     console.print(startup_panel)
@@ -155,6 +170,7 @@ def setup_logging(
     logger.info(f"Logging configured at level {level.upper()}. Log file: {log_path}")
 
     return logger
+
 
 def log_config(logger: logging.Logger, config: dict[str, Any]) -> None:
     """Log configuration parameters.
@@ -173,7 +189,7 @@ def log_config(logger: logging.Logger, config: dict[str, Any]) -> None:
         row_styles=["", "dim"],
         highlight=True,
         expand=False,
-        show_header=True
+        show_header=True,
     )
 
     table.add_column("Parameter", style="parameter")
@@ -195,6 +211,7 @@ def log_config(logger: logging.Logger, config: dict[str, Any]) -> None:
     for key, value in config.items():
         logger.info(f"  {key}: {value}")
 
+
 def log_cli_command(logger: logging.Logger, command: str, args: dict[str, Any]) -> None:
     """Log CLI command execution.
 
@@ -209,7 +226,7 @@ def log_cli_command(logger: logging.Logger, command: str, args: dict[str, Any]) 
         title="[phantom]Command Execution[/phantom]",
         border_style="cyan",
         box=box.ROUNDED,
-        expand=False
+        expand=False,
     )
 
     console.print(cmd_panel)
@@ -222,7 +239,7 @@ def log_cli_command(logger: logging.Logger, command: str, args: dict[str, Any]) 
         row_styles=["", "dim"],
         highlight=True,
         expand=False,
-        show_header=True
+        show_header=True,
     )
 
     table.add_column("Parameter", style="parameter")
@@ -252,7 +269,44 @@ def log_cli_command(logger: logging.Logger, command: str, args: dict[str, Any]) 
     for key, value in args.items():
         logger.info(f"  {key}: {value}")
 
-def log_error(logger: logging.Logger, error: Exception, context: Optional[dict[str, Any]] = None) -> None:
+
+def log_warning(
+    logger: logging.Logger, message: str, details: Optional[dict[str, Any]] = None
+) -> None:
+    """Log a warning message with optional details.
+
+    Args:
+        logger: Logger instance
+        message: Warning message
+        details: Additional details to log
+    """
+    # Create a warning panel
+    details_str = ""
+    if details:
+        details_str = "\n\n[bold]Details:[/bold]\n"
+        for key, value in details.items():
+            details_str += f"  [parameter]{key}:[/parameter] {value}\n"
+
+    warning_panel = Panel(
+        f"[warning]{message}[/warning]{details_str}",
+        title="[phantom]⚠ WARNING[/phantom]",
+        border_style="yellow",
+        box=box.ROUNDED,
+        expand=False,
+    )
+
+    console.print(warning_panel)
+
+    # Also log to file
+    logger.warning(f"Warning: {message}")  # Use the logger's warning level
+    if details:
+        for key, value in details.items():
+            logger.warning(f"  Detail - {key}: {value}")
+
+
+def log_error(
+    logger: logging.Logger, error: Exception, context: Optional[dict[str, Any]] = None
+) -> None:
     """Log an error with context.
 
     Args:
@@ -275,7 +329,7 @@ def log_error(logger: logging.Logger, error: Exception, context: Optional[dict[s
         title="[phantom]ERROR[/phantom]",
         border_style="red",
         box=box.HEAVY,
-        expand=False
+        expand=False,
     )
 
     console.print(error_panel)
@@ -285,7 +339,10 @@ def log_error(logger: logging.Logger, error: Exception, context: Optional[dict[s
         logger.error(f"Error occurred with context: {json.dumps(context)}")
     logger.error(f"Error: {error!s}", exc_info=True)
 
-def log_success(logger: logging.Logger, message: str, details: Optional[dict[str, Any]] = None) -> None:
+
+def log_success(
+    logger: logging.Logger, message: str, details: Optional[dict[str, Any]] = None
+) -> None:
     """Log a success message with optional details.
 
     Args:
@@ -305,7 +362,7 @@ def log_success(logger: logging.Logger, message: str, details: Optional[dict[str
         title="[phantom]✓ SUCCESS[/phantom]",
         border_style="green",
         box=box.ROUNDED,
-        expand=False
+        expand=False,
     )
 
     console.print(success_panel)
@@ -316,7 +373,10 @@ def log_success(logger: logging.Logger, message: str, details: Optional[dict[str
         for key, value in details.items():
             logger.info(f"  {key}: {value}")
 
-def log_processing_step(logger: logging.Logger, step_name: str, description: str = "") -> None:
+
+def log_processing_step(
+    logger: logging.Logger, step_name: str, description: str = ""
+) -> None:
     """Log a processing step.
 
     Args:
@@ -335,6 +395,7 @@ def log_processing_step(logger: logging.Logger, step_name: str, description: str
     if description:
         logger.info(f"  Description: {description}")
 
+
 def get_logger() -> logging.Logger:
     """Get the phantom_visuals logger.
 
@@ -343,9 +404,12 @@ def get_logger() -> logging.Logger:
     """
     return logging.getLogger("phantom_visuals")
 
-def create_progress_bar(description: str = "Processing",
-                       total: Optional[float] = None,
-                       transient: bool = False) -> Progress:
+
+def create_progress_bar(
+    description: str = "Processing",
+    total: Optional[float] = None,
+    transient: bool = False,
+) -> Progress:
     """Create a customized progress bar for phantom-visuals.
 
     Args:
@@ -362,8 +426,10 @@ def create_progress_bar(description: str = "Processing",
         TextColumn("[progress.description]{task.description}"),
         BarColumn(complete_style="phantom", finished_style="success"),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TextColumn("[progress.remaining]Remaining: {task.remaining}s[/progress.remaining]"),
+        TextColumn(
+            "[progress.remaining]Remaining: {task.remaining}s[/progress.remaining]"
+        ),
         console=console,
         transient=transient,
-        expand=True
+        expand=True,
     )

@@ -1,0 +1,228 @@
+# packages/phantom-visuals/style_flavors.toml
+
+# Phantom
+# -------------------------------------
+[phantom]
+intensity = 0.75
+blur_radius = 5.0
+noise_level = 0.1
+contrast = 1.7
+brightness = 1.0
+saturation = 0.3
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 0.0
+distortion = 0.2
+grain = 0.3
+vignette = 0.2
+symmetry = false
+invert = false
+seed = 1001
+
+# Duotone
+# -------------------------------------
+[duotone]
+intensity = 0.8
+blur_radius = 1.0
+noise_level = 0.0
+contrast = 1.8
+brightness = 1.0
+saturation = 1.0 # Saturation less relevant for duotone usually
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 0.0
+distortion = 0.05
+grain = 0.15
+vignette = 0.1
+symmetry = false
+invert = false
+seed = 1003
+
+# Abstract
+# -------------------------------------
+[abstract]
+intensity = 0.8
+blur_radius = 2.0
+noise_level = 0.2
+contrast = 1.5
+brightness = 1.0
+saturation = 0.5
+hue_shift = 0.1
+pixelation = 5
+edge_detection = 0.2
+distortion = 0.6
+grain = 0.1
+vignette = 0.1
+symmetry = false
+invert = false
+seed = 1004
+
+# Glitch
+# -------------------------------------
+[glitch]
+intensity = 0.85
+blur_radius = 1.0
+noise_level = 0.4
+contrast = 1.4
+brightness = 1.0
+saturation = 1.0
+hue_shift = 0.0
+pixelation = 10
+edge_detection = 0.1
+distortion = 0.7
+grain = 0.0 # Use noise instead
+vignette = 0.0
+symmetry = false
+invert = false
+seed = 1005
+
+# Ethereal
+# -------------------------------------
+# NOTE: This will not work
+[ethereal]
+intensity = 0.7
+blur_radius = 15.0
+noise_level = 0.1
+contrast = 1.1
+brightness = 1.1
+saturation = 0.6
+hue_shift = 0.05
+pixelation = 0
+edge_detection = 0.0
+distortion = 1
+grain = 0.2
+vignette = 0.3
+symmetry = false
+invert = false
+seed = 1006
+
+# Gothic
+# -------------------------------------
+[gothic]
+intensity = 0.8
+blur_radius = 2.0
+noise_level = 0.1
+contrast = 1.0
+brightness = 1.0
+saturation = 0.2
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 0.1
+distortion = 0.1
+grain = 0.4
+vignette = 0.6
+symmetry = true
+invert = false
+seed = 1008
+
+# Glitch Balanced
+# -------------------------------------
+[glitch_balanced]
+intensity = 0.6 # Overall glitch amount
+blur_radius = 0.0
+noise_level = 0.05 # Subtle noise base
+contrast = 1.1
+brightness = 1.0
+saturation = 1.0
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 0.0
+distortion = 0.4 # Controls shift/block subtlety
+grain = 0.0 # Uses noise instead
+vignette = 0.0
+symmetry = false
+invert = false
+seed = 1025
+
+# Topographic Wave
+# -------------------------------------
+[topographic_wave]
+intensity = 0.6
+blur_radius = 1.0
+noise_level = 0.1
+contrast = 1.0
+brightness = 1.0
+saturation = 1.0
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 0.0
+distortion = 0.5
+grain = 0.05
+vignette = 0.2
+symmetry = false
+invert = false
+seed = 1029
+
+# Long Exposure Scan
+# -------------------------------------
+[long_exposure_scan] # V1.5 temporal scan
+intensity = 0.8
+blur_radius = 20.0 # Blur between frames
+noise_level = 0.2 # Time warp randomness
+contrast = 1.8
+brightness = 1.0
+saturation = 0.05
+hue_shift = 0.0
+pixelation = 0
+edge_detection = 1
+distortion = 0.5 # Shift amount / warp function
+grain = 1
+vignette = 0.4
+symmetry = false
+invert = false
+seed = 1033
+
+# Topographic Mesh (V2 Topo)
+# -------------------------------------
+[topographic_mesh]
+intensity = 0.6
+distortion = 0.7
+blur_radius = 4.0
+noise_level = 0.2
+grain = 0.1
+vignette = 0.2
+seed = 1038
+
+# Temporal Streak (V2 Temporal)
+# -------------------------------------
+[temporal_streak]
+intensity = 0.7
+distortion = 0.6
+blur_radius = 8.0
+noise_level = 0.3
+grain = 0.2
+vignette = 0.3
+seed = 1039
+
+# Ethereal Smudge (V2 Smudge)
+# -------------------------------------
+[ethereal_smudge]
+intensity = 0.8
+distortion = 0.5
+blur_radius = 20.0
+noise_level = 0.1
+grain = 0.3
+vignette = 0.5
+seed = 1040
+
+# Celestial Drift (V4)
+# -------------------------------------
+[celestial_drift_v4]
+intensity = 0.7 # Particle density / Bloom / Steps
+distortion = 0.5 # Structure alignment / Angle variation
+blur_radius = 3.0 # Bloom radius
+noise_level = 0.4 # Flow noise scale/influence
+grain = 0.1
+vignette = 0.2
+seed = 401
+
+# Topo Streak Weave (V5)
+# -------------------------------------
+[topo_streak_weave] # Combined Mesh & Streak
+intensity = 0.5 # Affects mesh lines, streak steps, bloom
+distortion = 1 # Affects mesh amplitude, streak structure alignment, noise octaves
+blur_radius = 2.0 # Affects mesh shape blur, streak bloom radius
+noise_level = 0.6 # Affects mesh noise, streak flow strength
+grain = 0.15
+vignette = 0.3
+seed = 501

@@ -1,44 +1,42 @@
 # packages/phantom-visuals/phantom_visuals/transformers/abstract.py
 
-"""
-Abstract art composer for Phantom Visuals.
+"""Abstract art composer for Phantom Visuals.
 
 This module provides tools for creating abstract generative art with
 the distinctive Phantom visual aesthetic.
 """
 
-from typing import Optional, Dict, List, Tuple, Union, Any
-from pathlib import Path
-import random
 import math
-import numpy as np
+import random
+from pathlib import Path
+from typing import Optional, Union
+
 import cv2
+import numpy as np
 
 from phantom_visuals.core.config import Configuration
 from phantom_visuals.core.engine import StyleEngine
-from phantom_visuals.core.palette import ColorPalette, RGBColor
 from phantom_visuals.effects import (
     EffectChain,
-    duotone,
-    adjust_contrast,
-    adjust_brightness,
     add_grain,
     add_vignette,
-    gaussian_blur,
-    radial_blur,
+    adjust_brightness,
+    adjust_contrast,
     apply_symmetry,
-    wave_distortion,
     displace,
-    swirl,
+    duotone,
+    gaussian_blur,
+    gradient_map,
     lens_distortion,
     pixel_sort,
-    gradient_map,
+    radial_blur,
+    swirl,
+    wave_distortion,
 )
 
 
 class AbstractComposer:
-    """
-    Generator for abstract art compositions.
+    """Generator for abstract art compositions.
 
     This class provides methods for creating abstract generative art with
     various techniques and styles inspired by modernist, minimalist, and
@@ -46,8 +44,7 @@ class AbstractComposer:
     """
 
     def __init__(self, config: Optional[Configuration] = None):
-        """
-        Initialize the abstract composer.
+        """Initialize the abstract composer.
 
         Args:
             config: Configuration settings to use
@@ -60,10 +57,9 @@ class AbstractComposer:
         width: int = 1200,
         height: int = 1600,
         output_path: Union[str, Path] = "output/abstract.png",
-        style: Optional[str] = None
+        style: Optional[str] = None,
     ) -> Path:
-        """
-        Create an abstract composition with the specified style.
+        """Create an abstract composition with the specified style.
 
         Args:
             width: Width of the composition in pixels
@@ -111,8 +107,7 @@ class AbstractComposer:
         return self.engine.save_image(result, output_path)
 
     def _create_base_canvas(self, width: int, height: int, style: str) -> np.ndarray:
-        """
-        Create the base canvas for the composition.
+        """Create the base canvas for the composition.
 
         Args:
             width: Width of the canvas in pixels
@@ -130,15 +125,14 @@ class AbstractComposer:
         # Choose base generation method based on style
         if style in ["minimal", "modernist"]:
             return self._create_geometric_canvas(width, height)
-        elif style in ["duotone", "gothic"]:
+        if style in ["duotone", "gothic"]:
             return self._create_noisy_canvas(width, height)
-        elif style in ["ethereal", "phantom"]:
+        if style in ["ethereal", "phantom"]:
             return self._create_gradient_canvas(width, height)
-        elif style == "symmetrical":
+        if style == "symmetrical":
             return self._create_symmetrical_canvas(width, height)
-        else:
-            # Default to combined approach
-            return self._create_combined_canvas(width, height)
+        # Default to combined approach
+        return self._create_combined_canvas(width, height)
 
     def _create_geometric_canvas(self, width: int, height: int) -> np.ndarray:
         """Create a canvas with geometric shapes."""
@@ -152,7 +146,7 @@ class AbstractComposer:
             palette.secondary.as_tuple,
             palette.accent.as_tuple,
             palette.foreground.as_tuple,
-            palette.background.as_tuple
+            palette.background.as_tuple,
         ]
 
         for c in palette.additional.values():
@@ -208,7 +202,9 @@ class AbstractComposer:
 
         # Add low frequency variation using simplex noise
         # Simulate simplex noise using blurred random noise
-        low_freq = np.random.randint(0, 256, (height // 8, width // 8, 3), dtype=np.uint8)
+        low_freq = np.random.randint(
+            0, 256, (height // 8, width // 8, 3), dtype=np.uint8
+        )
         low_freq = cv2.resize(low_freq, (width, height))
         low_freq = cv2.GaussianBlur(low_freq, (0, 0), 50)
 
@@ -241,7 +237,7 @@ class AbstractComposer:
         colors = [
             palette.primary.as_normalized,
             palette.secondary.as_normalized,
-            palette.accent.as_normalized
+            palette.accent.as_normalized,
         ]
 
         # Create canvas
@@ -262,7 +258,9 @@ class AbstractComposer:
             color2 = np.array(colors[1])
 
             for c in range(3):
-                canvas[:, :, c] = gradient_mask * color2[c] + (1 - gradient_mask) * color1[c]
+                canvas[:, :, c] = (
+                    gradient_mask * color2[c] + (1 - gradient_mask) * color1[c]
+                )
 
         elif gradient_type == "radial":
             # Create radial gradient
@@ -271,7 +269,7 @@ class AbstractComposer:
 
             # Create distance map
             y, x = np.mgrid[0:height, 0:width]
-            distances = np.sqrt((x - center_x)**2 + (y - center_y)**2)
+            distances = np.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
 
             # Normalize distances
             max_dist = np.sqrt(width**2 + height**2) / 2
@@ -283,7 +281,9 @@ class AbstractComposer:
             color2 = np.array(colors[1])
 
             for c in range(3):
-                canvas[:, :, c] = gradient_mask * color2[c] + (1 - gradient_mask) * color1[c]
+                canvas[:, :, c] = (
+                    gradient_mask * color2[c] + (1 - gradient_mask) * color1[c]
+                )
 
         elif gradient_type == "angular":
             # Create angular gradient
@@ -299,7 +299,9 @@ class AbstractComposer:
 
             # Apply colors in a circular pattern
             num_colors = len(colors)
-            color_masks = [(gradient_mask * num_colors).astype(int) == i for i in range(num_colors)]
+            color_masks = [
+                (gradient_mask * num_colors).astype(int) == i for i in range(num_colors)
+            ]
 
             for i, color in enumerate(colors):
                 mask = color_masks[i]
@@ -363,7 +365,7 @@ class AbstractComposer:
         techniques = [
             self._create_geometric_canvas,
             self._create_noisy_canvas,
-            self._create_gradient_canvas
+            self._create_gradient_canvas,
         ]
 
         # Select two different techniques
@@ -451,12 +453,16 @@ class AbstractComposer:
         effects.add(lambda img, cfg, pal: displace(img, cfg, pal, None, displace_scale))
 
         # Apply pixel sorting on bright regions
-        effects.add(lambda img, cfg, pal: pixel_sort(
-            img, cfg, pal,
-            threshold=0.6,
-            sort_direction="both",
-            reverse=random.choice([True, False])
-        ))
+        effects.add(
+            lambda img, cfg, pal: pixel_sort(
+                img,
+                cfg,
+                pal,
+                threshold=0.6,
+                sort_direction="both",
+                reverse=random.choice([True, False]),
+            )
+        )
 
         # Apply radial blur
         blur_amount = self.config.effect_params.blur_radius * 3
@@ -489,12 +495,16 @@ class AbstractComposer:
         effects.add(lambda img, cfg, pal: gradient_map(img, cfg, pal))
 
         # Apply wave distortion
-        effects.add(lambda img, cfg, pal: wave_distortion(
-            img, cfg, pal,
-            amplitude=cfg.effect_params.distortion * 10,
-            frequency=0.005,
-            direction="both"
-        ))
+        effects.add(
+            lambda img, cfg, pal: wave_distortion(
+                img,
+                cfg,
+                pal,
+                amplitude=cfg.effect_params.distortion * 10,
+                frequency=0.005,
+                direction="both",
+            )
+        )
 
         # Add grain
         grain_amount = self.config.effect_params.intensity * 0.3
@@ -532,11 +542,11 @@ class AbstractComposer:
         effects = EffectChain()
 
         # Apply swirl distortion
-        effects.add(lambda img, cfg, pal: swirl(
-            img, cfg, pal,
-            strength=cfg.effect_params.distortion * 5,
-            radius=0.8
-        ))
+        effects.add(
+            lambda img, cfg, pal: swirl(
+                img, cfg, pal, strength=cfg.effect_params.distortion * 5, radius=0.8
+            )
+        )
 
         # Apply duotone with phantom colors
         effects.add(duotone)
@@ -566,11 +576,11 @@ class AbstractComposer:
         effects.add(lambda img, cfg, pal: adjust_brightness(img, cfg, pal, 0.8))
 
         # Apply lens distortion
-        effects.add(lambda img, cfg, pal: lens_distortion(
-            img, cfg, pal,
-            k1=cfg.effect_params.distortion * 0.3,
-            k2=0.1
-        ))
+        effects.add(
+            lambda img, cfg, pal: lens_distortion(
+                img, cfg, pal, k1=cfg.effect_params.distortion * 0.3, k2=0.1
+            )
+        )
 
         # Apply duotone with dark palette
         effects.add(duotone)
@@ -581,7 +591,11 @@ class AbstractComposer:
 
         # Add heavy vignette
         vignette_amount = 0.5 + self.config.effect_params.intensity * 0.5
-        effects.add(lambda img, cfg, pal: add_vignette(img, cfg, pal, vignette_amount, strength=1.5))
+        effects.add(
+            lambda img, cfg, pal: add_vignette(
+                img, cfg, pal, vignette_amount, strength=1.5
+            )
+        )
 
         # Add the effect chain to the engine
         self.engine.add_transformation(effects)
