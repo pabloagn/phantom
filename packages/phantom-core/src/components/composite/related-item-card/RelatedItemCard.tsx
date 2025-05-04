@@ -5,7 +5,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Card, Heading, Paragraph, Badge } from '@phantom/core';
+import { Card, Heading, Paragraph, Badge } from '../../base';
 
 export interface RelatedItemCardProps {
   /**

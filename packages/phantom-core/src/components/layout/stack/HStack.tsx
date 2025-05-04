@@ -1,8 +1,6 @@
 // packages/phantom-core/src/components/layout/stack/HStack.tsx
 // @ts-nocheck
 
-// DONE: Implement HStack component
-
 'use client';
 
 import React from 'react';

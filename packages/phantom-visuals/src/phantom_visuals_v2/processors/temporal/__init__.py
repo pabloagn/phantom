@@ -1,0 +1,1 @@
+"""Temporal coherence processing components."""

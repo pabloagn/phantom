@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { Motion, MotionProps } from '@phantom/core/components';
+import { Motion, MotionProps } from './Motion';
 
 export interface FadeInProps extends Omit<MotionProps, 'initialClasses' | 'finalClasses'> {
   /**

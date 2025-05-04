@@ -1,8 +1,6 @@
 // packages/phantom-core/src/components/layout/grid/Grid.tsx
 // @ts-nocheck
 
-// DONE: Implement Grid component
-
 'use client';
 
 import React, { forwardRef } from 'react';

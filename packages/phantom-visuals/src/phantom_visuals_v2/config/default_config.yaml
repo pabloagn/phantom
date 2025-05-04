@@ -1,0 +1,150 @@
+# config/default_config.yaml
+
+# Main configuration for Artistic Portrait Transformation System
+# This defines general parameters, while more specific settings
+# can be loaded from preset or effect-specific configs
+
+# Analysis module configuration
+analysis:
+  use_emoca: true
+  use_insightface: true
+  emoca_model_path: "models/EMOCA/emoca_v2_lr_mse_20.ckpt"
+  emoca_config_path: "config/emoca_config.yaml"
+
+# Flow generation configuration
+flow:
+  use_raft: true
+  raft_model_path: "models/RAFT/raft-things.pth"
+  neural_flow_weight: 0.7
+  normalize_flow: true
+  flow_shift_method: "translation"
+  flow_shift_amount: 5
+  generate_variations: false
+  num_variations: 3
+
+# Material simulation configuration
+material:
+  material_type: "liquid"
+  generate_transition_map: true
+
+  # Liquid material parameters
+  viscosity: 0.8
+  surface_tension: 0.6
+  iterations: 5
+  time_step: 0.1
+  init_displacement_scale: 0.0
+  max_displacement: 20.0
+  refraction_index: 1.33
+  caustics_strength: 0.5
+  specular_power: 50.0
+
+  # Face vs background material properties
+  face_specularity: 0.3
+  face_roughness: 0.7
+  background_specularity: 0.1
+  background_roughness: 0.9
+  normal_strength: 0.5
+
+# Composition configuration
+composition:
+  blend_mode: "normal"
+  blend_strength: 0.9
+  use_face_mask: true
+  mask_feather: 0.1
+  region_aware: true
+
+  # Flow effect parameters
+  flow_effect_type: "streak"
+  flow_blend_mode: "screen"
+  flow_blend_strength: 0.5
+
+  # Streak effect parameters
+  streak_count: 1000
+  streak_length: 30
+  streak_width: 1.0
+  streak_opacity: 0.5
+  bright_streaks: true
+
+  # Region-specific effects
+  eye_effect_enabled: true
+  eye_effect_type: "glow"
+  eye_glow_intensity: 1.5
+  eye_glow_radius: 0.01
+
+  mouth_effect_enabled: false
+  mouth_effect_type: "blur"
+  mouth_blur_radius: 0.02
+  mouth_blur_angle: 0
+
+# Temporal coherence configuration
+temporal:
+  enable_temporal_smoothing: true
+  smoothing_window: 5
+  motion_consistency: 0.8
+  max_history: 10
+
+# Aesthetic refinement configuration
+aesthetics:
+  contrast_enhancement: 0.1
+  detail_enhancement: 0.2
+  micro_contrast: 0.15
+  color_grading: true
+  denoise: 0.1
+  sharpen: 0.2
+  vignette: 0.1
+
+  # Color grading parameters
+  color_temp: 0.0
+  color_tint: 0.0
+  saturation: 0.0
+
+  # Shadow/highlight parameters
+  shadow_lift: 0.0
+  highlight_reduce: 0.0
+
+  # Film grain
+  film_grain: 0.1
+
+# Effect registry configuration
+effects:
+  # Register custom effects path
+  custom_effects_path: "custom_effects"
+
+  # Primary effect to apply (can be overridden by command line)
+  primary_effect: "vertical_cascade"
+
+  # Effect-specific settings
+  vertical_cascade:
+    line_density: 100
+    line_thickness: 1
+    line_variation: 0.3
+    face_preservation: 0.3
+    flow_speed: 0.7
+    direction: "down"
+    edge_emphasis: 0.5
+    line_style: "solid"
+    distortion: 0.2
+    feature_emphasis: 0.6
+    structure_preservation: 0.4
+
+  horizontal_smear:
+    smear_strength: 0.8
+    direction_coherence: 0.7
+    edge_preservation: 0.6
+    face_preservation: 0.3
+    color_preservation: 0.8
+    smoothness: 0.5
+    style: "motion"
+    feature_emphasis: 0.4
+
+  data_glitch:
+    glitch_density: 0.7
+    glitch_size: 0.1
+    glitch_style: "blocks"
+    horizontal_shift: 0.2
+    vertical_shift: 0.1
+    color_shift: 0.05
+    noise_amount: 0.1
+    face_emphasis: 0.6
+    random_seed: 0
+    animation_speed: 0.5

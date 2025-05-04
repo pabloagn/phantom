@@ -1,5 +1,4 @@
 // packages/phantomklange/src/data/types.ts
-// @ts-nocheck
 
 /**
  * Core types for the database
@@ -30,6 +29,10 @@ export interface BaseContent {
   // Image paths
   poster_image?: string; // Main image used in cards and single view
   cover_image?: string;  // Secondary image used in other contexts
+
+  // Other images
+  gallery_image?: string;
+  thumbnail?: string;
 }
 
 // Person/Contributor
@@ -80,6 +83,7 @@ export interface Essay extends BaseContent {
   publication_date?: string;
   last_updated?: string;
   reading_time?: number; // Estimated reading time in minutes
+  word_count?: number; // Estimated word count
   related_works?: Array<{
     id: string;
     title: string;

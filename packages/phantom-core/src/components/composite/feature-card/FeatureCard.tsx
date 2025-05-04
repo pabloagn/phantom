@@ -1,11 +1,11 @@
-// packages/phantom-core/src//components/composite/feature-card/FeatureCard.tsx
+// packages/phantom-core/src/components/composite/feature-card/FeatureCard.tsx
 // @ts-nocheck
 
 'use client';
 
 import React from 'react';
 import Image from 'next/image';
-import { Card, Heading, Paragraph, Badge } from '@phantom/core';
+import { Card, Heading, Paragraph, Badge } from '../../base';
 
 export interface FeatureCardProps {
   /**

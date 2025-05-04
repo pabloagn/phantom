@@ -1,7 +1,4 @@
 // packages/phantom-core/src/components/navigation/menu/Menu.tsx
-// @ts-nocheck
-
-// DONE: Implement Menu component
 
 'use client';
 

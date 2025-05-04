@@ -2,8 +2,8 @@
 
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { useInView } from '@phantom/core/hooks';
-import { cn } from '@phantom/core';
+import { useInView } from '../../hooks';
+import { cn } from '../../utils';
 
 // Use a CSSProperties type to ensure compatibility
 import type { CSSProperties } from 'react';

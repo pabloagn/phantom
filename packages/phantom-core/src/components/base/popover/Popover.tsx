@@ -1,9 +1,6 @@
 // packages/phantom-core/src//components/base/popover/Popover.tsx
-// @ts-nocheck
 
 'use client';
-
-// DONE: Implement Popover component
 
 import React, { useState, useRef, useEffect } from 'react';
 

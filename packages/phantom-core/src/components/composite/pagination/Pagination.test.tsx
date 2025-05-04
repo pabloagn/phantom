@@ -1,4 +1,4 @@
-// packages/phantom-core/src//components/composite/pagination/Pagination.test.tsx
+// packages/phantom-core/src/components/composite/pagination/Pagination.test.tsx
 // @ts-nocheck
 
 import React from 'react';

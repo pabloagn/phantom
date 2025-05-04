@@ -1,7 +1,4 @@
 // packages/phantom-core/src/components/navigation/navbar/Navbar.tsx
-// @ts-nocheck
-
-// DONE: Implement Navbar component
 
 'use client';
 

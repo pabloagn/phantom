@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef, useEffect } from 'react';
-import { cn } from '@phantom/core';
+import { cn } from '../../utils';
 
 export interface ParallaxProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

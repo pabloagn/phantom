@@ -1,7 +1,5 @@
 // packages/phantom-core/src/styles/tailwind.config.mjs
 
-// packages/phantom-core/src/styles/tailwind.config.mjs
-
 import path from 'path';
 import { fileURLToPath } from 'url';
 

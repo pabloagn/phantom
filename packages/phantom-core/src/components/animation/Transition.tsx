@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { cn } from '@phantom/core';
+import { cn } from '../../utils';
 
 export interface TransitionProps {
   /**

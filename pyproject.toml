@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [tool.ruff]
 target-version = "py311"
-line-length = 100
+line-length = 150
 select = [
     "E",    # pycodestyle errors
     "W",    # pycodestyle warnings
@@ -15,16 +15,16 @@ select = [
     "UP",   # pyupgrade
 ]
 ignore = [
-    "E501",  # line too long (handled by formatter)
+    "E501",
 ]
 
 [tool.ruff.isort]
 known-third-party = []
 section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
 
-[tool.pytest]
-testpaths = ["tests"]
-python_files = "test_*.py"
+# [tool.pytest]
+# testpaths = ["tests"]
+# python_files = "test_*.py"
 
 [tool.mypy]
 python_version = "3.11"

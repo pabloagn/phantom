@@ -1,4 +1,4 @@
-// packages/phantom-core/src//components/composite/pagination/Pagination.tsx
+// packages/phantom-core/src/components/composite/pagination/Pagination.tsx
 // @ts-nocheck
 
 'use client';

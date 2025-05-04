@@ -1,11 +1,11 @@
-// @ts-nocheck
 // packages/phantomklange/src/components/common/ContentImage.tsx
+// @ts-nocheck
 
 'use client';
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { ContentItem } from '@/data/types';
+import { ContentItem } from '../../data/types';
 
 export type ContentImageType = 'poster' | 'cover' | 'gallery' | 'thumbnail';
 

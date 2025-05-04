@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, JSX } from 'react';
-import { cn } from '@phantom/core';
+import { cn } from '../../utils';
 
 export interface FloatProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

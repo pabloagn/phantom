@@ -1,8 +1,6 @@
 // packages/phantom-core/src/components/layout/stack/VStack.tsx
 // @ts-nocheck
 
-// DONE: Implement VStack component
-
 'use client';
 
 import React from 'react';

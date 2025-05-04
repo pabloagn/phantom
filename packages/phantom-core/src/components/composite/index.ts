@@ -8,5 +8,4 @@ export * from './searchbar';
 export * from './feature-card';
 export * from './related-item-card';
 export * from './essay-card';
-export * from './essay-document';
 export * from './table';

@@ -1,8 +1,71 @@
+// phantom.code-workspace
+
 {
     "folders": [
-      {
-        "path": "."
-      }
+        {
+            "path": ".",
+            "name": "Phantom"
+        },
+        {
+            "path": "packages/phantom-api",
+            "name": "Phantom API"
+        },
+        {
+            "path": "packages/phantom-canon",
+            "name": "Phantom Canon"
+        },
+        {
+            "path": "packages/phantom-core",
+            "name": "Phantom Core"
+        },
+        {
+            "path": "packages/phantom-eda",
+            "name": "Phantom EDA"
+        },
+        {
+            "path": "packages/phantom-editor",
+            "name": "Phantom Editor"
+        },
+        {
+            "path": "packages/phantom-enrichment",
+            "name": "Phantom Enrichment"
+        },
+        {
+            "path": "packages/phantom-explorer",
+            "name": "Phantom Explorer"
+        },
+        {
+            "path": "packages/phantom-folio",
+            "name": "Phantom Folio"
+        },
+        {
+            "path": "packages/phantom-glacier",
+            "name": "Phantom Glacier"
+        },
+        {
+            "path": "packages/phantom-intake",
+            "name": "Phantom Intake"
+        },
+        {
+            "path": "packages/phantom-query",
+            "name": "Phantom Query"
+        },
+        {
+            "path": "packages/phantom-rd",
+            "name": "Phantom RD"
+        },
+        {
+            "path": "packages/phantom-vector",
+            "name": "Phantom Vector"
+        },
+        {
+            "path": "packages/phantom-visuals",
+            "name": "Phantom Visuals"
+        },
+        {
+            "path": "packages/phantomklange",
+            "name": "Phantom Klange"
+        }
     ],
     "settings": {
 
@@ -10,47 +73,80 @@
     "telemetry.feedback.enabled": false,
     "workbench.startupEditor": "none",
 
-      // --- Editor Behavior & Style ---
-      "editor.tabSize": 2,
-      "editor.insertSpaces": true,
-      "editor.detectIndentation": false,
-      "editor.suggestSelection": "first",
-      "editor.bracketPairColorization.enabled": true,
-      "editor.guides.bracketPairs": "active",
-      "editor.guides.bracketPairsHorizontal": true,
-      "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
-      "editor.rulers": [80, 120],
-      "editor.linkedEditing": true,
-      "editor.suggest.insertMode": "replace",
-      "editor.inlineSuggest.enabled": true,
-      "editor.codeLens": true,
-      "editor.unicodeHighlight.ambiguousCharacters": true,
-      "editor.unicodeHighlight.invisibleCharacters": true,
-  
-      // --- UI Preferences ---
-      "editor.fontFamily": "'Fira Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
-      "editor.fontLigatures": true,
-      "editor.fontSize": 14,
-      "editor.lineHeight": 1.6,
-      "editor.wordWrap": "on",
-      "editor.minimap.enabled": true,
-      "editor.minimap.side": "right",
-      "editor.minimap.scale": 1,
-      "editor.minimap.renderCharacters": true,
-      "editor.minimap.showSlider": "always",
-      "editor.cursorBlinking": "smooth",
-      "editor.cursorSmoothCaretAnimation": "on",
-      "editor.smoothScrolling": true,
-      "workbench.colorTheme": "Tokyo Night",
-      "workbench.iconTheme": "material-icon-theme",
-      "workbench.editor.labelFormat": "short",
-      "workbench.editor.limit.enabled": true,
-      "workbench.editor.limit.value": 15,
-      "workbench.panel.defaultLocation": "bottom",
-      "explorer.compactFolders": true,
-      "problems.autoReveal": true,
-      "problems.showCurrentInStatus": true,
-  
+    // --- Editor Behavior & Style ---
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.suggestSelection": "first",
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "editor.guides.bracketPairsHorizontal": true,
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.rulers": [80, 120],
+    "editor.linkedEditing": true,
+    "editor.suggest.insertMode": "replace",
+    "editor.inlineSuggest.enabled": true,
+    "editor.codeLens": true,
+    "editor.unicodeHighlight.ambiguousCharacters": true,
+    "editor.unicodeHighlight.invisibleCharacters": true,
+
+    // --- UI Preferences ---
+    "editor.fontFamily": "'Fira Code', 'JetBrains Mono', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14,
+    "editor.lineHeight": 1.6,
+    "editor.wordWrap": "on",
+    "editor.minimap.enabled": true,
+    "editor.minimap.side": "right",
+    "editor.minimap.scale": 1,
+    "editor.minimap.renderCharacters": true,
+    "editor.minimap.showSlider": "always",
+    "editor.cursorBlinking": "smooth",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.cursorStyle": "line",
+    "editor.smoothScrolling": true,
+    "workbench.colorTheme": "Tokyo Night",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.editor.labelFormat": "short",
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.value": 15,
+    "workbench.panel.defaultLocation": "bottom",
+    "explorer.compactFolders": true,
+    "problems.autoReveal": true,
+    "problems.showCurrentInStatus": true,
+
+   // --- Folder Colors (NEW) ---
+   "workbench.colorCustomizations": {
+    // Root folder
+    "[Tokyo Night]": {
+      "activityBar.background": "#1a1b26",
+      "statusBar.background": "#1a1b26",
+      "titleBar.activeBackground": "#1a1b26"
+    },
+    // Individual package folder colors
+    "workbench.tree.root.phantom-api.badgeBackground": "#2ac3de",
+    "workbench.tree.root.phantom-canon.badgeBackground": "#ff9e64",
+    "workbench.tree.root.phantom-core.badgeBackground": "#7aa2f7",
+    "workbench.tree.root.phantom-eda.badgeBackground": "#bb9af7",
+    "workbench.tree.root.phantom-editor.badgeBackground": "#9ece6a",
+    "workbench.tree.root.phantom-enrichment.badgeBackground": "#f7768e",
+    "workbench.tree.root.phantom-explorer.badgeBackground": "#7dcfff",
+    "workbench.tree.root.phantom-folio.badgeBackground": "#e0af68",
+    "workbench.tree.root.phantom-glacier.badgeBackground": "#73daca",
+    "workbench.tree.root.phantom-intake.badgeBackground": "#b4f9f8",
+    "workbench.tree.root.phantom-query.badgeBackground": "#c0caf5",
+    "workbench.tree.root.phantom-rd.badgeBackground": "#ff7a93",
+    "workbench.tree.root.phantom-vector.badgeBackground": "#a9b1d6",
+    "workbench.tree.root.phantom-visuals.badgeBackground": "#6694ff",
+    "workbench.tree.root.phantomklange.badgeBackground": "#9abdf5"
+  },
+
+  // Enable workbench decorations for workspace folders
+  "workbench.editor.decorations.colors": true,
+  "workbench.editor.decorations.badges": true,
+  "workbench.tree.indent": 20,
+  "workbench.tree.renderIndentGuides": "always",
+
       // --- Files & Search ---
       "files.encoding": "utf8",
       "files.eol": "\n",
@@ -111,7 +207,7 @@
         "**/.mypy_cache": true,
         "**/.ruff_cache": true
       },
-  
+
       // --- Formatting & Linting ---
       "editor.formatOnSave": false,
       "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -147,7 +243,7 @@
       "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
       "[yaml]": { "editor.defaultFormatter": "redhat.vscode-yaml" },
       "[scala]": { "editor.defaultFormatter": "scalameta.metals" },
-  
+
       // --- Python ---
       "python.defaultInterpreterPath": "python3",
       "python.languageServer": "Pylance",
@@ -173,7 +269,7 @@
       "javascript.inlayHints.parameterNames.enabled": "all",
       "typescript.inlayHints.variableTypes.enabled": true,
       "javascript.inlayHints.variableTypes.enabled": true,
-  
+
       // --- Tailwind CSS ---
       "tailwindCSS.includeLanguages": { "typescript": "javascript", "typescriptreact": "javascript" },
       "tailwindCSS.emmetCompletions": true,
@@ -182,13 +278,13 @@
         ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
         ["cva\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
       ],
-  
+
       // --- Database ---
-  
+
       // --- Markdown ---
       "markdown.preview.scrollEditorWithPreview": true,
       "markdown.preview.scrollPreviewWithEditor": true,
-  
+
       // --- Spell Checker ---
       "cSpell.customDictionaries": {
         "project-dictionary": {
@@ -221,11 +317,11 @@
         "**/.mypy_cache/**",
         "**/.pytest_cache/**"
       ],
-  
+
       // --- Terminal ---
       "terminal.integrated.cursorBlinking": true,
       "terminal.integrated.smoothScrolling": true,
-  
+
       // --- Git ---
       "git.enableSmartCommit": true,
       "git.confirmSync": false,
@@ -234,7 +330,7 @@
       "gitlens.codeLens.enabled": true,
       "gitlens.currentLine.enabled": true,
       "gitlens.hovers.currentLine.over": "line",
-  
+
       // --- Jupyter / Data Science ---
       "jupyter.interactiveWindow.creationMode": "perFile",
       "jupyter.interactiveWindow.textEditor.executeSelection": true,

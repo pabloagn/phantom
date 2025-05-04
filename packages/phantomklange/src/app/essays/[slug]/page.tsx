@@ -4,10 +4,9 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Container, Heading, Paragraph, Card, Badge, SlideIn, FadeIn } from '@phantom/core';
-import { ArrowLeft, Clock, Calendar, RefreshCw, User, BookOpen } from 'lucide-react';
+import { Container, Heading, Paragraph, Badge, SlideIn, FadeIn } from '@phantom/core';
+import { ArrowLeft, Clock, Calendar, RefreshCw, BookOpen } from 'lucide-react';
 import { getEssayBySlug, getPersonById, getRelatedContent, getRelatedEssays } from '@/data';
-import { getPersonBySlug } from '@/data';
 import { ContentImage } from '@/components/common';
 import { MarkdownRenderer } from '@/components/essays';
 import siteConfig from '@/config/site';
@@ -42,6 +41,7 @@ export default async function EssayPage({ params }) {
       <main className="bg-phantom-carbon-990 text-phantom-neutral-50 min-h-screen py-24">
         <Container>
           <div className="max-w-3xl mx-auto">
+            // TODO: Abstract this into a Not Found component for every content type
             <Heading level={1} className="text-4xl font-serif-alt mb-8">Essay Not Found</Heading>
             <Link href="/essays" className="text-phantom-neutral-400 hover:text-phantom-neutral-200 inline-flex items-center">
               <ArrowLeft size={16} className="mr-2" />
@@ -64,6 +64,46 @@ export default async function EssayPage({ params }) {
         day: 'numeric'
       })
     : null;
+
+  // Prepare contributors
+  const contributors = [];
+
+  // Add main author if available
+  if (essay.author_name) {
+    contributors.push({
+      name: essay.author_name,
+      role: 'Author'
+    });
+  }
+
+  // Handle collaborators array
+  if (essay.collaborators && essay.collaborators.length > 0) {
+    essay.collaborators.forEach(collaborator => {
+      const personName = collaborator.person_name ||
+                         (getPersonById(collaborator.person)?.title) ||
+                         collaborator.person;
+
+      contributors.push({
+        name: personName,
+        role: collaborator.role || 'Contributor',
+        slug: collaborator.person_slug
+      });
+    });
+  }
+
+  // Handle contributors array (used in some essay entries)
+  if (essay.contributors && essay.contributors.length > 0) {
+    essay.contributors.forEach(contributor => {
+      const person = getPersonById(contributor.person);
+      const personName = person?.title || contributor.person;
+
+      contributors.push({
+        name: personName,
+        role: contributor.role || 'Contributor',
+        slug: person?.slug
+      });
+    });
+  }
 
   // Calculate image paths based on the slug
   const coverImagePath = `/images/essays/${slug}/${slug}-cover.jpg`;
@@ -96,7 +136,7 @@ export default async function EssayPage({ params }) {
         </div>
 
         <Container className="relative z-20 h-full flex flex-col justify-end pb-8">
-          <div className="max-w-4xl">
+          <div>
             <Link href="/essays" className="text-phantom-neutral-400 hover:text-phantom-neutral-200 inline-flex items-center mb-4">
               <ArrowLeft size={16} className="mr-2" />
               Back to Essays
@@ -125,233 +165,159 @@ export default async function EssayPage({ params }) {
                 {essay.excerpt}
               </Paragraph>
 
-              {/* Author and publication metadata - moved here from sidebar */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-phantom-neutral-400 mb-8">
-                {author && (
-                  <Link href={`/people/${author.slug}`} className="flex items-center group">
-                    {author.poster_image && (
-                      <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-phantom-carbon-900">
-                        <Image
-                          src={author.poster_image}
-                          alt={author.title}
-                          width={32}
-                          height={32}
-                          className="object-cover w-full h-full"
-                        />
-                      </div>
-                    )}
-                    <span className="group-hover:text-phantom-neutral-200 transition-colors">{author.title}</span>
-                  </Link>
-                )}
-
+              {/* Metadata Row */}
+              <div className="flex flex-wrap items-center gap-6 text-sm text-phantom-neutral-400 mb-8 border-t border-b border-phantom-carbon-800 py-4">
+                {/* Publication date */}
                 {formattedDate && (
                   <div className="flex items-center">
-                    <Calendar size={14} className="mr-1" />
-                    <span>{formattedDate}</span>
+                    <Calendar size={14} className="mr-1 text-phantom-primary-400" />
+                    <span>Published {formattedDate}</span>
                   </div>
                 )}
 
+                {/* Last updated */}
+                {essay.last_updated && essay.last_updated !== essay.publication_date && (
+                  <div className="flex items-center">
+                    <Calendar size={14} className="mr-1 text-phantom-primary-400" />
+                    <span>Updated {new Date(essay.last_updated).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}</span>
+                  </div>
+                )}
+
+                {/* Reading time */}
                 {essay.reading_time && (
                   <div className="flex items-center">
-                    <Clock size={14} className="mr-1" />
+                    <Clock size={14} className="mr-1 text-phantom-primary-400" />
                     <span>{essay.reading_time} min read</span>
                   </div>
                 )}
               </div>
+
+              {/* Contributors */}
+              {contributors.length > 0 && (
+                <div className="mb-10 border-b border-phantom-carbon-800 pb-6">
+                  <div className="flex flex-col gap-2.5">
+                    {contributors.map((contributor, index) => (
+                      <div key={index} className="flex items-center">
+                        {/* TODO: Always capitalize the role */}
+                        <span className="text-phantom-neutral-400 w-20 text-sm">{contributor.role}:</span>
+                        {contributor.slug ? (
+                          <Link
+                            href={`/people/${contributor.slug}`}
+                            className="text-phantom-primary-300 hover:text-phantom-primary-200 transition-colors"
+                          >
+                            {contributor.name}
+                          </Link>
+                        ) : (
+                          <span className="text-phantom-neutral-100">{contributor.name}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </FadeIn>
           </div>
         </Container>
       </div>
 
       {/* Main content */}
-      <Container className="py-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-10">
-            {/* Sidebar with TOC */}
-            <div className="w-full lg:w-1/4 order-2 lg:order-1">
-              <div className="lg:sticky lg:top-24">
-                <SlideIn from="left">
-                  {/* Custom Table of Contents for this page */}
-                  {essay.toc && (
-                    <div className="bg-phantom-carbon-950 border border-phantom-carbon-900 rounded-lg p-5 mb-6">
-                      <h3 className="text-lg font-medium text-phantom-neutral-100 mb-4">Table of Contents</h3>
-                      <nav className="toc-nav">
-                        <ul className="space-y-2.5">
-                          {essay.toc.map((item, index) => (
-                            <li key={index}>
-                              <a
-                                href={`#${item.id}`}
-                                className="block text-phantom-neutral-300 hover:text-phantom-primary-400 transition-colors py-1 group"
-                              >
-                                <span className="flex items-center">
-                                  <span className="mr-2 opacity-60 group-hover:opacity-100 transition-opacity">•</span>
-                                  <span className="line-clamp-2">{item.title}</span>
-                                </span>
-                              </a>
-                              {item.children && item.children.length > 0 && (
-                                <ul className="pl-4 mt-1.5 space-y-1.5 border-l border-phantom-carbon-800">
-                                  {item.children.map((child, childIndex) => (
-                                    <li key={childIndex}>
-                                      <a
-                                        href={`#${child.id}`}
-                                        className="block text-sm text-phantom-neutral-400 hover:text-phantom-primary-400 transition-colors py-0.5 pl-2"
-                                      >
-                                        {child.title}
-                                      </a>
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </nav>
-                    </div>
-                  )}
+      <Container className="py-12 relative essay-content">
+        <div className="grid grid-cols-1 relative max-w-full">
+          {/* Main content area with reduced width to make room for TOC */}
+          <div className="w-full max-w-3xl mx-auto">
+            <article className="prose prose-invert prose-lg max-w-none">
+              {/* Render markdown */}
+              {essay.markdown_content ? (
+                <FadeIn>
+                  <MarkdownRenderer
+                    content={essay.markdown_content}
+                    className="toc-enabled"
+                    // Don't pass title and excerpt to avoid duplication with the hero section
+                    // Just pass metadata that might be needed for the TOC and other features
+                    publishDate={essay.publication_date}
+                    lastUpdated={essay.last_updated}
+                    readingTime={essay.reading_time}
+                    wordCount={essay.word_count}
+                    contributors={contributors}
+                    tags={essay.tags}
+                  />
+                </FadeIn>
+              ) : (
+                <FadeIn>
+                  <div dangerouslySetInnerHTML={{ __html: essay.content }} />
+                </FadeIn>
+              )}
+            </article>
 
-                  {/* Additional metadata */}
-                  <div className="bg-phantom-carbon-950 border border-phantom-carbon-900 rounded-lg p-5 space-y-4 mb-6">
-                    {essay.last_updated && (
-                      <div className="flex">
-                        <RefreshCw size={16} className="text-phantom-neutral-500 mt-1 mr-3 flex-shrink-0" />
-                        <div>
-                          <div className="text-xs text-phantom-neutral-400 mb-1">Updated</div>
-                          <div className="text-phantom-neutral-200">
-                            {new Date(essay.last_updated).toLocaleDateString('en-US', {
+            {/* Related content */}
+            {(relatedEssays.length > 0 || relatedContent.length > 0) && (
+              <div className="mt-12 pt-12 border-t border-phantom-carbon-900">
+                {/* Related essays */}
+                {relatedEssays.length > 0 && (
+                  <div className="mb-12">
+                    <Heading level={2} className="text-2xl font-serif-alt mb-6">Related Essays</Heading>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {relatedEssays.map(relatedEssay => (
+                        <Link key={relatedEssay.id} href={`/essays/${relatedEssay.slug}`} className="block group">
+                          <EssayCard
+                            title={relatedEssay.title}
+                            author={relatedEssay.author_name || ""}
+                            publicationDate={relatedEssay.publication_date ? new Date(relatedEssay.publication_date).toLocaleDateString('en-US', {
                               year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {essay.word_count && (
-                      <div className="flex">
-                        <BookOpen size={16} className="text-phantom-neutral-500 mt-1 mr-3 flex-shrink-0" />
-                        <div>
-                          <div className="text-xs text-phantom-neutral-400 mb-1">Word Count</div>
-                          <div className="text-phantom-neutral-200">{essay.word_count.toLocaleString()}</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Collaborators */}
-                  {essay.collaborators && essay.collaborators.length > 0 && (
-                    <div className="bg-phantom-carbon-950 border border-phantom-carbon-900 rounded-lg p-5">
-                      <h3 className="text-lg font-medium text-phantom-neutral-100 mb-4">Contributors</h3>
-                      <ul className="space-y-3">
-                        {essay.collaborators.map((collaborator, index) => {
-                          const person = getPersonById(collaborator.person);
-
-                          return (
-                            <li key={index} className="flex justify-between items-center">
-                              <span className="text-phantom-neutral-400 capitalize">{collaborator.role}</span>
-                              {person ? (
-                                <Link
-                                  href={`/people/${person.slug}`}
-                                  className="text-phantom-neutral-200 hover:text-phantom-primary-300 transition-colors"
-                                >
-                                  {person.title}
-                                </Link>
-                              ) : (
-                                <span className="text-phantom-neutral-200">
-                                  {collaborator.person_name || collaborator.person}
-                                </span>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
+                              month: 'short'
+                            }) : undefined}
+                            excerpt={relatedEssay.excerpt}
+                            variant="minimal"
+                            className="transition-opacity hover:opacity-95" readingTime={undefined} onClick={undefined} icons={undefined} children={undefined}
+                            />
+                        </Link>
+                      ))}
                     </div>
-                  )}
-                </SlideIn>
-              </div>
-            </div>
-
-            {/* Main content area */}
-            <div className="w-full lg:w-3/4 order-1 lg:order-2">
-              <article className="prose prose-invert prose-lg max-w-none">
-                {/* Render markdown */}
-                {essay.markdown_content ? (
-                  <FadeIn>
-                    <MarkdownRenderer content={essay.markdown_content} />
-                  </FadeIn>
-                ) : (
-                  <FadeIn>
-                    <div dangerouslySetInnerHTML={{ __html: essay.content }} />
-                  </FadeIn>
+                  </div>
                 )}
-              </article>
 
-              {/* Related content */}
-              {(relatedEssays.length > 0 || relatedContent.length > 0) && (
-                <div className="mt-12 pt-12 border-t border-phantom-carbon-900">
-                  {/* Related essays */}
-                  {relatedEssays.length > 0 && (
-                    <div className="mb-12">
-                      <Heading level={2} className="text-2xl font-serif-alt mb-6">Related Essays</Heading>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {relatedEssays.map(relatedEssay => (
-                          <Link key={relatedEssay.id} href={`/essays/${relatedEssay.slug}`} className="block group">
-                            <EssayCard
-                              title={relatedEssay.title}
-                              author={relatedEssay.author_name || ""}
-                              publicationDate={relatedEssay.publication_date ? new Date(relatedEssay.publication_date).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short'
-                              }) : undefined}
-                              excerpt={relatedEssay.excerpt}
+                {/* Other related content */}
+                {relatedContent.length > 0 && (
+                  <div>
+                    <Heading level={2} className="text-2xl font-serif-alt mb-6">You May Also Enjoy</Heading>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {relatedContent.map(content => {
+                        // Determine type and path
+                        const contentType =
+                          'book_id' in content ? 'books' :
+                          'film_id' in content ? 'films' :
+                          'painting_id' in content ? 'paintings' :
+                          'person_id' in content ? 'people' : 'essays';
+
+                        const displayType = contentType.replace(/s$/, '');
+
+                        return (
+                          <Link
+                            href={`/${contentType}/${content.slug}`}
+                            key={content.id}
+                            className="block no-underline"
+                          >
+                            <RelatedItemCard
+                              title={content.title}
+                              excerpt={content.excerpt ? content.excerpt.substring(0, 80) + '...' : ''}
+                              contentType={displayType}
+                              imageSrc={content.poster_image || `/images/placeholders/essays/placeholder-poster.jpg`}
+                              imageAlt={`Poster for ${content.title}`}
                               variant="minimal"
-                              className="transition-opacity hover:opacity-95"
+                              imageAspectRatio="4/3" children={undefined} onClick={undefined} icons={undefined}
                             />
                           </Link>
-                        ))}
-                      </div>
+                        );
+                      })}
                     </div>
-                  )}
-
-                  {/* Other related content */}
-                  {relatedContent.length > 0 && (
-                    <div>
-                      <Heading level={2} className="text-2xl font-serif-alt mb-6">You May Also Enjoy</Heading>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {relatedContent.map(content => {
-                          // Determine type and path
-                          const contentType =
-                            'book_id' in content ? 'books' :
-                            'film_id' in content ? 'films' :
-                            'painting_id' in content ? 'paintings' :
-                            'person_id' in content ? 'people' : 'essays';
-
-                          const displayType = contentType.replace(/s$/, '');
-
-                          return (
-                            <Link
-                              href={`/${contentType}/${content.slug}`}
-                              key={content.id}
-                              className="block no-underline"
-                            >
-                              <RelatedItemCard
-                                title={content.title}
-                                excerpt={content.excerpt ? content.excerpt.substring(0, 80) + '...' : ''}
-                                contentType={displayType}
-                                imageSrc={content.poster_image || `/images/placeholders/essays/placeholder-poster.jpg`}
-                                imageAlt={`Poster for ${content.title}`}
-                                variant="minimal"
-                                imageAspectRatio="4/3"
-                              />
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Container>

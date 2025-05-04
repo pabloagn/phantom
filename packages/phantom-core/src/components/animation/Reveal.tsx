@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { cn } from '@phantom/core';
+import { cn } from '../../utils';
 
 export interface RevealProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

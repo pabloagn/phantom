@@ -25,7 +25,8 @@
     "rehype-slug": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "lucide-react": "^0.503.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

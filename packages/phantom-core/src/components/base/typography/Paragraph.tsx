@@ -3,8 +3,6 @@
 
 'use client';
 
-// DONE: Implement Paragraph component
-
 import React, { forwardRef } from 'react';
 
 export type ParagraphSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';

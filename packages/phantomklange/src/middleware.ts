@@ -1,9 +1,9 @@
+// packages/phantomklange/src/middleware.ts
+
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  // Add your middleware logic here
   const response = NextResponse.next();
   
   // Example: Add security headers

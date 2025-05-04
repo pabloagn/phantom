@@ -69,10 +69,10 @@ This project uses pnpm for package management and Turborepo for task running. To
 pnpm install
 
 # Run development server for all packages
-pnpm dev
+pnpm run dev
 
-# Build all packages
-pnpm build
+# Build all packages using monorepo build command
+pnpm run build
 ```
 
 ## Documentation
