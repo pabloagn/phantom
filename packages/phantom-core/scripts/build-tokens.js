@@ -3,8 +3,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-// execSync is no longer needed for tsc here
-// import { execSync } from 'child_process';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,90 +12,122 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const srcTokensDir = path.join(rootDir, 'src', 'tokens');
 const distDir = path.join(rootDir, 'dist');
+const distCssTokensDir = path.join(distDir, 'css', 'tokens');
 const distEsmTokensDir = path.join(distDir, 'esm', 'tokens');
 const compiledEntryPointFilename = 'index.js';
 const jsonTokensFilename = 'tokens.json';
 
+// --- Helper Functions ---
 const ensureDirExists = (dirPath) => {
-  // Only ensure the top-level dist exists, as build-formats handles the rest
-  if (dirPath === distDir && !fs.existsSync(dirPath)) {
-     fs.mkdirSync(dirPath, { recursive: true });
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+    console.log(`📁 Created directory: ${path.relative(rootDir, dirPath)}`);
   }
-  // We assume build-formats.js created the necessary subdirectories
+};
+
+const copyTokenCssFiles = () => {
+  console.log('📋 Copying token CSS files...');
+
+  // Ensure the destination directory exists
+  ensureDirExists(distCssTokensDir);
+
+  try {
+    // Get all CSS files from tokens directory
+    const cssFiles = fs.readdirSync(srcTokensDir)
+      .filter(file => file.endsWith('.css'));
+
+    if (cssFiles.length === 0) {
+      console.warn('⚠️ No CSS files found in tokens directory!');
+      return;
+    }
+
+    console.log(`   Found ${cssFiles.length} token CSS files to copy`);
+
+    // Copy each file
+    for (const file of cssFiles) {
+      const sourcePath = path.join(srcTokensDir, file);
+      const destPath = path.join(distCssTokensDir, file);
+
+      try {
+        fs.copyFileSync(sourcePath, destPath);
+        console.log(`   ✓ Copied ${file}`);
+      } catch (error) {
+        console.warn(`   ⚠️ Could not copy ${file}: ${error.message}`);
+      }
+    }
+
+    console.log('   ✅ Token CSS files copied successfully');
+  } catch (error) {
+    console.error(`   ❌ Error copying token CSS files: ${error.message}`);
+  }
 };
 
 // --- Main Build Function ---
 async function buildTokens() {
-  console.log('🔨 Processing design tokens (JSON generation)...');
+  console.log('🔨 Processing design tokens...');
 
-  // Ensure top-level dist exists, assume build-formats created subdirs
+  // Ensure necessary directories exist
   ensureDirExists(distDir);
+  ensureDirExists(distCssTokensDir);
 
   try {
-    // 3. Dynamically Import the Compiled ESM Output File (created by build-formats.js)
-    const compiledModulePath = path.join(distEsmTokensDir, compiledEntryPointFilename).replace(/\\/g, '/');
-    const cacheBuster = `?t=${Date.now()}`; // Keep cache buster for dynamic import
+    // 1. Copy all token CSS files
+    copyTokenCssFiles();
 
-    // Check if the file actually exists first (sanity check)
+    // 2. Dynamically Import the Compiled ESM Output File
+    const compiledModulePath = path.join(distEsmTokensDir, compiledEntryPointFilename).replace(/\\/g, '/');
+    const cacheBuster = `?t=${Date.now()}`;
+
     if (!fs.existsSync(compiledModulePath)) {
-        console.error(`❌ Critical error: Compiled token file not found at ${compiledModulePath}`);
-        console.error('   Ensure the main build script (build-formats.js) ran successfully and created this file.');
-        process.exit(1);
+      console.error(`❌ Critical error: Compiled token file not found at ${compiledModulePath}`);
+      console.error('   Ensure the main build script (build-formats.js) ran successfully.');
+      process.exit(1);
     }
 
-    console.log(`📥 Dynamically importing pre-compiled ESM tokens from ${compiledModulePath}...`);
+    console.log(`📥 Importing token definitions from ${path.relative(rootDir, compiledModulePath)}...`);
 
     let importedTokens = null;
     try {
-      // Use file:// protocol for absolute paths with dynamic import
       importedTokens = await import(`file://${compiledModulePath}${cacheBuster}`);
-      console.log('   ✅ Imported pre-compiled module successfully.');
+      console.log('   ✅ Token definitions imported successfully');
     } catch (importError) {
-      console.error(`❌ Critical error: Failed to import pre-compiled module at ${compiledModulePath}`);
+      console.error(`❌ Critical error: Failed to import token definitions`);
       console.error('   Reason:', importError);
       process.exit(1);
     }
 
-    // 4. Extract Token Categories from Named Exports (No change needed here)
-    const tokens = {
-      colors: importedTokens.colors || {},
-      typography: importedTokens.typography || {},
-      spacing: importedTokens.spacing || {},
-      shadows: importedTokens.shadows || {},
-      breakpoints: importedTokens.breakpoints || {},
-      // Add other expected keys if necessary
-      animations: importedTokens.animations || {},
-      borderRadius: importedTokens.borderRadius || {},
-      containers: importedTokens.containers || {},
-    };
+    // 3. Dynamically extract all token categories from the imported module
+    console.log('🔍 Extracting token categories...');
+    const tokens = {};
 
-    // Validate that we actually got some tokens (No change needed here)
-    const foundTokenKeys = Object.entries(tokens)
-      .filter(([, value]) => typeof value === 'object' && Object.keys(value).length > 0)
-      .map(([key]) => key);
-
-    if (foundTokenKeys.length === 0) {
-      console.error('❌ Critical error: Imported module did not contain expected token exports (colors, typography, etc.).');
-      console.error('   Check the named exports in src/tokens/index.ts and the compiled output generated by build-formats.js.');
-      console.error('   Compiled module path:', compiledModulePath);
-      console.error('   Imported module content (keys):', Object.keys(importedTokens || {}));
-      process.exit(1);
-    } else {
-      console.log(`   Extracted token categories: ${foundTokenKeys.join(', ')}`);
+    // Get all exports from the module that are objects (token categories)
+    const exportedKeys = Object.keys(importedTokens);
+    for (const key of exportedKeys) {
+      const value = importedTokens[key];
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        tokens[key] = value;
+      }
     }
 
-    // 5. Write JSON Tokens File (No change needed here)
-    console.log(`📝 Writing JSON tokens (${jsonTokensFilename})...`);
+    const tokenCategories = Object.keys(tokens);
+    if (tokenCategories.length === 0) {
+      console.error('❌ Critical error: No token categories found in compiled module');
+      console.error('   Check the exports in src/tokens/index.ts');
+      process.exit(1);
+    }
+
+    console.log(`   Found ${tokenCategories.length} token categories: ${tokenCategories.join(', ')}`);
+
+    // 4. Write JSON Tokens File
+    console.log(`📝 Writing JSON tokens to ${jsonTokensFilename}...`);
     const jsonPath = path.join(distDir, jsonTokensFilename);
     fs.writeFileSync(jsonPath, JSON.stringify(tokens, null, 2));
-    console.log(`   Created: ${path.relative(rootDir, jsonPath)}`);
+    console.log(`   ✅ Tokens JSON file created successfully`);
 
-    console.log('\n✅ Design tokens (JSON) processed successfully!');
+    console.log('\n🎉 Design tokens processing completed successfully!');
 
   } catch (error) {
-    console.error('❌ Error processing design tokens (JSON generation):', error);
-    // Removed stderr check as execSync is gone
-    // if (error.stderr) { ... }
+    console.error('❌ Error processing design tokens:', error);
     process.exit(1);
   }
 }

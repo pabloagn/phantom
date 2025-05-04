@@ -113,213 +113,203 @@ export default async function EssayPage({ params }) {
   const coverImage = essay.cover_image || coverImagePath;
   const posterImage = essay.poster_image || posterImagePath;
 
+
   return (
     <main className="bg-phantom-carbon-990 text-phantom-neutral-50 min-h-screen">
-      {/* Hero section with cover image */}
-      <div className="relative w-full h-[40vh] sm:h-[50vh] overflow-hidden">
-        <div className="absolute inset-0 bg-phantom-carbon-990/80 z-10"></div>
+
+      {/* Hero Section: Regular block flow, uses padding for vertical space */}
+      <div className="relative w-full overflow-hidden">
+        {/* Background Image & Overlay */}
         <div className="absolute inset-0 z-0">
-          {essay.cover_image && (
-            <Image
-              src={coverImage}
-              alt={essay.title}
-              fill
-              priority
-              className="object-cover"
-              sizes="100vw"
-              onError={(e) => {
-                // Fallback if image fails to load
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          )}
+          <div className="absolute inset-0 bg-phantom-carbon-990/80 z-10"></div>
+           {essay.cover_image && (
+             <Image
+               src={coverImage}
+               alt={essay.title}
+               fill
+               priority
+               className="object-cover z-0"
+               sizes="100vw"
+               onError={(e) => {
+                 e.currentTarget.style.display = 'none';
+               }}
+             />
+           )}
         </div>
 
-        <Container className="relative z-20 h-full flex flex-col justify-end pb-8">
-          <div>
-            <Link href="/essays" className="text-phantom-neutral-400 hover:text-phantom-neutral-200 inline-flex items-center mb-4">
-              <ArrowLeft size={16} className="mr-2" />
-              Back to Essays
-            </Link>
+        {/* Hero Content Container */}
+        <Container className="relative z-20 pt-24 pb-12 sm:pt-32 sm:pb-16 md:pt-40 md:pb-20">
+           <div>
+              <Link href="/essays" className="text-phantom-neutral-400 hover:text-phantom-neutral-200 inline-flex items-center mb-4">
+                 <ArrowLeft size={16} className="mr-2" />
+                 Back to Essays
+              </Link>
 
-            <FadeIn>
-              {essay.tags && essay.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {essay.tags.map(tag => (
-                    <Badge
-                      key={tag}
-                      variant="primary"
-                      className="uppercase text-xs tracking-wider px-3 py-1"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+              <FadeIn>
+                 {essay.tags && essay.tags.length > 0 && (
+                   <div className="flex flex-wrap gap-2 mb-4">
+                     {essay.tags.map(tag => (
+                       <Badge
+                         key={tag}
+                         variant="outline"
+                         className="uppercase text-xs tracking-wider px-3 py-1"
+                       >
+                         {tag}
+                       </Badge>
+                     ))}
+                   </div>
+                 )}
 
-              <Heading level={1} className="text-4xl sm:text-5xl md:text-6xl font-serif-alt font-light mb-4 tracking-wide">
-                {essay.title}
-              </Heading>
+                 <Heading level={1} className="text-4xl sm:text-5xl md:text-6xl font-serif-alt font-light mb-4 tracking-wide">
+                   {essay.title}
+                 </Heading>
 
-              <Paragraph className="text-xl md:text-2xl text-phantom-neutral-300 font-serif-alt mb-6">
-                {essay.excerpt}
-              </Paragraph>
+                 <Paragraph className="text-xl md:text-2xl text-phantom-neutral-300 font-serif-alt mb-6">
+                   {essay.excerpt}
+                 </Paragraph>
 
-              {/* Metadata Row */}
-              <div className="flex flex-wrap items-center gap-6 text-sm text-phantom-neutral-400 mb-8 border-t border-b border-phantom-carbon-800 py-4">
-                {/* Publication date */}
-                {formattedDate && (
-                  <div className="flex items-center">
-                    <Calendar size={14} className="mr-1 text-phantom-primary-400" />
-                    <span>Published {formattedDate}</span>
-                  </div>
-                )}
+                 <div className="flex flex-wrap items-center gap-6 text-sm text-phantom-neutral-400 mb-8 border-t border-b border-phantom-carbon-800 py-4">
+                   {formattedDate && (
+                     <div className="flex items-center">
+                       <Calendar size={14} className="mr-1 text-phantom-primary-400" />
+                       <span>Published {formattedDate}</span>
+                     </div>
+                   )}
 
-                {/* Last updated */}
-                {essay.last_updated && essay.last_updated !== essay.publication_date && (
-                  <div className="flex items-center">
-                    <Calendar size={14} className="mr-1 text-phantom-primary-400" />
-                    <span>Updated {new Date(essay.last_updated).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}</span>
-                  </div>
-                )}
+                   {essay.last_updated && essay.last_updated !== essay.publication_date && (
+                     <div className="flex items-center">
+                       <Calendar size={14} className="mr-1 text-phantom-primary-400" />
+                       <span>Updated {new Date(essay.last_updated).toLocaleDateString('en-US', {
+                         year: 'numeric',
+                         month: 'long',
+                         day: 'numeric'
+                       })}</span>
+                     </div>
+                   )}
 
-                {/* Reading time */}
-                {essay.reading_time && (
-                  <div className="flex items-center">
-                    <Clock size={14} className="mr-1 text-phantom-primary-400" />
-                    <span>{essay.reading_time} min read</span>
-                  </div>
-                )}
-              </div>
+                   {essay.reading_time && (
+                     <div className="flex items-center">
+                       <Clock size={14} className="mr-1 text-phantom-primary-400" />
+                       <span>{essay.reading_time} min read</span>
+                     </div>
+                   )}
+                 </div>
 
-              {/* Contributors */}
-              {contributors.length > 0 && (
-                <div className="mb-10 border-b border-phantom-carbon-800 pb-6">
-                  <div className="flex flex-col gap-2.5">
-                    {contributors.map((contributor, index) => (
-                      <div key={index} className="flex items-center">
-                        {/* TODO: Always capitalize the role */}
-                        <span className="text-phantom-neutral-400 w-20 text-sm">{contributor.role}:</span>
-                        {contributor.slug ? (
-                          <Link
-                            href={`/people/${contributor.slug}`}
-                            className="text-phantom-primary-300 hover:text-phantom-primary-200 transition-colors"
-                          >
-                            {contributor.name}
-                          </Link>
-                        ) : (
-                          <span className="text-phantom-neutral-100">{contributor.name}</span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </FadeIn>
-          </div>
+                 {contributors.length > 0 && (
+                   <div className="mb-10 border-b border-phantom-carbon-800 pb-6">
+                     <div className="flex flex-col gap-2.5">
+                       {contributors.map((contributor, index) => (
+                         <div key={index} className="flex items-center">
+                           <span className="text-phantom-neutral-400 w-20 text-sm">{contributor.role}:</span>
+                           {contributor.slug ? (
+                             <Link
+                               href={`/people/${contributor.slug}`}
+                               className="text-phantom-primary-300 hover:text-phantom-primary-200 transition-colors"
+                             >
+                               {contributor.name}
+                             </Link>
+                           ) : (
+                             <span className="text-phantom-neutral-100">{contributor.name}</span>
+                           )}
+                         </div>
+                       ))}
+                     </div>
+                   </div>
+                 )}
+              </FadeIn>
+           </div>
         </Container>
       </div>
 
-      {/* Main content */}
+
+      {/* Main Article Content: Renders normally after the hero div */}
       <Container className="py-12 relative essay-content">
-        <div className="grid grid-cols-1 relative max-w-full">
-          {/* Main content area with reduced width to make room for TOC */}
-          <div className="w-full max-w-3xl mx-auto">
-            <article className="prose prose-invert prose-lg max-w-none">
-              {/* Render markdown */}
-              {essay.markdown_content ? (
-                <FadeIn>
-                  <MarkdownRenderer
-                    content={essay.markdown_content}
-                    className="toc-enabled"
-                    // Don't pass title and excerpt to avoid duplication with the hero section
-                    // Just pass metadata that might be needed for the TOC and other features
-                    publishDate={essay.publication_date}
-                    lastUpdated={essay.last_updated}
-                    readingTime={essay.reading_time}
-                    wordCount={essay.word_count}
-                    contributors={contributors}
-                    tags={essay.tags}
-                  />
-                </FadeIn>
-              ) : (
-                <FadeIn>
-                  <div dangerouslySetInnerHTML={{ __html: essay.content }} />
-                </FadeIn>
-              )}
-            </article>
+         <div className="grid grid-cols-1 relative max-w-full">
+            <div className="w-full max-w-3xl mx-auto">
+               <article className="prose prose-invert prose-lg max-w-none">
+                  {essay.markdown_content ? (
+                    <FadeIn>
+                      <MarkdownRenderer
+                        content={essay.markdown_content}
+                        className="toc-enabled"
+                        publishDate={essay.publication_date}
+                        lastUpdated={essay.last_updated}
+                        readingTime={essay.reading_time}
+                        wordCount={essay.word_count}
+                        contributors={contributors}
+                        tags={essay.tags}
+                      />
+                    </FadeIn>
+                  ) : (
+                    <FadeIn>
+                      <div dangerouslySetInnerHTML={{ __html: essay.content }} />
+                    </FadeIn>
+                  )}
+               </article>
 
-            {/* Related content */}
-            {(relatedEssays.length > 0 || relatedContent.length > 0) && (
-              <div className="mt-12 pt-12 border-t border-phantom-carbon-900">
-                {/* Related essays */}
-                {relatedEssays.length > 0 && (
-                  <div className="mb-12">
-                    <Heading level={2} className="text-2xl font-serif-alt mb-6">Related Essays</Heading>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {relatedEssays.map(relatedEssay => (
-                        <Link key={relatedEssay.id} href={`/essays/${relatedEssay.slug}`} className="block group">
-                          <EssayCard
-                            title={relatedEssay.title}
-                            author={relatedEssay.author_name || ""}
-                            publicationDate={relatedEssay.publication_date ? new Date(relatedEssay.publication_date).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short'
-                            }) : undefined}
-                            excerpt={relatedEssay.excerpt}
-                            variant="minimal"
-                            className="transition-opacity hover:opacity-95" readingTime={undefined} onClick={undefined} icons={undefined} children={undefined}
-                            />
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
+               {(relatedEssays.length > 0 || relatedContent.length > 0) && (
+                 <div className="mt-12 pt-12 border-t border-phantom-carbon-900">
+                   {relatedEssays.length > 0 && (
+                     <div className="mb-12">
+                       <Heading level={2} className="text-2xl font-serif-alt mb-6">Related Essays</Heading>
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         {relatedEssays.map(relatedEssay => (
+                           <Link key={relatedEssay.id} href={`/essays/${relatedEssay.slug}`} className="block group">
+                             <EssayCard
+                               title={relatedEssay.title}
+                               author={relatedEssay.author_name || ""}
+                               publicationDate={relatedEssay.publication_date ? new Date(relatedEssay.publication_date).toLocaleDateString('en-US', {
+                                 year: 'numeric',
+                                 month: 'short'
+                               }) : undefined}
+                               excerpt={relatedEssay.excerpt}
+                               variant="minimal"
+                               className="transition-opacity hover:opacity-95" readingTime={undefined} onClick={undefined} icons={undefined} children={undefined}
+                               />
+                           </Link>
+                         ))}
+                       </div>
+                     </div>
+                   )}
 
-                {/* Other related content */}
-                {relatedContent.length > 0 && (
-                  <div>
-                    <Heading level={2} className="text-2xl font-serif-alt mb-6">You May Also Enjoy</Heading>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {relatedContent.map(content => {
-                        // Determine type and path
-                        const contentType =
-                          'book_id' in content ? 'books' :
-                          'film_id' in content ? 'films' :
-                          'painting_id' in content ? 'paintings' :
-                          'person_id' in content ? 'people' : 'essays';
+                   {relatedContent.length > 0 && (
+                     <div>
+                       <Heading level={2} className="text-2xl font-serif-alt mb-6">You May Also Enjoy</Heading>
+                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                         {relatedContent.map(content => {
+                           const contentType =
+                             'book_id' in content ? 'books' :
+                             'film_id' in content ? 'films' :
+                             'painting_id' in content ? 'paintings' :
+                             'person_id' in content ? 'people' : 'essays';
 
-                        const displayType = contentType.replace(/s$/, '');
+                           const displayType = contentType.replace(/s$/, '');
 
-                        return (
-                          <Link
-                            href={`/${contentType}/${content.slug}`}
-                            key={content.id}
-                            className="block no-underline"
-                          >
-                            <RelatedItemCard
-                              title={content.title}
-                              excerpt={content.excerpt ? content.excerpt.substring(0, 80) + '...' : ''}
-                              contentType={displayType}
-                              imageSrc={content.poster_image || `/images/placeholders/essays/placeholder-poster.jpg`}
-                              imageAlt={`Poster for ${content.title}`}
-                              variant="minimal"
-                              imageAspectRatio="4/3" children={undefined} onClick={undefined} icons={undefined}
-                            />
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
+                           return (
+                             <Link
+                               href={`/${contentType}/${content.slug}`}
+                               key={content.id}
+                               className="block no-underline"
+                             >
+                               <RelatedItemCard
+                                 title={content.title}
+                                 excerpt={content.excerpt ? content.excerpt.substring(0, 80) + '...' : ''}
+                                 contentType={displayType}
+                                 imageSrc={content.poster_image || `/images/placeholders/essays/placeholder-poster.jpg`}
+                                 imageAlt={`Poster for ${content.title}`}
+                                 variant="minimal"
+                                 imageAspectRatio="4/3" children={undefined} onClick={undefined} icons={undefined}
+                               />
+                             </Link>
+                           );
+                         })}
+                       </div>
+                     </div>
+                   )}
+                 </div>
+               )}
+            </div>
+         </div>
       </Container>
     </main>
   );

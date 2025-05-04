@@ -1,15 +1,13 @@
 /* packages/phantom-core/src/tokens/typography.css */
 
-/* TODO: Double check what we need here */
+/*
+PHANTOM TYPOGRAPHY SYSTEM
 
-/**
- * PHANTOM TYPOGRAPHY SYSTEM
- *
- * This is the SINGLE SOURCE OF TRUTH for all typography in the Phantom design system.
- * - Defines font families, sizes, weights, line heights, and letter spacing
- * - Used by both Tailwind and standard CSS
- * - Defined once, used everywhere
- */
+This is the SINGLE SOURCE OF TRUTH for all typography in the Phantom design system.
+- Defines font families, sizes, weights, line heights, and letter spacing
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
 
 :root {
   /* FONT FAMILIES */
@@ -80,13 +78,56 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+
+/* Header styles */
+h1 {
   font-family: var(--font-serif-alt);
+  font-size: var(--font-size-5xl);
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-tight);
+  margin-bottom: var(--title-margin-bottom);
+}
+
+h2 {
+  font-family: var(--font-serif-alt);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--heading-margin-bottom);
+}
+
+h3 {
+  font-family: var(--font-serif-alt);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--subheading-margin-bottom);
+}
+
+h4 {
+  font-family: var(--font-serif-alt);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--subtitle-margin-bottom);
+}
+
+h5 {
+  font-family: var(--font-serif-alt);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--subtitle-margin-bottom);
+}
+
+h6 {
+  font-family: var(--font-serif-alt);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--subtitle-margin-bottom);
+}
+
+p {
+  margin-bottom: var(--paragraph-margin-bottom);
 }

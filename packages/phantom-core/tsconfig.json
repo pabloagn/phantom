@@ -1,33 +1,50 @@
 // packages/phantom-core/tsconfig.json
 
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "target": "ES2020",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "rootDir": "src",
-    "outDir": "dist/esm",
-    "declaration": true,
-    "declarationDir": "dist/types",
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "baseUrl": "src",
-    "composite": true,
-    "noEmit": false,
-    "emitDeclarationOnly": false,
-    // "paths": {
-    //   "@phantom/core": ["./src/index.ts"],
-    //   "@phantom/core/*": ["./src/*"],
-    //   "@phantom-design/*": ["./src/*"],
-    //   "@phantom-components/*": ["src/components/*"],
-    //   "@phantom-tokens/*": ["./src/tokens/*"],
-    //   "@phantom-themes/*": ["./src/themes/*"],
-    //   "@phantom-utils/*": ["./src/utils/*"],
-    //   "@phantom-types/*": ["./src/types/*"]
-    // }
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/**/*.d.ts"],
-  "exclude": ["node_modules", "dist", "dist/esm", "config", ".turbo", "scripts"]
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+      "target": "ES2020",
+      "module": "ESNext",
+      "moduleResolution": "bundler",
+      "rootDir": "src",
+      "outDir": "dist/esm",
+      "declaration": true,
+      "declarationDir": "dist/types",
+      "jsx": "react-jsx",
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "baseUrl": "src",
+      "composite": true,
+      "noEmit": false,
+      "emitDeclarationOnly": false,
+      "noEmitOnError": false,
+      "allowJs": true
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "src/**/*.js",
+      "src/**/*.mjs",
+      "src/types/**/*.d.ts",
+      "./phantom-core.d.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      "dist/**",
+      "dist/esm",
+      "dist/esm/**",
+      "build",
+      "coverage",
+      ".turbo",
+      "scripts",
+      "config",
+      "src/**/*.test.ts",
+      "src/**/*.test.tsx",
+      "src/**/*.spec.ts",
+      "src/**/*.spec.tsx",
+      "src/**/*.stories.ts",
+      "src/**/*.stories.tsx",
+      "src/**/stories/**"
+    ]
 }

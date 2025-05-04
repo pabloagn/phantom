@@ -1,23 +1,19 @@
 // packages/phantom-core/src/components/layout/container/Container.tsx
-// @ts-nocheck
 
 'use client';
-
-// TODO: Implement Container component
 
 import * as React from 'react';
 
 export type ContainerWidth = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
 
+// Container Props
 export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   maxWidth?: ContainerWidth;
   padding?: boolean;
   center?: boolean;
 }
 
-/**
- * Container component for consistent layout spacing and sizing
- */
+// Container Component
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
   ({
     children,
@@ -50,7 +46,5 @@ export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
     );
   }
 );
-
-Container.displayName = 'Container';
 
 export default Container;

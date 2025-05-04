@@ -1,0 +1,118 @@
+/* packages/phantom-core/src/tokens/theme.css */
+
+/*
+PHANTOM THEME SYSTEM
+
+- Semantic color mappings that reference the base color system.
+- Defines both default theme (root level) and theme variations.
+*/
+
+:root {
+  /* UI ELEMENT COLORS - Default Theme (Dark) */
+  --theme-background: var(--color-carbon-990);
+  --theme-foreground: var(--color-neutral-50);
+
+  /* Primary interface colors */
+  --theme-primary: var(--color-primary-400);
+  --theme-primary-foreground: var(--color-neutral-50);
+  --theme-secondary: var(--color-secondary-400);
+  --theme-secondary-foreground: var(--color-neutral-50);
+  --theme-accent: var(--color-accent-400);
+  --theme-accent-foreground: var(--color-carbon-900);
+
+  /* Interface element colors */
+  --theme-muted: var(--color-neutral-800);
+  --theme-muted-foreground: var(--color-neutral-400);
+  --theme-card: var(--color-carbon-900);
+  --theme-card-foreground: var(--color-neutral-100);
+
+  /* Border and input colors */
+  --theme-border: var(--color-neutral-700);
+  --theme-input: var(--color-neutral-700);
+  --theme-ring: var(--color-primary-400);
+
+  /* Layer depths for shadows and 3D effects */
+  --theme-depth-1: var(--color-carbon-980);
+  --theme-depth-2: var(--color-carbon-950);
+  --theme-depth-3: var(--color-neutral-900);
+
+  /* Special effects */
+  --theme-glow: rgba(223, 168, 79, 0.15);
+  --theme-shadow: rgba(0, 0, 0, 0.6);
+  --theme-separator: var(--color-accent-700);
+  --theme-separator-glow: 0 0 15px var(--color-accent-900);
+}
+
+/* DARK THEME */
+.dark-theme {
+  /* UI ELEMENT COLORS - Dark Theme */
+  --theme-background: var(--color-carbon-990);
+  --theme-foreground: var(--color-neutral-50);
+
+  /* Primary interface colors */
+  --theme-primary: var(--color-primary-400);
+  --theme-primary-foreground: var(--color-neutral-50);
+  --theme-secondary: var(--color-secondary-400);
+  --theme-secondary-foreground: var(--color-neutral-50);
+  --theme-accent: var(--color-accent-400);
+  --theme-accent-foreground: var(--color-carbon-900);
+
+  /* Interface element colors */
+  --theme-muted: var(--color-neutral-800);
+  --theme-muted-foreground: var(--color-neutral-400);
+  --theme-card: var(--color-carbon-900);
+  --theme-card-foreground: var(--color-neutral-100);
+
+  /* Border and input colors */
+  --theme-border: var(--color-neutral-700);
+  --theme-input: var(--color-neutral-700);
+  --theme-ring: var(--color-primary-400);
+
+  /* Layer depths for shadows and 3D effects */
+  --theme-depth-1: var(--color-carbon-980);
+  --theme-depth-2: var(--color-carbon-950);
+  --theme-depth-3: var(--color-neutral-900);
+
+  /* Special effects */
+  --theme-glow: rgba(223, 168, 79, 0.15);
+  --theme-shadow: rgba(0, 0, 0, 0.6);
+  --theme-separator: var(--color-accent-700);
+  --theme-separator-glow: 0 0 15px var(--color-accent-900);
+}
+
+/* LIGHT THEME */
+.light-theme {
+  /* UI ELEMENT COLORS - Light Theme */
+  --theme-background: var(--color-neutral-50);
+  --theme-foreground: var(--color-neutral-900);
+
+  /* Primary interface colors */
+  --theme-primary: var(--color-primary-500);
+  --theme-primary-foreground: var(--color-neutral-50);
+  --theme-secondary: var(--color-secondary-500);
+  --theme-secondary-foreground: var(--color-neutral-50);
+  --theme-accent: var(--color-accent-500);
+  --theme-accent-foreground: var(--color-carbon-900);
+
+  /* Interface element colors */
+  --theme-muted: var(--color-neutral-100);
+  --theme-muted-foreground: var(--color-neutral-600);
+  --theme-card: var(--color-neutral-50);
+  --theme-card-foreground: var(--color-neutral-900);
+
+  /* Border and input colors */
+  --theme-border: var(--color-neutral-200);
+  --theme-input: var(--color-neutral-200);
+  --theme-ring: var(--color-primary-500);
+
+  /* Layer depths for shadows and 3D effects */
+  --theme-depth-1: var(--color-neutral-100);
+  --theme-depth-2: var(--color-neutral-200);
+  --theme-depth-3: var(--color-neutral-300);
+
+  /* Special effects */
+  --theme-glow: rgba(223, 168, 79, 0.1);
+  --theme-shadow: rgba(0, 0, 0, 0.1);
+  --theme-separator: var(--color-neutral-200);
+  --theme-separator-glow: none;
+}

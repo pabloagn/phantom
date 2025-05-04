@@ -20,6 +20,10 @@
     "./css": {
       "import": "./dist/css/styles.css"
     },
+    "./styles": {
+      "import": "./dist/esm/styles/index.js",
+      "types": "./dist/types/styles/index.d.ts"
+    },
     "./styles.css": "./dist/css/styles.css",
     "./global.css": "./dist/css/global.css",
     "./tailwind.css": "./dist/css/tailwind.css",
@@ -32,6 +36,9 @@
     "./tokens/typography.css": "./dist/css/tokens/typography.css",
     "./tokens/spacing.css": "./dist/css/tokens/spacing.css",
     "./tokens/shadows.css": "./dist/css/tokens/shadows.css",
+    "./tokens/theme.css": "./dist/css/tokens/theme.css",
+    "./tokens/animations.css": "./dist/css/tokens/animations.css",
+    "./tokens/border-radius.css": "./dist/css/tokens/border-radius.css",
     "./tokens/breakpoints.css": "./dist/css/tokens/breakpoints.css",
     "./components": {
       "import": "./dist/esm/components/index.js",
@@ -73,15 +80,15 @@
     "verify-build": "node scripts/verify-build.js",
     "build": "rimraf dist && node scripts/build-formats.js && node scripts/build-tokens.js && pnpm run verify-build",
     "build:tokens": "node scripts/build-tokens.js",
-    "build:css": "tailwindcss -c ./src/styles/tailwind.config.mjs -i ./src/styles/tailwind.css -o ./dist/css/styles.css --minify && cpy ./src/styles/global.css ./dist/css && cpy ./config/tailwind.preset.mjs ./dist/config",
+    "build:css": "tailwindcss -c ./src/styles/tailwind.config.ts -i ./src/styles/tailwind.css -o ./dist/css/styles.css --minify && cpy ./src/styles/global.css ./dist/css && cpy ./config/tailwind.preset.mjs ./dist/config",
     "build:docs": "vitepress build docs",
-    "build:watch:ts": "concurrently \"tsc --project tsconfig.json --watch --preserveWatchOutput\" \"tsc --project tsconfig.types.json --watch --preserveWatchOutput\"",
-    "build:watch:css": "tailwindcss -c ./src/styles/tailwind.config.mjs -i ./src/styles/tailwind.css -o ./dist/css/styles.css --watch",
+    "build:watch:ts": "tsc --project tsconfig.json --watch --preserveWatchOutput",
+    "build:watch:css": "tailwindcss -c ./src/styles/tailwind.config.ts -i ./src/styles/tailwind.css -o ./dist/css/styles.css --watch",
     "build:watch:assets": "chokidar './src/styles/global.css' './config/tailwind.preset.mjs' -c \"cpy ./src/styles/global.css ./dist/css && cpy ./config/tailwind.preset.mjs ./dist/config\"",
     "dev:watch": "pnpm run build && concurrently \"pnpm:build:watch:*\"",
     "watch": "pnpm run build && concurrently \"pnpm:build:watch:*\"",
     "watch:tokens": "chokidar './src/tokens/**/*.css' -c 'node scripts/build-tokens.js'",
-    "watch:all": "pnpm run build && concurrently \"pnpm:build:watch:*\" \"pnpm run watch:tokens\"",
+    "watch:all": "pnpm run build && concurrently \"pnpm:build:watch:css\" \"pnpm:build:watch:assets\" \"pnpm:build:watch:ts\" \"pnpm run watch:tokens\"",
     "lint": "eslint . --ext .ts,.tsx --config ./config/eslint.config.js && stylelint --config ./stylelint.config.mjs \"**/*.{css,scss}\"",
     "lint:fix": "eslint . --ext .ts,.tsx --config ./config/eslint.config.js --fix && stylelint --config ./stylelint.config.mjs \"**/*.{css,scss}\" --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,yml,yaml}\" --ignore-path .gitignore",
@@ -176,6 +183,7 @@
     "chromatic": "^10.9.6",
     "concurrently": "^9.1.2",
     "cpy-cli": "^5.0.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.0",
     "eslint-config-prettier": "^9.1.0",

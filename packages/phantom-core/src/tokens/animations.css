@@ -1,0 +1,201 @@
+/* packages/phantom-core/src/tokens/css/animations.css */
+
+/*
+PHANTOM ANIMATION SYSTEM
+
+This is the SINGLE SOURCE OF TRUTH for all animations in the Phantom design system.
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
+
+:root {
+  /* Animation durations */
+  --animation-duration-fastest: 50ms;
+  --animation-duration-faster: 100ms;
+  --animation-duration-fast: 150ms;
+  --animation-duration-normal: 200ms;
+  --animation-duration-slow: 300ms;
+  --animation-duration-slower: 400ms;
+  --animation-duration-slowest: 500ms;
+
+  /* Animation easings */
+  --animation-easing-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --animation-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --animation-easing-decelerated: cubic-bezier(0, 0, 0.2, 1);
+  --animation-easing-accelerated: cubic-bezier(0.4, 0, 1, 1);
+  --animation-easing-linear: cubic-bezier(0, 0, 1, 1);
+  --animation-easing-easeIn: cubic-bezier(0.4, 0, 1, 1);
+  --animation-easing-easeOut: cubic-bezier(0, 0, 0.2, 1);
+  --animation-easing-easeInOut: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Transition durations */
+  --transition-duration-fastest: 50ms;
+  --transition-duration-faster: 100ms;
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 200ms;
+  --transition-duration-slow: 300ms;
+  --transition-duration-slower: 400ms;
+  --transition-duration-slowest: 500ms;
+
+  /* Transition timing functions */
+  --transition-timing-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --transition-timing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --transition-timing-decelerated: cubic-bezier(0, 0, 0.2, 1);
+  --transition-timing-accelerated: cubic-bezier(0.4, 0, 1, 1);
+  --transition-timing-linear: cubic-bezier(0, 0, 1, 1);
+  --transition-timing-easeIn: cubic-bezier(0.4, 0, 1, 1);
+  --transition-timing-easeOut: cubic-bezier(0, 0, 0.2, 1);
+  --transition-timing-easeInOut: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Common transition presets */
+  --transition-hover: var(--transition-duration-fast) var(--transition-timing-standard);
+  --transition-focus: var(--transition-duration-normal) var(--transition-timing-emphasized);
+  --transition-color: var(--transition-duration-fast) var(--transition-timing-standard);
+  --transition-shadow: var(--transition-duration-normal) var(--transition-timing-standard);
+  --transition-transform: var(--transition-duration-normal) var(--transition-timing-standard);
+  --transition-opacity: var(--transition-duration-normal) var(--transition-timing-standard);
+  --transition-background: var(--transition-duration-normal) var(--transition-timing-standard);
+  --transition-border: var(--transition-duration-fast) var(--transition-timing-standard);
+  --transition-spacing: var(--transition-duration-slow) var(--transition-timing-standard);
+
+  /* Element-specific transitions */
+  --transition-button: var(--transition-duration-fast) var(--transition-timing-standard);
+  --transition-input: var(--transition-duration-fast) var(--transition-timing-easeOut);
+  --transition-card: var(--transition-duration-normal) var(--transition-timing-easeInOut);
+  --transition-dialog: var(--transition-duration-normal) var(--transition-timing-decelerated);
+  --transition-drawer: var(--transition-duration-slower) var(--transition-timing-emphasized);
+  --transition-dropdown: var(--transition-duration-fast) var(--transition-timing-decelerated);
+  --transition-tooltip: var(--transition-duration-faster) var(--transition-timing-standard);
+  --transition-navigation: var(--transition-duration-normal) var(--transition-timing-standard);
+}
+
+/* Keyframe Definitions */
+
+/* Fade animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Slide animations */
+@keyframes slide-in-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-in-down {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-in-left {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-in-right {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-out-up {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+@keyframes slide-out-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+}
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+}
+
+/* Scale animations */
+@keyframes scale-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes scale-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+/* Utility animations */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}

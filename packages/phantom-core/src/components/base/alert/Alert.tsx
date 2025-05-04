@@ -6,8 +6,10 @@
 import React from 'react';
 import { X, AlertCircle, Info, CheckCircle, AlertTriangle } from 'lucide-react';
 
+// Alert variants
 export type AlertVariant = 'info' | 'success' | 'warning' | 'error';
 
+// Alert props
 export interface AlertProps {
   /**
    * Alert variant
@@ -42,9 +44,7 @@ export interface AlertProps {
   className?: string;
 }
 
-/**
- * Alert component for notifications and status messages
- */
+// Alert component
 export const Alert: React.FC<AlertProps> = ({
   variant = 'info',
   title,

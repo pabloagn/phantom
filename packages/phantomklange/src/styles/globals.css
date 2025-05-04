@@ -1,15 +1,14 @@
 /* packages/phantomklange/src/styles/globals.css */
 
-/* Import custom fonts first */
-@import './fonts.css';
-
-/* Base Tailwind directives - these MUST come before other imports */
+/* Base Tailwind directives*/
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Import custom fonts first */
+@import './fonts.css';
+
 /* --- Import shared styles from @phantom/core --- */
-/* These imports MUST match exactly what's exported in package.json */
 @import '@phantom/core/global.css';
 
 /* Import token CSS files directly using the proper paths */
@@ -19,32 +18,32 @@
 @import '@phantom/core/tokens/shadows.css';
 @import '@phantom/core/tokens/breakpoints.css';
 
-/* Add phantomklange-specific global styles below */
-/* These styles will override phantom-core styles if there are conflicts */
+/* Phantomklange-specific global styles */
+/* NOTE: Will override phantom-core styles if there are conflicts */
 
 /* Site Background Settings - uses the semantic CSS variables from colors.css */
 :root {
-  /* PhantomKlange theme - deep, modern, gothic aesthetic */
-  --site-background: var(--color-carbon-990);
-  --site-foreground: var(--color-neutral-50);
-  --site-accent: var(--color-accent-400);
-  --site-accent-glow: var(--color-gothic-glow);
-  --site-primary: var(--color-primary-400);
-
-  /* Custom depths for layering elements */
-  --site-depth-1: var(--color-carbon-980);
-  --site-depth-2: var(--color-carbon-950);
-  --site-depth-3: var(--color-neutral-900);
-
-  /* Gothic design accents */
-  --site-separator-color: var(--color-accent-700);
-  --site-separator-glow: 0 0 15px var(--color-accent-900);
+    /* Main Phantomklange theme */
+    --site-background: var(--color-carbon-990);
+    --site-foreground: var(--color-neutral-50);
+    --site-accent: var(--color-accent-400);
+    --site-accent-glow: var(--color-gothic-glow);
+    --site-primary: var(--color-primary-400);
+  
+    /* Custom depths for layering elements */
+    --site-depth-1: var(--color-carbon-980);
+    --site-depth-2: var(--color-carbon-950);
+    --site-depth-3: var(--color-neutral-900);
+  
+    /* Design accents */
+    --site-separator-color: var(--color-accent-700);
+    --site-separator-glow: 0 0 15px var(--color-accent-900);
 }
 
 html, body {
-  background-color: var(--site-background);
-  color: var(--site-foreground);
-  min-height: 100%;
+    background-color: var(--site-background);
+    color: var(--site-foreground);
+    min-height: 100%;
 }
 
 /* Theme-specific classes (these will take precedence over the core theme variables) */

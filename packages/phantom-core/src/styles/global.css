@@ -1,63 +1,146 @@
 /* packages/phantom-core/src/styles/global.css */
 
-/* Global styles for the Phantom design system */
+/* Global styles for the Phantom Design System */
 
-/* Import Tailwind base styles */
-@import 'tailwind.css';
+/* Base Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Phantom-specific component variables that reference the token systems */
-:root {
-  /* Color variables */
-  --phantom-background: var(--color-background);
-  --phantom-foreground: var(--color-foreground);
-  --phantom-primary: var(--color-primary-400);
-  --phantom-primary-foreground: var(--color-background);
-  --phantom-secondary: var(--color-secondary-400);
-  --phantom-secondary-foreground: var(--color-background);
-  --phantom-accent: var(--color-accent-400);
-  --phantom-accent-foreground: var(--color-background);
-  --phantom-muted: var(--color-muted);
-  --phantom-muted-foreground: var(--color-muted-foreground);
-  --phantom-card: var(--color-card);
-  --phantom-card-foreground: var(--color-card-foreground);
-  --phantom-border: var(--color-border);
-  --phantom-input: var(--color-input);
-  --phantom-ring: var(--color-ring);
+/* Import token systems - these define all our variables */
+@import '../tokens/colors.css';
+@import '../tokens/typography.css';
+@import '../tokens/spacing.css';
+@import '../tokens/shadows.css';
+@import '../tokens/border-radius.css';
+@import '../tokens/animations.css';
+@import '../tokens/theme.css';
 
-  /* Gothic design elements */
-  --phantom-gothic-glow: var(--color-gothic-glow, rgba(223, 168, 79, 0.15));
-  --phantom-gothic-shadow: var(--color-gothic-shadow, rgba(0, 0, 0, 0.6));
+/* Global base element styles */
+@layer base {
+  html {
+    @apply antialiased;
+  }
 
-  /* Spacing */
-  --phantom-radius-sm: var(--radius-sm);
-  --phantom-radius-md: var(--radius-md);
-  --phantom-radius-lg: var(--radius-lg);
-  --phantom-radius-xl: var(--radius-xl);
+  body {
+    /* Apply themed background and text colors */
+    background-color: var(--theme-background);
+    color: var(--theme-foreground);
 
-  /* Animation */
-  --phantom-transition-fast: var(--transition-fast);
-  --phantom-transition-default: var(--transition-default);
-  --phantom-transition-slow: var(--transition-slow);
+    /* Font settings defined in typography.css */
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+
+    /* Rendering quality */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Base HTML elements - these inherit typography.css defaults */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--theme-foreground);
+    /* NOTE: Other properties are set in typography.css */
+  }
+
+  a {
+    color: var(--theme-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--transition-duration-fast) var(--transition-timing-standard);
+  }
+
+  a:hover {
+    color: var(--theme-primary);
+    text-decoration: none;
+  }
+
+  p {
+    margin-bottom: var(--paragraph-margin-bottom);
+  }
+
+  /* Focus styles for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--theme-ring);
+    outline-offset: 2px;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background-color: var(--theme-primary);
+    color: var(--theme-primary-foreground);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--theme-muted);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--theme-muted-foreground);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-primary);
+  }
 }
 
-/* TODO: Implement global styles (complete pending items) */
-/* Global styles */
-body {
-  /* Colors from color system */
-  background-color: var(--phantom-background);
-  color: var(--phantom-foreground);
+/* Component styles */
+@layer components {
+  /* Any globally available component styles would go here */
+  .container {
+    @apply mx-auto px-4;
+    max-width: 100%;
+  }
 
-  /* Typography from typography system - these are already set in typography.css */
-  /* This is just for reference - the body styles in typography.css will apply */
-  /*
-  font-family: var(--font-sans);
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-normal);
-  line-height: var(--line-height-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  */
+  @screen sm {
+    .container {
+      max-width: var(--container-sm);
+    }
+  }
+
+  @screen md {
+    .container {
+      max-width: var(--container-md);
+    }
+  }
+
+  @screen lg {
+    .container {
+      max-width: var(--container-lg);
+    }
+  }
+
+  @screen xl {
+    .container {
+      max-width: var(--container-xl);
+    }
+  }
+
+  @screen 2xl {
+    .container {
+      max-width: var(--container-2xl);
+    }
+  }
 }
 
-/* Additional global styles can be added here */
+/* Utility classes */
+@layer utilities {
+  .content-auto {
+    content-visibility: auto;
+  }
+}

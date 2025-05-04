@@ -35,7 +35,7 @@ const Header: React.FC = () => {
   // Dynamic header styles based on scroll position
   const headerClasses = `fixed top-0 left-0 w-full py-4 z-50 transition-all duration-300 ${
     scrolled
-      ? 'backdrop-blur-xl bg-carbon-990/90'
+      ? 'bg-carbon-990'
       : 'bg-transparent'
   }`;
 

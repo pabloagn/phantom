@@ -46,7 +46,6 @@ const expectedFilePaths = [
 ];
 
 // --- Verification Logic ---
-// --- Verification Logic ---
 console.log(`🔍 Verifying build output in: ${path.relative(process.cwd(), distDir)}`);
 
 const missingFiles = [];

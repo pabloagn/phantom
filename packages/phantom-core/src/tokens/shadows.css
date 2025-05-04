@@ -1,17 +1,16 @@
 /* packages/phantom-core/src/tokens/shadows.css */
-/* TODO: Double check what we need here */
 
-/**
- * PHANTOM SHADOWS SYSTEM
- *
- * This is the SINGLE SOURCE OF TRUTH for all shadow values in the Phantom design system.
- * - Provides elevation and depth through box-shadows
- * - Used by both Tailwind and standard CSS
- * - Defined once, used everywhere
- */
-/* TODO: Integrate from colors instead of defining here */
+/*
+PHANTOM SHADOWS SYSTEM
+
+This is the SINGLE SOURCE OF TRUTH for all shadow values in the Phantom design system.
+- Provides elevation and depth through box-shadows
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
+
 :root {
-  /* SHADOW VALUES - Elevations */
+  /* Basic elevation shadows */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-default: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -21,9 +20,13 @@
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
   --shadow-none: none;
 
-  /* SHADOW VALUES - Colored Interactive Elements */
-  --shadow-primary: 0 4px 8px -2px rgba(110, 84, 188, 0.3), 0 2px 4px -2px rgba(110, 84, 188, 0.2);
-  --shadow-success: 0 4px 8px -2px rgba(16, 185, 129, 0.3), 0 2px 4px -2px rgba(16, 185, 129, 0.2);
-  --shadow-warning: 0 4px 8px -2px rgba(245, 158, 11, 0.3), 0 2px 4px -2px rgba(245, 158, 11, 0.2);
-  --shadow-error: 0 4px 8px -2px rgba(239, 68, 68, 0.3), 0 2px 4px -2px rgba(239, 68, 68, 0.2);
+  /* Glow parameters for use with color-mix() */
+  --shadow-glow-sm: 0 0 4px;
+  --shadow-glow-md: 0 0 8px;
+  --shadow-glow-lg: 0 0 16px;
+
+  /* Color mix percentages */
+  --shadow-color-opacity-light: 20%;
+  --shadow-color-opacity-medium: 40%;
+  --shadow-color-opacity-strong: 60%;
 }

@@ -24,6 +24,7 @@ declare module '@phantom/core' {
     setTheme: (theme: Theme) => void;
   }
   export interface ThemeProviderProps {
+    defaultTheme?: Theme;
     initialTheme?: Theme;
     children: ReactNode;
   }

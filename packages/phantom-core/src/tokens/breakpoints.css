@@ -1,14 +1,13 @@
 /* packages/phantom-core/src/tokens/breakpoints.css */
-/* TODO: Double check what we need here */
 
-/**
- * PHANTOM BREAKPOINTS SYSTEM
- *
- * This is the SINGLE SOURCE OF TRUTH for all breakpoint values in the Phantom design system.
- * - Defines standard screen sizes for responsive design
- * - Used by both Tailwind and standard CSS
- * - Defined once, used everywhere
- */
+/*
+PHANTOM BREAKPOINTS SYSTEM
+
+This is the SINGLE SOURCE OF TRUTH for all breakpoint values in the Phantom design system.
+- Defines standard screen sizes for responsive design
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
 
 :root {
   /* BREAKPOINT VALUES */
@@ -19,7 +18,7 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
 
-  /* Container max widths (optional) */
+  /* Container max widths */
   --container-sm: 600px;
   --container-md: 728px;
   --container-lg: 984px;

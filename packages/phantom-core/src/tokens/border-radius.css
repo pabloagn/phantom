@@ -1,5 +1,13 @@
 /* packages/phantom-core/src/tokens/css/border-radius.css */
 
+/*
+PHANTOM BORDER RADIUS SYSTEM
+
+This is the SINGLE SOURCE OF TRUTH for all border radius tokens in the Phantom design system.
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
+
 :root {
   /* Base border radius scale */
   --border-radius-none: 0px;
@@ -25,11 +33,4 @@
   --border-radius-toast: var(--border-radius-md);
   --border-radius-popover: var(--border-radius-md);
   --border-radius-tag: var(--border-radius-md);
-}
-
-/* Dark mode overrides if needed */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Any dark mode specific changes would go here */
-  }
 }

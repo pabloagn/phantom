@@ -1,3 +1,5 @@
+// packages/phantom-core/config/tailwind.preset.d.mts
+
 export default presetConfig;
 /**
  * Tailwind CSS Preset for the Phantom Design System.

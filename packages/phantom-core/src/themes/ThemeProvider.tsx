@@ -1,79 +1,162 @@
 // packages/phantom-core/src/themes/ThemeProvider.tsx
-// @ts-nocheck
 
 'use client';
 
-// TODO: Implement ThemeProvider component (double check what we need here)
+import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
-import React, { createContext, useContext, useEffect, type ReactNode } from 'react';
+// Theme type definitions
+export type ThemeMode = 'light' | 'dark' | 'system';
 
-// Define a simple theme type
 export interface Theme {
   name: string;
-  isDark?: boolean;
+  isDark: boolean;
 }
 
-// Available themes
-export const THEMES = {
-  default: { name: 'default', isDark: true } as Theme,
-  dark: { name: 'dark', isDark: true } as Theme,
+// Available themes with their configurations
+export const themes = {
+  light: {
+    name: 'light',
+    isDark: false,
+  } as Theme,
+  
+  dark: {
+    name: 'dark',
+    isDark: true,
+  } as Theme,
 };
 
-// Create a context for the theme
-export interface ThemeContextType {
-  currentTheme: Theme;
-  setTheme: (theme: Theme) => void;
+export type ThemeKey = keyof typeof themes;
+
+// Theme Context Type
+interface ThemeContextType {
+  theme: Theme;
+  themeKey: ThemeKey;
+  setTheme: (key: ThemeKey) => void;
 }
 
-export const ThemeContext = createContext<ThemeContextType>({
-  currentTheme: THEMES.default,
-  setTheme: () => {}, // no-op default
-});
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// Theme Provider Props
 export interface ThemeProviderProps {
-  initialTheme?: Theme;
+  /** Initial theme key to use */
+  initialTheme?: ThemeKey;
+  /** Whether to enable system theme detection */
+  enableSystem?: boolean;
+  /** Optional storage key for persisting theme preference */
+  storageKey?: string;
+  /** Children components */
   children: ReactNode;
 }
 
-/**
- * Theme provider component
- * This implementation uses CSS classes to switch between themes
- * The color values are defined in tokens/colors.css
- */
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+// Theme Provider Component
+export function ThemeProvider({
+  initialTheme = 'dark',
+  enableSystem = false,
+  storageKey = 'theme-preference',
   children,
-  initialTheme = THEMES.default,
-}) => {
-  // Theme switching function
-  const setTheme = (theme: Theme) => {
-    // Remove existing theme classes
-    document.documentElement.classList.remove('dark-theme');
-
-    // Add the new theme class if it's the dark theme
-    if (theme.isDark) {
-      document.documentElement.classList.add('dark-theme');
+}: ThemeProviderProps) {
+  // Initialize theme from localStorage or default
+  const [themeKey, setThemeKey] = useState<ThemeKey>(() => {
+    // Only use localStorage in browser environment
+    if (typeof window !== 'undefined') {
+      try {
+        const storedTheme = localStorage.getItem(storageKey);
+        if (storedTheme && storedTheme in themes) {
+          return storedTheme as ThemeKey;
+        }
+      } catch (e) {
+        console.warn('Failed to read theme from localStorage:', e);
+      }
     }
+    
+    return initialTheme;
+  });
 
-    // Set a data attribute for theme name (useful for targeting in CSS or testing)
-    document.documentElement.setAttribute('data-theme', theme.name);
+  // Get the current theme object
+  const theme = themes[themeKey];
+
+  // Set the theme in both CSS and localStorage
+  const applyTheme = (key: ThemeKey) => {
+    const newTheme = themes[key];
+    
+    // Apply CSS class for the theme
+    if (typeof document !== 'undefined') {
+      // Remove existing theme classes
+      document.documentElement.classList.remove('light-theme', 'dark-theme');
+      
+      // Add the new theme class
+      document.documentElement.classList.add(`${newTheme.name}-theme`);
+      
+      // Set data attribute for more specific CSS targeting
+      document.documentElement.setAttribute('data-theme', newTheme.name);
+      
+      // Set color-scheme for browser UI elements
+      document.documentElement.style.colorScheme = newTheme.isDark ? 'dark' : 'light';
+    }
+    
+    // Store the preference
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(storageKey, key);
+      } catch (e) {
+        console.warn('Failed to save theme to localStorage:', e);
+      }
+    }
   };
 
-  // Apply initial theme on mount
+  // Handle theme changes
+  const setTheme = (key: ThemeKey) => {
+    setThemeKey(key);
+  };
+
+  // Apply the theme effect
   useEffect(() => {
-    setTheme(initialTheme);
-  }, [initialTheme]);
+    applyTheme(themeKey);
+  }, [themeKey]);
+
+  // Handle system preference changes if enabled
+  useEffect(() => {
+    if (!enableSystem) return;
+    
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setThemeKey(e.matches ? 'dark' : 'light');
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [enableSystem]);
+
+  // Memoize context value to prevent unnecessary renders
+  const contextValue = React.useMemo(
+    () => ({
+      theme,
+      themeKey,
+      setTheme,
+    }),
+    [theme, themeKey]
+  );
 
   return (
-    <ThemeContext.Provider
-      value={{
-        currentTheme: initialTheme,
-        setTheme,
-      }}
-    >
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );
-};
+}
 
-// Custom hook for accessing the theme
-export const useTheme = () => useContext(ThemeContext);
+/**
+ * Hook to access the current theme
+ * @returns ThemeContextType
+ * @throws Error if used outside of ThemeProvider
+ */
+export function useTheme(): ThemeContextType {
+  const context = useContext(ThemeContext);
+  
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  
+  return context;
+}

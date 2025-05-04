@@ -1,12 +1,18 @@
-/**
- * Border radius tokens for consistent rounding across the design system
- */
+/* packages/phantom-core/src/tokens/border-radius.ts */
+
+/*
+PHANTOM BORDER RADIUS TOKENS
+
+This is the SINGLE SOURCE OF TRUTH for all border radius tokens in the Phantom design system.
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
+*/
 
 // Helper function to generate CSS variable references
 const cssVar = (name: string) => `var(--${name})`;
 
 // Border radius values
-export const borderRadius = {
+export const scale = {
   none: cssVar('border-radius-none'),       // 0px
   xs: cssVar('border-radius-xs'),           // 2px
   sm: cssVar('border-radius-sm'),           // 4px
@@ -16,8 +22,10 @@ export const borderRadius = {
   '2xl': cssVar('border-radius-2xl'),       // 16px
   '3xl': cssVar('border-radius-3xl'),       // 24px
   full: cssVar('border-radius-full'),       // 9999px
+};
 
-  // Specific component radii (with default values)
+// Component-specific border radius values
+export const components = {
   button: cssVar('border-radius-button'),         // same as md
   input: cssVar('border-radius-input'),           // same as md
   card: cssVar('border-radius-card'),             // same as lg
@@ -30,4 +38,10 @@ export const borderRadius = {
   toast: cssVar('border-radius-toast'),           // same as md
   popover: cssVar('border-radius-popover'),       // same as md
   tag: cssVar('border-radius-tag'),               // same as md
+};
+
+// Combined border radius object (flattened for backward compatibility)
+export const borderRadius = {
+  ...scale,
+  ...components
 };

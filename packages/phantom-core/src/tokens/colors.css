@@ -1,159 +1,116 @@
 /* packages/phantom-core/src/tokens/colors.css */
-/* TODO: Double check what we need here */
 
-/**
- * PHANTOM COLOR SYSTEM
- *
- * This is the SINGLE SOURCE OF TRUTH for all colors in the Phantom design system.
- * - Uses HSL format for easier adjustments
- * - Provides color previews in editors that support CSS
- * - Used by both Tailwind and standard CSS
- * - Defined once, used everywhere
- *
- * This color system embodies Phantom's minimalist, modern gothic aesthetic.
- */
+/*
+PHANTOM COLOR SYSTEM
 
-:root {
-  /* PRIMARY PALETTE - Modern teal-blue */
-  --color-primary-50: hsl(200, 60%, 95%);       /* #ebf5fa */
-  --color-primary-100: hsl(200, 65%, 88%);      /* #d0e6f1 */
-  --color-primary-200: hsl(200, 70%, 75%);      /* #a0cfe3 */
-  --color-primary-300: hsl(200, 75%, 60%);      /* #60aed0 */
-  --color-primary-400: hsl(200, 80%, 45%);      /* #2a8fb8 */
-  --color-primary-500: hsl(200, 85%, 35%);      /* #196e91 */
-  --color-primary-600: hsl(200, 90%, 25%);      /* #0d4f69 */
-  --color-primary-700: hsl(200, 90%, 18%);      /* #08354a */
-  --color-primary-800: hsl(200, 90%, 12%);      /* #051f2b */
-  --color-primary-900: hsl(200, 90%, 6%);       /* #030f15 */
+This is the SINGLE SOURCE OF TRUTH for all colors in the Phantom design system.
+- Uses HSL format for easier adjustments
+- Provides color previews in editors that support CSS
+- Used by both Tailwind and standard CSS
+- Defined once, used everywhere
 
-  /* SECONDARY PALETTE - Slate gray */
-  --color-secondary-50: hsl(220, 15%, 95%);     /* #eef0f4 */
-  --color-secondary-100: hsl(220, 15%, 85%);    /* #d5d9e3 */
-  --color-secondary-200: hsl(220, 15%, 75%);    /* #bbc1d0 */
-  --color-secondary-300: hsl(220, 15%, 65%);    /* #a1a9bd */
-  --color-secondary-400: hsl(220, 15%, 45%);    /* #6e7994 */
-  --color-secondary-500: hsl(220, 15%, 35%);    /* #555e75 */
-  --color-secondary-600: hsl(220, 15%, 25%);    /* #3c4256 */
-  --color-secondary-700: hsl(220, 15%, 18%);    /* #2a303e */
-  --color-secondary-800: hsl(220, 15%, 12%);    /* #1c2029 */
-  --color-secondary-900: hsl(220, 15%, 8%);     /* #12141b */
+This color system embodies Phantom's minimalist, modern gothic aesthetic.
+*/
 
-  /* ACCENT PALETTE - Subtle gold/amber */
-  --color-accent-50: hsl(35, 60%, 95%);         /* #fcf6eb */
-  --color-accent-100: hsl(35, 65%, 90%);        /* #f8edd6 */
-  --color-accent-200: hsl(35, 70%, 80%);        /* #f2dbb0 */
-  --color-accent-300: hsl(35, 75%, 65%);        /* #e8c17c */
-  --color-accent-400: hsl(35, 80%, 55%);        /* #dfa84f */
-  --color-accent-500: hsl(35, 85%, 45%);        /* #cc8c29 */
-  --color-accent-600: hsl(35, 90%, 35%);        /* #a16813 */
-  --color-accent-700: hsl(35, 90%, 25%);        /* #734a0e */
-  --color-accent-800: hsl(35, 90%, 15%);        /* #452c08 */
-  --color-accent-900: hsl(35, 90%, 8%);         /* #241704 */
-
-  /* SUCCESS PALETTE - Subtle green */
-  --color-success-50: hsl(160, 60%, 95%);       /* #ebfaf5 */
-  --color-success-100: hsl(160, 65%, 87%);      /* #c8f1e4 */
-  --color-success-200: hsl(160, 70%, 75%);      /* #93e5cc */
-  --color-success-300: hsl(160, 75%, 60%);      /* #4dd6ae */
-  --color-success-400: hsl(160, 70%, 40%);      /* #1fb38a */
-  --color-success-500: hsl(160, 80%, 30%);      /* #0e8e69 */
-  --color-success-600: hsl(160, 85%, 23%);      /* #086b4f */
-  --color-success-700: hsl(160, 90%, 17%);      /* #044e39 */
-  --color-success-800: hsl(160, 90%, 12%);      /* #033728 */
-  --color-success-900: hsl(160, 90%, 10%);      /* #052e22 */
-
-  /* WARNING PALETTE - Amber */
-  --color-warning-50: hsl(40, 90%, 95%);        /* #fef8eb */
-  --color-warning-100: hsl(40, 90%, 88%);       /* #fcefce */
-  --color-warning-200: hsl(40, 90%, 80%);       /* #f9e4ad */
-  --color-warning-300: hsl(40, 90%, 70%);       /* #f7d685 */
-  --color-warning-400: hsl(40, 90%, 55%);       /* #f5c848 */
-  --color-warning-500: hsl(36, 90%, 45%);       /* #e09e20 */
-  --color-warning-600: hsl(35, 90%, 35%);       /* #b27b13 */
-  --color-warning-700: hsl(32, 90%, 25%);       /* #86590d */
-  --color-warning-800: hsl(31, 90%, 18%);       /* #614009 */
-  --color-warning-900: hsl(30, 90%, 15%);       /* #6b3d07 */
-
-  /* ERROR PALETTE - Deep red */
-  --color-error-50: hsl(5, 60%, 95%);           /* #fbefed */
-  --color-error-100: hsl(5, 70%, 90%);          /* #f8deda */
-  --color-error-200: hsl(5, 80%, 80%);          /* #f4b8b0 */
-  --color-error-300: hsl(5, 85%, 70%);          /* #ef8c82 */
-  --color-error-400: hsl(5, 90%, 55%);          /* #f44336 */
-  --color-error-500: hsl(5, 95%, 40%);          /* #d32f2f */
-  --color-error-600: hsl(5, 95%, 30%);          /* #a02424 */
-  --color-error-700: hsl(5, 95%, 25%);          /* #861d1d */
-  --color-error-800: hsl(5, 95%, 20%);          /* #6b1717 */
-  --color-error-900: hsl(5, 95%, 15%);          /* #541111 */
-
-  /* NEUTRAL/GRAY PALETTE - Cold gray */
-  --color-neutral-50: hsl(210, 6%, 98%);        /* #f8f9fa */
-  --color-neutral-100: hsl(210, 5%, 94%);       /* #eff0f2 */
-  --color-neutral-200: hsl(210, 4%, 88%);       /* #e2e4e6 */
-  --color-neutral-300: hsl(210, 3%, 78%);       /* #c7cacd */
-  --color-neutral-400: hsl(210, 2%, 65%);       /* #a5a8ab */
-  --color-neutral-500: hsl(210, 2%, 45%);       /* #72757a */
-  --color-neutral-600: hsl(210, 3%, 33%);       /* #52565a */
-  --color-neutral-700: hsl(210, 4%, 25%);       /* #3d4045 */
-  --color-neutral-800: hsl(210, 5%, 15%);       /* #24272c */
-  --color-neutral-900: hsl(210, 6%, 8%);        /* #121418 */
-  --color-neutral-950: hsl(210, 7%, 4%);        /* #09090b */
-
-  /* CARBON BLACK PALETTE - Deep blacks for dramatic contrast */
-  --color-carbon-950: hsl(220, 10%, 3%);        /* #05060a */
-  --color-carbon-980: hsl(220, 12%, 2%);        /* #030407 */
-  --color-carbon-990: hsl(220, 15%, 1%);        /* #020204 */
-  --color-carbon-black: hsl(0, 0%, 0%);         /* #000000 */
-
-  /* SEMANTIC COLORS - Light Theme */
-  --color-background: var(--color-neutral-50);
-  --color-foreground: var(--color-neutral-900);
-  --color-muted: var(--color-neutral-100);
-  --color-muted-foreground: var(--color-neutral-500);
-  --color-card: var(--color-neutral-50);
-  --color-card-foreground: var(--color-neutral-900);
-  --color-border: var(--color-neutral-200);
-  --color-input: var(--color-neutral-200);
-  --color-ring: var(--color-primary-500);
-
-  /* SPACING & RADIUS */
-  --radius-sm: 0.125rem;
-  --radius-md: 0.25rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 1rem;
-
-  /* ANIMATION */
-  --transition-fast: 150ms;
-  --transition-default: 250ms;
-  --transition-slow: 500ms;
-}
-
-/* DARK THEME - Modern Gothic Aesthetic */
-.dark-theme {
-  --color-background: var(--color-carbon-950);
-  --color-foreground: var(--color-neutral-100);
-  --color-muted: var(--color-neutral-800);
-  --color-muted-foreground: var(--color-neutral-400);
-  --color-card: var(--color-neutral-900);
-  --color-card-foreground: var(--color-neutral-100);
-  --color-border: var(--color-neutral-700);
-  --color-input: var(--color-neutral-700);
-  --color-ring: var(--color-primary-400);
-
-  /* Enhanced dark theme gothic aesthetic - subtle accent highlights */
-  --color-gothic-glow: rgba(223, 168, 79, 0.15);
-  --color-gothic-shadow: rgba(0, 0, 0, 0.6);
-}
-
-/* LIGHT THEME (Explicit) */
-.light-theme {
-  --color-background: var(--color-neutral-50);
-  --color-foreground: var(--color-neutral-900);
-  --color-muted: var(--color-neutral-100);
-  --color-muted-foreground: var(--color-neutral-500);
-  --color-card: var(--color-neutral-50);
-  --color-card-foreground: var(--color-neutral-900);
-  --color-border: var(--color-neutral-200);
-  --color-input: var(--color-neutral-200);
-  --color-ring: var(--color-primary-500);
+ :root {
+    /* PRIMARY - Modern teal-blue */
+    --color-primary-50: hsl(200, 60%, 95%);       /* #ebf5fa */
+    --color-primary-100: hsl(200, 65%, 88%);      /* #d0e6f1 */
+    --color-primary-200: hsl(200, 70%, 75%);      /* #a0cfe3 */
+    --color-primary-300: hsl(200, 75%, 60%);      /* #60aed0 */
+    --color-primary-400: hsl(200, 80%, 45%);      /* #2a8fb8 */
+    --color-primary-500: hsl(200, 85%, 35%);      /* #196e91 */
+    --color-primary-600: hsl(200, 90%, 25%);      /* #0d4f69 */
+    --color-primary-700: hsl(200, 90%, 18%);      /* #08354a */
+    --color-primary-800: hsl(200, 90%, 12%);      /* #051f2b */
+    --color-primary-900: hsl(200, 90%, 6%);       /* #030f15 */
+  
+    /* SECONDARY - Slate gray */
+    --color-secondary-50: hsl(220, 15%, 95%);     /* #eef0f4 */
+    --color-secondary-100: hsl(220, 15%, 85%);    /* #d5d9e3 */
+    --color-secondary-200: hsl(220, 15%, 75%);    /* #bbc1d0 */
+    --color-secondary-300: hsl(220, 15%, 65%);    /* #a1a9bd */
+    --color-secondary-400: hsl(220, 15%, 45%);    /* #6e7994 */
+    --color-secondary-500: hsl(220, 15%, 35%);    /* #555e75 */
+    --color-secondary-600: hsl(220, 15%, 25%);    /* #3c4256 */
+    --color-secondary-700: hsl(220, 15%, 18%);    /* #2a303e */
+    --color-secondary-800: hsl(220, 15%, 12%);    /* #1c2029 */
+    --color-secondary-900: hsl(220, 15%, 8%);     /* #12141b */
+  
+    /* ACCENT - Subtle gold/amber */
+    --color-accent-50: hsl(35, 60%, 95%);         /* #fcf6eb */
+    --color-accent-100: hsl(35, 65%, 90%);        /* #f8edd6 */
+    --color-accent-200: hsl(35, 70%, 80%);        /* #f2dbb0 */
+    --color-accent-300: hsl(35, 75%, 65%);        /* #e8c17c */
+    --color-accent-400: hsl(35, 80%, 55%);        /* #dfa84f */
+    --color-accent-500: hsl(35, 85%, 45%);        /* #cc8c29 */
+    --color-accent-600: hsl(35, 90%, 35%);        /* #a16813 */
+    --color-accent-700: hsl(35, 90%, 25%);        /* #734a0e */
+    --color-accent-800: hsl(35, 90%, 15%);        /* #452c08 */
+    --color-accent-900: hsl(35, 90%, 8%);         /* #241704 */
+  
+    /* SUCCESS - Subtle green */
+    --color-success-50: hsl(160, 60%, 95%);       /* #ebfaf5 */
+    --color-success-100: hsl(160, 65%, 87%);      /* #c8f1e4 */
+    --color-success-200: hsl(160, 70%, 75%);      /* #93e5cc */
+    --color-success-300: hsl(160, 75%, 60%);      /* #4dd6ae */
+    --color-success-400: hsl(160, 70%, 40%);      /* #1fb38a */
+    --color-success-500: hsl(160, 80%, 30%);      /* #0e8e69 */
+    --color-success-600: hsl(160, 85%, 23%);      /* #086b4f */
+    --color-success-700: hsl(160, 90%, 17%);      /* #044e39 */
+    --color-success-800: hsl(160, 90%, 12%);      /* #033728 */
+    --color-success-900: hsl(160, 90%, 10%);      /* #052e22 */
+  
+    /* WARNING - Amber */
+    --color-warning-50: hsl(40, 90%, 95%);        /* #fef8eb */
+    --color-warning-100: hsl(40, 90%, 88%);       /* #fcefce */
+    --color-warning-200: hsl(40, 90%, 80%);       /* #f9e4ad */
+    --color-warning-300: hsl(40, 90%, 70%);       /* #f7d685 */
+    --color-warning-400: hsl(40, 90%, 55%);       /* #f5c848 */
+    --color-warning-500: hsl(36, 90%, 45%);       /* #e09e20 */
+    --color-warning-600: hsl(35, 90%, 35%);       /* #b27b13 */
+    --color-warning-700: hsl(32, 90%, 25%);       /* #86590d */
+    --color-warning-800: hsl(31, 90%, 18%);       /* #614009 */
+    --color-warning-900: hsl(30, 90%, 15%);       /* #6b3d07 */
+  
+    /* ERROR - Deep red */
+    --color-error-50: hsl(5, 60%, 95%);           /* #fbefed */
+    --color-error-100: hsl(5, 70%, 90%);          /* #f8deda */
+    --color-error-200: hsl(5, 80%, 80%);          /* #f4b8b0 */
+    --color-error-300: hsl(5, 85%, 70%);          /* #ef8c82 */
+    --color-error-400: hsl(5, 90%, 55%);          /* #f44336 */
+    --color-error-500: hsl(5, 95%, 40%);          /* #d32f2f */
+    --color-error-600: hsl(5, 95%, 30%);          /* #a02424 */
+    --color-error-700: hsl(5, 95%, 25%);          /* #861d1d */
+    --color-error-800: hsl(5, 95%, 20%);          /* #6b1717 */
+    --color-error-900: hsl(5, 95%, 15%);          /* #541111 */
+  
+    /* NEUTRAL - Cold gray */
+    --color-neutral-50: hsl(210, 6%, 98%);        /* #f8f9fa */
+    --color-neutral-100: hsl(210, 5%, 94%);       /* #eff0f2 */
+    --color-neutral-200: hsl(210, 4%, 88%);       /* #e2e4e6 */
+    --color-neutral-300: hsl(210, 3%, 78%);       /* #c7cacd */
+    --color-neutral-400: hsl(210, 2%, 65%);       /* #a5a8ab */
+    --color-neutral-500: hsl(210, 2%, 45%);       /* #72757a */
+    --color-neutral-600: hsl(210, 3%, 33%);       /* #52565a */
+    --color-neutral-700: hsl(210, 4%, 25%);       /* #3d4045 */
+    --color-neutral-800: hsl(210, 5%, 15%);       /* #24272c */
+    --color-neutral-900: hsl(210, 6%, 8%);        /* #121418 */
+    --color-neutral-950: hsl(210, 7%, 4%);        /* #09090b */
+  
+    /* CARBON - Deep blacks */
+    --color-carbon-50: hsl(220, 10%, 98%);       /* #fafbfd */
+    --color-carbon-100: hsl(220, 10%, 90%);      /* #e8eaef */
+    --color-carbon-200: hsl(220, 10%, 80%);      /* #cdd2da */
+    --color-carbon-300: hsl(220, 10%, 70%);      /* #b1b9c5 */
+    --color-carbon-400: hsl(220, 10%, 50%);      /* #7d8798 */
+    --color-carbon-500: hsl(220, 10%, 35%);      /* #57606f */
+    --color-carbon-600: hsl(220, 10%, 25%);      /* #3d4452 */
+    --color-carbon-700: hsl(220, 10%, 15%);      /* #252a33 */
+    --color-carbon-800: hsl(220, 10%, 8%);       /* #13161c */
+    --color-carbon-900: hsl(220, 10%, 5%);       /* #0c0d11 */
+    --color-carbon-950: hsl(220, 10%, 3%);       /* #05060a */
+    --color-carbon-980: hsl(220, 12%, 2%);       /* #030407 */
+    --color-carbon-990: hsl(220, 15%, 1%);       /* #020204 */
+    --color-carbon-black: hsl(0, 0%, 0%);        /* #000000 */
 }

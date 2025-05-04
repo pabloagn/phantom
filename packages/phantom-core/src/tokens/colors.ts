@@ -7,9 +7,10 @@
  * This file just provides TypeScript types and references to those CSS variables
  */
 
-export type ColorScale = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+export type ColorScale = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950;
+export type CarbonScale = 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | 950 | 980 | 990 | 'black';
 export type BrandColor = 'primary' | 'secondary' | 'accent';
-export type UIColor = 'success' | 'warning' | 'error' | 'info';
+export type UIColor = 'success' | 'warning' | 'error';
 
 // Helper function to generate CSS variable references
 const cssVar = (name: string) => `var(--${name})`;
@@ -109,29 +110,20 @@ export const neutral = {
 };
 
 export const carbon = {
+  50: cssVar('color-carbon-50'),
+  100: cssVar('color-carbon-100'),
+  200: cssVar('color-carbon-200'),
+  300: cssVar('color-carbon-300'),
+  400: cssVar('color-carbon-400'),
+  500: cssVar('color-carbon-500'),
+  600: cssVar('color-carbon-600'),
+  700: cssVar('color-carbon-700'),
+  800: cssVar('color-carbon-800'),
+  900: cssVar('color-carbon-900'),
   950: cssVar('color-carbon-950'),
   980: cssVar('color-carbon-980'),
   990: cssVar('color-carbon-990'),
   black: cssVar('color-carbon-black'),
-};
-
-// Gothic design elements
-export const gothic = {
-  glow: cssVar('color-gothic-glow'),
-  shadow: cssVar('color-gothic-shadow')
-};
-
-// Semantic colors
-export const semantic = {
-  background: cssVar('color-background'),
-  foreground: cssVar('color-foreground'),
-  muted: cssVar('color-muted'),
-  mutedForeground: cssVar('color-muted-foreground'),
-  card: cssVar('color-card'),
-  cardForeground: cssVar('color-card-foreground'),
-  border: cssVar('color-border'),
-  input: cssVar('color-input'),
-  ring: cssVar('color-ring'),
 };
 
 // Combined color object for export
@@ -144,6 +136,4 @@ export const colors = {
   error,
   neutral,
   carbon,
-  gothic,
-  semantic,
 };

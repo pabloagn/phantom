@@ -1,12 +1,11 @@
 // packages/phantom-core/src/tokens/spacing/spacing.ts
-// TODO: Implement spacing.ts (double check what we need here)
 
-/**
- * This file provides TypeScript access to the spacing tokens defined in spacing.css
- *
- * IMPORTANT: The single source of truth for spacing is the spacing.css file
- * This file just provides TypeScript types and references to those CSS variables
- */
+/*
+This file provides TypeScript access to the spacing tokens defined in spacing.css
+
+- IMPORTANT: The single source of truth for spacing is the spacing.css file
+- This file just provides TypeScript types and references to those CSS variables
+*/
 
 // Helper function to generate CSS variable references
 const cssVar = (name: string) => `var(--${name})`;
@@ -55,7 +54,7 @@ export const spacing: Spacing = {
   72: cssVar('space-72'),
   80: cssVar('space-80'),
   96: cssVar('space-96'),
-  
+
   // Semantic names
   xs: cssVar('space-xs'),
   sm: cssVar('space-sm'),
