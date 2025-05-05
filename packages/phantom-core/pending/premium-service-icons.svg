@@ -1,0 +1,340 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1400" width="900" height="1400">
+  <!-- Black background -->
+  <rect width="900" height="1400" fill="#000" />
+  
+  <!-- Title and header -->
+  <text x="450" y="60" font-family="Inter, Arial, sans-serif" font-size="32" fill="white" text-anchor="middle" font-weight="300" letter-spacing="3">PREMIUM SERVICE ICONS</text>
+  <text x="450" y="100" font-family="Inter, Arial, sans-serif" font-size="16" fill="#777" text-anchor="middle" font-weight="300" letter-spacing="1.5">MODERNIST LITERATURE &amp; ART CURATION</text>
+  
+  <!-- Row 1 -->
+  <!-- 1. Archive -->
+  <g transform="translate(150, 180)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 0L60 15V45L30 60L0 45V15L30 0Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30V60M0 15L30 30L60 15" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 15V37.5M45 15V37.5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ARCHIVE</text>
+  </g>
+  
+  <!-- 2. Literary Canon -->
+  <g transform="translate(300, 180)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 10H50V50H10V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 10L30 0L50 10" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 0V50" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 20H40M20 30H40M20 40H40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">LITERARY CANON</text>
+  </g>
+  
+  <!-- 3. Visual Arts -->
+  <g transform="translate(450, 180)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 10L50 20L30 30L10 20L30 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 20V40L30 50L50 40V20" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30V50" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="20" r="3" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">VISUAL ARTS</text>
+  </g>
+  
+  <!-- 4. Timeline -->
+  <g transform="translate(600, 180)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M0 30H60" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="15" cy="30" r="5" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="30" r="5" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="45" cy="30" r="5" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 15V45M30 10V50M45 20V40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">TIMELINE</text>
+  </g>
+  
+  <!-- 5. Analysis -->
+  <g transform="translate(750, 180)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 0L60 30L30 60L0 30L30 0Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 15L45 45M45 15L15 45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="30" r="5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ANALYSIS</text>
+  </g>
+  
+  <!-- Row 2 -->
+  <!-- 6. Comparative -->
+  <g transform="translate(150, 330)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 10H25V30H10V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 30H50V50H35V30Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 20L35 40" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 40H25M35 20H50" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">COMPARATIVE</text>
+  </g>
+  
+  <!-- 7. Movements -->
+  <g transform="translate(300, 330)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 20C15 10 25 5 30 20C35 35 45 40 50 30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 35C15 25 25 20 30 35C35 50 45 55 50 45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="10" cy="20" r="2" fill="white" />
+      <circle cx="50" cy="30" r="2" fill="white" />
+      <circle cx="10" cy="35" r="2" fill="white" />
+      <circle cx="50" cy="45" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">MOVEMENTS</text>
+  </g>
+  
+  <!-- 8. Taxonomy -->
+  <g transform="translate(450, 330)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <circle cx="30" cy="10" r="5" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 15V20" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 30H45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="15" cy="30" r="3" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="30" r="3" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="45" cy="30" r="3" fill="none" stroke="white" stroke-width="1" />
+      <path d="M15 33V40M30 33V40M45 33V40" fill="none" stroke="white" stroke-width="1" />
+      <path d="M5 50H25M25 50H35M35 50H55" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="5" cy="50" r="2" fill="white" />
+      <circle cx="15" cy="50" r="2" fill="white" />
+      <circle cx="25" cy="50" r="2" fill="white" />
+      <circle cx="35" cy="50" r="2" fill="white" />
+      <circle cx="45" cy="50" r="2" fill="white" />
+      <circle cx="55" cy="50" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">TAXONOMY</text>
+  </g>
+  
+  <!-- 9. Curator -->
+  <g transform="translate(600, 330)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 0V60" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 10H45M10 30H50M15 50H45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="10" r="4" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="30" r="4" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="50" r="4" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">CURATOR</text>
+  </g>
+  
+  <!-- 10. Symbolism -->
+  <g transform="translate(750, 330)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 0L38 20H60L42 32L50 55L30 40L10 55L18 32L0 20H22L30 0Z" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="23" r="5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">SYMBOLISM</text>
+  </g>
+  
+  <!-- Row 3 -->
+  <!-- 11. Influence -->
+  <g transform="translate(150, 480)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <circle cx="20" cy="20" r="10" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="40" cy="40" r="15" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M28 28L32 32" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 20H0M20 10V0M30 20H40M20 30V40" fill="none" stroke="white" stroke-width="1" stroke-dasharray="2 2" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">INFLUENCE</text>
+  </g>
+  
+  <!-- 12. Interpretation -->
+  <g transform="translate(300, 480)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 10L50 10L50 50L10 50L10 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 25L35 25L35 35L25 35L25 25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 10L25 25M50 10L35 25M10 50L25 35M50 50L35 35" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">INTERPRETATION</text>
+  </g>
+  
+  <!-- 13. Cross-Reference -->
+  <g transform="translate(450, 480)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M15 15L45 15L45 45L15 45L15 15Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M5 25L15 25M45 25L55 25" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 5L30 15M30 45L30 55" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 20L40 40M40 20L20 40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">CROSS-REFERENCE</text>
+  </g>
+  
+  <!-- 14. Patterns -->
+  <g transform="translate(600, 480)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 10H25V25H10V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 10H50V25H35V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 35H25V50H10V35Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 35H50V50H35V35Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 17.5H35M17.5 25V35M50 42.5H60M42.5 50V60" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">PATTERNS</text>
+  </g>
+  
+  <!-- 15. Thematic -->
+  <g transform="translate(750, 480)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 5L45 30H15L30 5Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 30L5 50H55L45 30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 17L30 38" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="42" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">THEMATIC</text>
+  </g>
+  
+  <!-- Row 4 -->
+  <!-- 16. Authorship -->
+  <g transform="translate(150, 630)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 45C10 32.5 17.5 25 30 25C42.5 25 50 32.5 50 45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="15" r="8" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 25V35M20 35H40" fill="none" stroke="white" stroke-width="1" />
+      <path d="M20 45H40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">AUTHORSHIP</text>
+  </g>
+  
+  <!-- 17. Historical Context -->
+  <g transform="translate(300, 630)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <circle cx="30" cy="30" r="20" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 12V30L38 38" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30L5 45M30 30L55 45" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">HISTORICAL CONTEXT</text>
+  </g>
+  
+  <!-- 18. Artistic Medium -->
+  <g transform="translate(450, 630)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 50C10 28.2 22.2 10 37.5 10C52.8 10 65 28.2 65 50" fill="none" stroke="white" stroke-width="1.5" transform="translate(-7.5, -5) scale(0.9)" />
+      <path d="M20 20L40 40M20 40L40 20" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 30H45" fill="none" stroke="white" stroke-width="1" />
+      <path d="M30 15V45" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ARTISTIC MEDIUM</text>
+  </g>
+  
+  <!-- 19. Deconstruction -->
+  <g transform="translate(600, 630)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M10 10H50V50H10V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 10L20 20M50 10L40 20M10 50L20 40M50 50L40 40" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 20H40V40H20V20Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M30 20V40M20 30H40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">DECONSTRUCTION</text>
+  </g>
+  
+  <!-- 20. Cultural Significance -->
+  <g transform="translate(750, 630)">
+    <circle cx="50" cy="50" r="50" fill="#111" />
+    <g transform="translate(20, 20)">
+      <path d="M30 5L55 30L30 55L5 30L30 5Z" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="30" r="10" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M18 18L42 42M42 18L18 42" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="11" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">CULTURAL SIGNIFICANCE</text>
+  </g>
+  
+  <!-- Design notes -->
+  <g transform="translate(150, 780)">
+    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="14" fill="#aaa" font-weight="300">DESIGN NOTES</text>
+    <line x1="0" y1="10" x2="600" y2="10" stroke="#333" stroke-width="1" />
+    
+    <text x="0" y="40" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Consistent stroke weight (1.5px primary, 1px secondary)</text>
+    <text x="0" y="70" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Modernist geometric structures with art deco refinement</text>
+    <text x="0" y="100" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Emphasis on radiating symmetry and balanced composition</text>
+    <text x="0" y="130" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Subtle hierarchical elements to create visual depth</text>
+    <text x="0" y="160" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Negative space as active design component</text>
+    <text x="0" y="190" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">• Mathematical precision in all geometric forms</text>
+    
+    <text x="0" y="230" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">Designed for sophisticated contexts related to literature and art curation,</text>
+    <text x="0" y="255" font-family="Inter, Arial, sans-serif" font-size="12" fill="#888" font-weight="300">with a focus on conveying complex intellectual concepts through refined visual language.</text>
+  </g>
+  
+  <!-- Sample Implementation -->
+  <g transform="translate(150, 1050)">
+    <text x="0" y="0" font-family="Inter, Arial, sans-serif" font-size="14" fill="#aaa" font-weight="300">SAMPLE IMPLEMENTATION</text>
+    <line x1="0" y1="10" x2="600" y2="10" stroke="#333" stroke-width="1" />
+    
+    <rect x="0" y="30" width="600" height="280" rx="4" fill="#0a0a0a" />
+    
+    <!-- Navbar -->
+    <rect x="0" y="30" width="600" height="50" fill="#111" rx="4 4 0 0" />
+    <text x="60" y="60" font-family="Inter, Arial, sans-serif" font-size="14" fill="white" font-weight="300" letter-spacing="1">LITERARY ATLAS</text>
+    
+    <!-- Sidebar -->
+    <rect x="0" y="80" width="80" height="230" fill="#111" rx="0 0 0 4" />
+    
+    <!-- Service icons in the navigation -->
+    <g transform="translate(25, 110) scale(0.5)">
+      <path d="M30 0L60 15V45L30 60L0 45V15L30 0Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30V60M0 15L30 30L60 15" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 15V37.5M45 15V37.5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    
+    <g transform="translate(25, 170) scale(0.5)">
+      <circle cx="30" cy="30" r="20" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 12V30L38 38" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30L5 45M30 30L55 45" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    
+    <g transform="translate(25, 230) scale(0.5)">
+      <path d="M30 5L45 30H15L30 5Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 30L5 50H55L45 30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 17L30 38" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="42" r="2" fill="white" />
+    </g>
+    
+    <g transform="translate(25, 290) scale(0.5)">
+      <path d="M15 15L45 15L45 45L15 45L15 15Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M5 25L15 25M45 25L55 25" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 5L30 15M30 45L30 55" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 20L40 40M40 20L20 40" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    
+    <!-- Content -->
+    <text x="100" y="110" font-family="Inter, Arial, sans-serif" font-size="18" fill="white" font-weight="300" letter-spacing="1">LITERARY MOVEMENTS: MODERNISM</text>
+    
+    <rect x="100" y="130" width="180" height="120" rx="2" fill="#111" />
+    <g transform="translate(190, 190) scale(0.6)">
+      <path d="M10 20C15 10 25 5 30 20C35 35 45 40 50 30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 35C15 25 25 20 30 35C35 50 45 55 50 45" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="10" cy="20" r="2" fill="white" />
+      <circle cx="50" cy="30" r="2" fill="white" />
+      <circle cx="10" cy="35" r="2" fill="white" />
+      <circle cx="50" cy="45" r="2" fill="white" />
+    </g>
+    
+    <rect x="300" y="130" width="180" height="120" rx="2" fill="#111" />
+    <g transform="translate(390, 190) scale(0.6)">
+      <path d="M30 0L38 20H60L42 32L50 55L30 40L10 55L18 32L0 20H22L30 0Z" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="30" cy="23" r="5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    
+    <rect x="100" y="270" width="380" height="30" rx="2" fill="#111" />
+    <text x="120" y="290" font-family="Inter, Arial, sans-serif" font-size="12" fill="#777" font-weight="300">EXPLORE THE EVOLUTION OF LITERARY MOVEMENTS</text>
+  </g>
+</svg>

@@ -1,0 +1,308 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 3200" width="1200" height="3200">
+  <!-- Black background -->
+  <rect width="1200" height="3200" fill="#000" />
+  
+  <!-- Title and header -->
+  <text x="600" y="80" font-family="Didot, Times New Roman, serif" font-size="40" fill="white" text-anchor="middle" font-weight="300" letter-spacing="10">ESOTERIC SERVICE ICONS</text>
+  <text x="600" y="130" font-family="Didot, Times New Roman, serif" font-size="18" fill="#555" text-anchor="middle" font-weight="300" letter-spacing="4">THE FORBIDDEN COLLECTION — CONTINUED</text>
+  
+  <!-- Decorative line -->
+  <line x1="200" y1="170" x2="1000" y2="170" stroke="#333" stroke-width="1" />
+  
+  <!-- Row 1 -->
+  <!-- 22. Hermetic Seal -->
+  <g transform="translate(150, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <circle cx="40" cy="40" r="30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 10L50 20L60 10L70 20L60 30L70 40L60 50L70 60L60 70L50 60L40 70L30 60L20 70L10 60L20 50L10 40L20 30L10 20L20 10L30 20L40 10Z" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="10" fill="none" stroke="white" stroke-width="1" />
+      <path d="M35 35L45 45M45 35L35 45" fill="none" stroke="white" stroke-width="0.75" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">HERMETIC SEAL</text>
+  </g>
+  
+  <!-- 23. Empyrean Ascent -->
+  <g transform="translate(300, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M10 70L40 10L70 70H10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 40L40 15L55 40L50 55L30 55L25 40Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 55V70" fill="none" stroke="white" stroke-width="1" />
+      <path d="M25 70H55" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="30" r="3" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">EMPYREAN ASCENT</text>
+  </g>
+  
+  <!-- 24. Nocturnal Paradox -->
+  <g transform="translate(450, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 20L60 20L60 60L20 60L20 20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30L50 30L50 50L30 50L30 30Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 20L30 30M60 20L50 30M20 60L30 50M60 60L50 50" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="5" fill="none" stroke="white" stroke-width="1" />
+      <path d="M40 35V45M35 40H45" fill="none" stroke="white" stroke-width="0.75" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">NOCTURNAL PARADOX</text>
+  </g>
+  
+  <!-- 25. Veiled Threshold -->
+  <g transform="translate(600, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M10 20H70V60H10V20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 20V60" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 30V50M55 30V50" fill="none" stroke="white" stroke-width="1" />
+      <path d="M10 40H25M55 40H70" fill="none" stroke="white" stroke-width="1" />
+      <path d="M25 30C25 20 55 20 55 30" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 1" />
+      <path d="M25 50C25 60 55 60 55 50" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 1" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">VEILED THRESHOLD</text>
+  </g>
+  
+  <!-- 26. Cthonic Whisper -->
+  <g transform="translate(750, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 40C20 25 60 25 60 40" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 40C20 55 60 55 60 40" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 30C15 15 65 15 65 30" fill="none" stroke="white" stroke-width="1" stroke-dasharray="1 2" />
+      <path d="M15 50C15 65 65 65 65 50" fill="none" stroke="white" stroke-width="1" stroke-dasharray="1 2" />
+      <path d="M40 5V15M40 65V75" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="5" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">CHTHONIC WHISPER</text>
+  </g>
+  
+  <!-- 27. Apophatic Relic -->
+  <g transform="translate(900, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 10H60V40L40 70L20 40V10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 20H50V40L40 55L30 40V20Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M35 30H45" fill="none" stroke="white" stroke-width="1" />
+      <path d="M40 10V20M20 40H30M50 40H60" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="40" cy="40" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">APOPHATIC RELIC</text>
+  </g>
+  
+  <!-- 28. Penumbral Archive -->
+  <g transform="translate(1050, 250)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M15 15H55V70H15V15Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 25H45V45H25V25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 55H45" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M55 15L65 25V80H25L25 70" fill="none" stroke="white" stroke-width="1" />
+      <path d="M55 15V25H65" fill="none" stroke="white" stroke-width="1" />
+      <path d="M35 25V45" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 1" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">PENUMBRAL ARCHIVE</text>
+  </g>
+  
+  <!-- Row 2 -->
+  <!-- 29. Sidereal Compass -->
+  <g transform="translate(150, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <circle cx="40" cy="40" r="30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 10V30M40 50V70" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 40H30M50 40H70" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M19 19L34 34M61 19L46 34M19 61L34 46M61 61L46 46" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="5" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="1" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">SIDEREAL COMPASS</text>
+  </g>
+  
+  <!-- 30. Abyssal Echo -->
+  <g transform="translate(300, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 20L60 20L70 40L60 60L20 60L10 40L20 20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 30L50 30L55 40L50 50L30 50L25 40L30 30Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M20 20L30 30M60 20L50 30M20 60L30 50M60 60L50 50" fill="none" stroke="white" stroke-width="0.75" />
+      <path d="M10 40H25M55 40H70" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="40" cy="40" r="3" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="40" cy="40" r="1" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ABYSSAL ECHO</text>
+  </g>
+  
+  <!-- 31. Paradoxical Mirror -->
+  <g transform="translate(450, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M10 10L70 10L70 70L10 70L10 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 10L70 70M70 10L10 70" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M30 10L30 70M50 10L50 70" fill="none" stroke="white" stroke-width="1" />
+      <path d="M10 30L70 30M10 50L70 50" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="5" fill="none" stroke="white" stroke-width="1" />
+      <path d="M37 37L43 43M43 37L37 43" fill="none" stroke="white" stroke-width="0.75" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">PARADOXICAL MIRROR</text>
+  </g>
+  
+  <!-- 32. Liminal Binding -->
+  <g transform="translate(600, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M40 10L55 25L55 55L40 70L25 55L25 25L40 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 25L55 55M55 25L25 55" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 10V70" fill="none" stroke="white" stroke-width="1" />
+      <path d="M25 40H55" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="3" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">LIMINAL BINDING</text>
+  </g>
+  
+  <!-- 33. Grimoire Index -->
+  <g transform="translate(750, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M15 20H65V70H15V20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 20L25 10H75V60H65" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 10V20H75" fill="none" stroke="white" stroke-width="1" />
+      <path d="M25 35H55M25 45H45M25 55H50" fill="none" stroke="white" stroke-width="1" />
+      <path d="M35 25L45 25" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 1" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">GRIMOIRE INDEX</text>
+  </g>
+  
+  <!-- 34. Occult Mechanism -->
+  <g transform="translate(900, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M25 25L55 25L55 55L25 55L25 25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <circle cx="40" cy="40" r="8" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 25V32M40 48V55M25 40H32M48 40H55" fill="none" stroke="white" stroke-width="1" />
+      <path d="M30 30L35 35M50 30L45 35M30 50L35 45M50 50L45 45" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="2" fill="white" />
+      <path d="M15 15L25 25M65 15L55 25M15 65L25 55M65 65L55 55" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 2" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">OCCULT MECHANISM</text>
+  </g>
+  
+  <!-- 35. Quantum Ghost -->
+  <g transform="translate(1050, 400)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 20L60 20C70 20 70 40 60 40C70 40 70 60 60 60L20 60C10 60 10 40 20 40C10 40 10 20 20 20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 35L45 35L45 45L35 45L35 35Z" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="30" cy="30" r="2" fill="white" />
+      <circle cx="50" cy="30" r="2" fill="white" />
+      <circle cx="30" cy="50" r="2" fill="white" />
+      <circle cx="50" cy="50" r="2" fill="white" />
+      <path d="M20 20C30 10 50 10 60 20" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 2" />
+      <path d="M20 60C30 70 50 70 60 60" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 2" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">QUANTUM GHOST</text>
+  </g>
+  
+  <!-- Row 3 -->
+  <!-- 36. Arcane Cartograph -->
+  <g transform="translate(150, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M10 15H70V65H10V15Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 15L20 5H80V55H70" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 5V15H80" fill="none" stroke="white" stroke-width="1" />
+      <path d="M25 30L40 20L55 30L60 45L55 60L40 70L25 60L20 45L25 30Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M40 20V70M20 45H60" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="40" cy="45" r="3" fill="none" stroke="white" stroke-width="0.75" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ARCANE CARTOGRAPH</text>
+  </g>
+  
+  <!-- 37. Necromantic Conduit -->
+  <g transform="translate(300, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M40 10L50 20L40 30L30 20L40 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 30V50" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 50H60" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M20 50L15 60H65L60 50" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 60V70M35 60V70M45 60V70M55 60V70" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="20" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">NECROMANTIC CONDUIT</text>
+  </g>
+  
+  <!-- 38. Vortical Obsidian -->
+  <g transform="translate(450, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M40 5L60 25L75 40L60 55L40 75L20 55L5 40L20 25L40 5Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 20L50 35L55 40L50 45L35 60L20 45L15 40L20 35L35 20Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M40 5V20M40 60V75M5 40H20M60 40H75" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="35" cy="40" r="5" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="35" cy="40" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">VORTICAL OBSIDIAN</text>
+  </g>
+  
+  <!-- 39. Ephemeral Tether -->
+  <g transform="translate(600, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M20 20L60 20L60 60L20 60L20 20Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 5V20M40 60V75" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M5 40H20M60 40H75" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 25L55 55M55 25L25 55" fill="none" stroke="white" stroke-width="1" />
+      <circle cx="40" cy="40" r="5" fill="none" stroke="white" stroke-width="1" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">EPHEMERAL TETHER</text>
+  </g>
+  
+  <!-- 40. Prophecy Matrix -->
+  <g transform="translate(750, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M15 15H65V65H15V15Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M25 25H55V55H25V25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 35H45V45H35V35Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M15 15L25 25M65 15L55 25M15 65L25 55M65 65L55 55" fill="none" stroke="white" stroke-width="0.75" />
+      <path d="M35 35L25 25M45 35L55 25M35 45L25 55M45 45L55 55" fill="none" stroke="white" stroke-width="0.75" stroke-dasharray="1 1" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">PROPHECY MATRIX</text>
+  </g>
+  
+  <!-- 41. Abyssal Trinity -->
+  <g transform="translate(900, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M40 10L70 60H10L40 10Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 25L55 50H25L40 25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M10 60L70 60" fill="none" stroke="white" stroke-width="1" />
+      <path d="M40 10V25M25 50L10 60M55 50L70 60" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="40" cy="35" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ABYSSAL TRINITY</text>
+  </g>
+  
+  <!-- 42. Ontological Scarab -->
+  <g transform="translate(1050, 550)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <path d="M25 25C15 35 15 55 25 65C35 75 55 75 65 65C75 55 75 35 65 25C55 15 35 15 25 25Z" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M35 35C30 40 30 50 35 55C40 60 50 60 55 55C60 50 60 40 55 35C50 30 40 30 35 35Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M35 35L25 25M55 35L65 25M35 55L25 65M55 55L65 65" fill="none" stroke="white" stroke-width="0.75" />
+      <path d="M45 25V35M45 55V65" fill="none" stroke="white" stroke-width="0.75" />
+      <circle cx="45" cy="45" r="2" fill="white" />
+    </g>
+    <text x="50" y="120" font-family="Didot, Times New Roman, serif" font-size="10" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1">ONTOLOGICAL SCARAB</text>
+  </g>
+  
+  <!-- Row 4 -->
+  <!-- 43. Void Chronometer -->
+  <g transform="translate(150, 700)">
+    <circle cx="50" cy="50" r="50" fill="#0A0A0A" />
+    <g transform="translate(10, 10)">
+      <circle cx="40" cy="40" r="30" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 15V25M40 55V65" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M15 40H25M55 40H65" fill="none" stroke="white" stroke-width="1.5" />
+      <path d="M40 25

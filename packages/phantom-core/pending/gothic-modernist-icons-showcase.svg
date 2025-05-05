@@ -1,0 +1,274 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100" width="800" height="1100">
+  <!-- Black background -->
+  <rect width="800" height="1100" fill="#111" />
+  
+  <!-- Title and header -->
+  <text x="400" y="60" font-family="Inter, Arial, sans-serif" font-size="32" fill="white" text-anchor="middle" font-weight="300" letter-spacing="1.5">GOTHIC MODERNIST ICON SYSTEM</text>
+  
+  <!-- Section dividers -->
+  <line x1="100" y1="100" x2="700" y2="100" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="420" x2="700" y2="420" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="740" x2="700" y2="740" stroke="#333" stroke-width="1" />
+  
+  <!-- Section titles -->
+  <text x="100" y="130" font-family="Inter, Arial, sans-serif" font-size="18" fill="white" font-weight="300" letter-spacing="1.5">UI ICONS (24×24px)</text>
+  <text x="100" y="450" font-family="Inter, Arial, sans-serif" font-size="18" fill="white" font-weight="300" letter-spacing="1.5">ABSTRACT GLYPHS (24×24px)</text>
+  <text x="100" y="770" font-family="Inter, Arial, sans-serif" font-size="18" fill="white" font-weight="300" letter-spacing="1.5">SERVICE ICONS (48×48px)</text>
+
+  <!-- UI ICONS GROUP -->
+  <!-- Row 1 -->
+  <!-- Document Icon -->
+  <g transform="translate(150, 200)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M7 4H13V8H17V20H7V4Z M13 4L17 8 M10 10H14 M10 14H14 M10 18H14" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Document</text>
+  </g>
+  
+  <!-- Search Icon -->
+  <g transform="translate(250, 200)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M15 15L20 20 M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Search</text>
+  </g>
+  
+  <!-- Settings Icon -->
+  <g transform="translate(350, 200)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M12 2V4 M12 20V22 M4 12H2 M22 12H20 M6 6L4 4 M18 18L20 20 M6 18L4 20 M18 6L20 4" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Settings</text>
+  </g>
+  
+  <!-- Calendar Icon -->
+  <g transform="translate(450, 200)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M8 2V6 M16 2V6 M3 10H21 M5 4H19C20.1046 4 21 4.89543 21 6V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V6C3 4.89543 3.89543 4 5 4Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Calendar</text>
+  </g>
+  
+  <!-- Bell Icon -->
+  <g transform="translate(550, 200)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 3C13.6569 3 15 4.34315 15 6V10C15 14.4183 17 17 17 17H7C7 17 9 14.4183 9 10V6C9 4.34315 10.3431 3 12 3Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 17V21" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Bell</text>
+  </g>
+  
+  <!-- Row 2 -->
+  <!-- Home Icon -->
+  <g transform="translate(150, 300)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M5 10L12 3L19 10L19 19C19 19.5523 18.5523 20 18 20H6C5.44772 20 5 19.5523 5 19L5 10Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M9 20V14C9 13.4477 9.44772 13 10 13H14C14.5523 13 15 13.4477 15 14V20" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Home</text>
+  </g>
+  
+  <!-- Lock Icon -->
+  <g transform="translate(250, 300)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M16 11H8V20H16V11Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M12 16V18" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M8 11V7C8 4.79086 9.79086 3 12 3V3C14.2091 3 16 4.79086 16 7V11" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Lock</text>
+  </g>
+  
+  <!-- User Icon -->
+  <g transform="translate(350, 300)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M4 21C4 17.134 7.58172 14 12 14C16.4183 14 20 17.134 20 21" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">User</text>
+  </g>
+  
+  <!-- Code Icon -->
+  <g transform="translate(450, 300)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M16 18L22 12L16 6" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M8 6L2 12L8 18" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Code</text>
+  </g>
+  
+  <!-- Link Icon -->
+  <g transform="translate(550, 300)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M10 13C10.8632 13.5565 11.8744 13.8626 12.9066 13.8626C13.9388 13.8626 14.95 13.5565 15.8133 13C16.6765 12.4435 17.3484 11.6422 17.7361 10.7069C18.1237 9.77165 18.2098 8.74886 17.9827 7.7654C17.7557 6.78193 17.2245 5.88467 16.4568 5.18991C15.6891 4.49515 14.7182 4.03515 13.6754 3.86924C12.6326 3.70333 11.5663 3.83849 10.5945 4.26022C9.62272 4.68194 8.79366 5.37245 8.22303 6.2562C7.65239 7.13994 7.36499 8.17304 7.4 9.22" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M14 11C13.1368 10.4435 12.1256 10.1374 11.0934 10.1374C10.0612 10.1374 9.05004 10.4435 8.18677 11C7.32349 11.5565 6.65161 12.3578 6.26397 13.2931C5.87633 14.2284 5.79023 15.2512 6.01731 16.2346C6.2444 17.2181 6.77555 18.1153 7.54325 18.8101C8.31096 19.5048 9.28184 19.9648 10.3246 20.1308C11.3674 20.2967 12.4337 20.1615 13.4055 19.7398C14.3773 19.3181 15.2063 18.6276 15.777 17.7438C16.3476 16.8601 16.635 15.827 16.6 14.78" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Link</text>
+  </g>
+  
+  <!-- ABSTRACT GLYPHS GROUP -->
+  <!-- Row 1 -->
+  <!-- Tension Glyph -->
+  <g transform="translate(150, 520)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M6 6L18 18 M18 6L6 18 M8 8H16V16H8V8Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Tension</text>
+  </g>
+  
+  <!-- Circuit Glyph -->
+  <g transform="translate(250, 520)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M5 12H19 M12 5V19 M8 8L16 16 M16 8L8 16" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Circuit</text>
+  </g>
+  
+  <!-- Nexus Glyph -->
+  <g transform="translate(350, 520)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 3L21 12L12 21L3 12L12 3Z M8 8L16 16 M16 8L8 16" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Nexus</text>
+  </g>
+  
+  <!-- Symmetry Glyph -->
+  <g transform="translate(450, 520)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 3V21 M3 12H21 M7 7L17 17 M17 7L7 17" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Symmetry</text>
+  </g>
+  
+  <!-- Void Glyph -->
+  <g transform="translate(550, 520)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M12 12L12 12.01" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Void</text>
+  </g>
+  
+  <!-- Row 2 -->
+  <!-- Spectrum Glyph -->
+  <g transform="translate(150, 620)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M3 6L21 6 M3 12L21 12 M3 18L21 18" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Spectrum</text>
+  </g>
+  
+  <!-- Fractal Glyph -->
+  <g transform="translate(250, 620)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M12 3L21 12L12 21L3 12L12 3Z" stroke="white" fill="none" stroke-width="1.5" stroke-linejoin="round" />
+      <path d="M12 7L17 12L12 17L7 12L12 7Z" stroke="white" fill="none" stroke-width="1.5" stroke-linejoin="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Fractal</text>
+  </g>
+  
+  <!-- Infinity Glyph -->
+  <g transform="translate(350, 620)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M18.5 12C18.5 10.067 16.933 8.5 15 8.5C13.067 8.5 11.5 10.067 11.5 12C11.5 13.933 13.067 15.5 15 15.5C16.933 15.5 18.5 13.933 18.5 12Z" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M5.5 12C5.5 10.067 7.067 8.5 9 8.5C10.933 8.5 12.5 10.067 12.5 12C12.5 13.933 10.933 15.5 9 15.5C7.067 15.5 5.5 13.933 5.5 12Z" stroke="white" fill="none" stroke-width="1.5" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Infinity</text>
+  </g>
+  
+  <!-- Convergence Glyph -->
+  <g transform="translate(450, 620)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M3 3L12 12 M21 3L12 12 M3 21L12 12 M21 21L12 12" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Convergence</text>
+  </g>
+  
+  <!-- Resonance Glyph -->
+  <g transform="translate(550, 620)">
+    <rect width="60" height="60" rx="2" fill="#222" />
+    <g transform="translate(18, 18)">
+      <path d="M3 12H6 M9 12H15 M18 12H21 M6 12C6 9.23858 8.23858 7 11 7H13C15.7614 7 18 9.23858 18 12C18 14.7614 15.7614 17 13 17H11C8.23858 17 6 14.7614 6 12Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="30" y="80" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Resonance</text>
+  </g>
+  
+  <!-- SERVICE ICONS GROUP -->
+  <!-- Architecture Icon -->
+  <g transform="translate(200, 850)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <path d="M24 4L44 24L24 44L4 24L24 4Z M14 14H34V34H14V14Z M14 14L4 24 M34 14L44 24 M34 34L44 24 M14 34L4 24 M24 4V44 M4 24H44" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Architecture</text>
+  </g>
+  
+  <!-- Sustainability Icon -->
+  <g transform="translate(350, 850)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <path d="M24 8L36 16V32L24 40L12 32V16L24 8Z M24 24L36 16 M24 24L12 16 M24 24V40" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Sustainability</text>
+  </g>
+  
+  <!-- Mechanical Icon -->
+  <g transform="translate(500, 850)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <path d="M24 12C29.5228 12 34 16.4772 34 22C34 27.5228 29.5228 32 24 32C18.4772 32 14 27.5228 14 22C14 16.4772 18.4772 12 24 12Z" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M24 8V12 M24 32V36 M8 22H12 M36 22H40 M13.5 11.5L16.5 14.5 M34.5 32.5L31.5 29.5 M13.5 32.5L16.5 29.5 M34.5 11.5L31.5 14.5" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Mechanical</text>
+  </g>
+  
+  <!-- Project Management -->
+  <g transform="translate(200, 970)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <circle cx="24" cy="24" r="20" stroke="white" fill="none" stroke-width="1.5" />
+      <path d="M24 12V24L32 32" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Project Mgmt</text>
+  </g>
+  
+  <!-- Value Engineering -->
+  <g transform="translate(350, 970)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <path d="M16 12L8 24L16 36 M32 12L40 24L32 36" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M20 40L28 8" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Value Engineering</text>
+  </g>
+  
+  <!-- Interior Design -->
+  <g transform="translate(500, 970)">
+    <rect width="100" height="100" rx="2" fill="#222" />
+    <g transform="translate(26, 26)">
+      <path d="M8 8H40V40H8V8Z" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M40 8L8 40" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+      <path d="M8 8L40 40" stroke="white" fill="none" stroke-width="1.5" stroke-linecap="round" />
+    </g>
+    <text x="50" y="120" font-family="Inter, Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">Interior Design</text>
+  </g>
+</svg>
