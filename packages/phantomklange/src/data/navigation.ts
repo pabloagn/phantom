@@ -14,6 +14,7 @@ export type NavigationItem = {
   order: number;
   isExternal?: boolean;
   children?: NavigationItem[];
+  isDevelopment?: boolean; // Flag for dev-only navigation items
 };
 
 /**
@@ -49,6 +50,28 @@ export const mainNavigation: NavigationItem[] = [
     label: 'ABOUT',
     path: '/about',
     order: 5
+  },
+  {
+    // Development-only navigation item for design system showcase
+    id: 'design-system',
+    label: 'DESIGN SYSTEM',
+    path: '/design-system',
+    order: 6,
+    isDevelopment: true,
+    children: [
+      {
+        id: 'components',
+        label: 'COMPONENTS',
+        path: '/design-system',
+        order: 1
+      },
+      {
+        id: 'icons',
+        label: 'ICONS',
+        path: '/design-system/icons',
+        order: 2
+      }
+    ]
   }
 ];
 
@@ -81,6 +104,11 @@ export const addContentTypeToNavigation = (
 /**
  * Get all navigation items sorted by order
  */
-export const getNavigation = (): NavigationItem[] => {
-  return [...mainNavigation].sort((a, b) => a.order - b.order);
+export const getNavigation = (includeDevelopmentItems = process.env.NODE_ENV === 'development'): NavigationItem[] => {
+  // Filter out development items if not in development mode, unless explicitly requested
+  const items = includeDevelopmentItems
+    ? mainNavigation
+    : mainNavigation.filter(item => !item.isDevelopment);
+
+  return [...items].sort((a, b) => a.order - b.order);
 };

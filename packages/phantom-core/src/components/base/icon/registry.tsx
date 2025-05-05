@@ -1,5 +1,4 @@
-// packages/phantom-core/src//components/base/icon/registry.tsx
-// @ts-nocheck
+// packages/phantom-core/src/components/base/icon/registry.tsx
 
 import React from 'react';
 
