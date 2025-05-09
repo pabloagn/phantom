@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 // --- Configuration ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const packageRoot = path.resolve(__dirname, '..'); // Root of the @phantom/core package
+const packageRoot = path.resolve(__dirname, '..');
 const distDir = path.join(packageRoot, 'dist');
 
 const expectedFilePaths = [
@@ -27,11 +27,12 @@ const expectedFilePaths = [
   'types/index.d.ts',
   'types/components/index.d.ts',
   'types/tokens/index.d.ts',
+  'types/tailwind.d.ts',
 
   // CSS & Config
-  'css/styles.css',
+  // 'css/styles.css',
   'css/global.css',
-  'css/tailwind.css',
+  // 'css/tailwind.css',
   'config/tailwind.preset.mjs',
 
   // Token CSS files
@@ -39,6 +40,9 @@ const expectedFilePaths = [
   'css/tokens/typography.css',
   'css/tokens/spacing.css',
   'css/tokens/shadows.css',
+  'css/tokens/border-radius.css',
+  'css/tokens/animations.css',
+  'css/tokens/theme.css',
   'css/tokens/breakpoints.css',
 
   // JSON tokens

@@ -1,8 +1,10 @@
 // packages/docs/docusaurus.config.ts
 
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 const config: Config = {
   title: 'Phantom Docs',
@@ -16,7 +18,12 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-
+  stylesheets: [ // For Google Fonts defined in @phantom/core's typography.css
+    {
+      href: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@400;500;700&family=Work+Sans:wght@400;500;600;700&display=swap',
+      type: 'text/css',
+    },
+  ],
   presets: [
     [
       'classic',

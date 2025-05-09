@@ -2,12 +2,10 @@
 
 /* Global styles for the Phantom Design System */
 
-/* Base Tailwind directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 1. Import Tailwind's core directives */
+@import './tailwind.css';
 
-/* Import token systems - these define all our variables */
+/* 2. Import token systems - define all variables */
 @import '../tokens/colors.css';
 @import '../tokens/typography.css';
 @import '../tokens/spacing.css';

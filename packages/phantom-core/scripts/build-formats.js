@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 // packages/phantom-core/scripts/build-formats.js
 
+/*
+This script should only be responsible for:
+- Compiling TypeScript to ESM and generating type declarations (tsc).
+- Copying type definition related assets (like your tailwind.d.ts).
+It should NOT build any CSS or copy global.css / tailwind.css / token CSS files.
+*/
+
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -33,62 +40,21 @@ const ensureDirExists = (dirPath) => {
   }
 };
 
-const dirs = [
-  'dist/esm',
-  'dist/esm/components',
-  'dist/esm/themes',
-  'dist/esm/tokens',
-  'dist/esm/utils',
-  'dist/types',
-  'dist/types/components',
-  'dist/types/themes',
-  'dist/types/tokens',
-  'dist/types/utils',
-  'dist/css',
-  'dist/css/tokens',
-  'dist/config'
+const dirsToEnsure = [
+  'dist/esm', 'dist/esm/components', 'dist/esm/themes', 'dist/esm/tokens', 'dist/esm/utils',
+  'dist/types', 'dist/types/components', 'dist/types/themes', 'dist/types/tokens', 'dist/types/utils',
+  'dist/config' // For tailwind.preset.mjs
 ];
-
-dirs.forEach(ensureDirExists);
+dirsToEnsure.forEach(ensureDirExists);
 
 try {
-  const entryPoint = path.join(rootDir, 'src', 'index.ts');
-  if (!fs.existsSync(entryPoint)) {
-    console.error(`Entry point file not found: ${entryPoint}`);
-    process.exit(1);
-  }
-
   console.log('Building ESM and Type Declarations...');
   safeExec(`tsc --project tsconfig.json`);
   console.log(`TypeScript ESM output generated in ${path.join(rootDir, 'dist/esm')}`);
   console.log(`TypeScript Type Declarations generated in ${path.join(rootDir, 'dist/types')}`);
 
-  console.log('Building CSS...');
-  safeExec(
-    'tailwindcss -c ./src/styles/tailwind.config.ts -i ./src/styles/tailwind.css -o ./dist/css/styles.css --minify'
-  );
-
-  console.log('Copying additional files...');
-  try {
-    fs.copyFileSync(
-      path.join(rootDir, 'src/styles/tailwind.css'),
-      path.join(rootDir, 'dist/css/tailwind.css')
-    );
-    console.log('Copied tailwind.css to dist/css/tailwind.css');
-  } catch (error) {
-    console.warn(`Could not copy tailwind.css: ${error.message}`);
-  }
-
-  try {
-    fs.copyFileSync(
-      path.join(rootDir, 'src/styles/global.css'),
-      path.join(rootDir, 'dist/css/global.css')
-    );
-    console.log('Copied global.css to dist/css/global.css');
-  } catch (error) {
-    console.warn(`Could not copy global.css: ${error.message}`);
-  }
-
+  console.log('Copying configuration and type definition assets...');
+  // Copy Tailwind preset
   try {
     fs.copyFileSync(
       path.join(rootDir, 'config/tailwind.preset.mjs'),
@@ -99,6 +65,7 @@ try {
     console.warn(`Could not copy tailwind.preset.mjs: ${error.message}`);
   }
 
+  // Copy/Create tailwind.d.ts
   const tailwindTypeDefPath = path.join(rootDir, 'dist/types/tailwind.d.ts');
   const sourceTailwindTypeDefPath = path.join(rootDir, 'src/types/tailwind.d.ts');
   if (fs.existsSync(sourceTailwindTypeDefPath)) {
@@ -123,34 +90,9 @@ declare module '@phantom/core/tailwind' {
     }
   }
 
-  console.log('Copying token CSS files...');
-  try {
-    // Get all CSS files from the tokens directory
-    const tokenCssFiles = fs.readdirSync(path.join(rootDir, 'src/tokens'))
-      .filter(file => file.endsWith('.css'));
-
-    console.log(`Found ${tokenCssFiles.length} token CSS files to copy`);
-
-    for (const file of tokenCssFiles) {
-      const sourcePath = path.join(rootDir, 'src/tokens', file);
-      const destPath = path.join(rootDir, 'dist/css/tokens', file);
-
-      try {
-        fs.copyFileSync(sourcePath, destPath);
-        console.log(`Copied ${file} to dist/css/tokens/${file}`);
-      } catch (error) {
-        console.warn(`Could not copy ${file}: ${error.message}`);
-      }
-    }
-  } catch (error) {
-    console.warn(`Error copying token CSS files: ${error.message}`);
-  }
-
-  console.log('Updating global.css references (if applicable)...');
-
-  console.log('Build completed successfully!');
+  console.log('JavaScript and asset build completed successfully!');
 
 } catch (error) {
-  console.error('Build failed:', error);
+  console.error('JavaScript and asset build failed:', error);
   process.exit(1);
 }
