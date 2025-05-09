@@ -19,6 +19,10 @@
       "name": "Phantom Core",
     },
     {
+      "path": "packages/phantom-docs",
+      "name": "Phantom Docs",
+    },
+    {
       "path": "packages/phantom-eda",
       "name": "Phantom EDA",
     },

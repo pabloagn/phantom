@@ -33,7 +33,3 @@ When contributing to the documentation, please follow these guidelines:
 The documentation can be built as a static site using [Docusaurus](https://docusaurus.io/) or a similar tool. This allows for a searchable, navigable documentation portal.
 
 To set up the documentation site:
-
-```bash
-# Future implementation
-``` 

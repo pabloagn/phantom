@@ -1,0 +1,103 @@
+/* packages/docs/src/pages/index.module.css */
+
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroBanner {
+  padding: 6rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--ifm-background-surface-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.heroTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--ifm-hero-text-color, var(--ifm-font-color-base));
+}
+
+.heroSubtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2.5rem;
+  color: var(--ifm-color-secondary-darkest);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.heroButton {
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+}
+
+/* Key Sections Styles */
+.keySections {
+  padding: 4rem 0;
+}
+
+.keySectionColumn {
+  margin-bottom: 2rem;
+  display: flex;
+}
+
+.keySectionCard {
+  background-color: var(--ifm-card-background-color);
+  border-radius: var(--ifm-card-border-radius);
+  padding: 2rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  box-shadow: var(--ifm-global-shadow-lw);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.keySectionCard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--ifm-global-shadow-md);
+}
+
+.keySectionIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--ifm-color-primary);
+  display: block;
+  text-align: center;
+}
+
+.keySectionTitle {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.keySectionTitle a {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+.keySectionTitle a:hover {
+  color: var(--ifm-color-primary);
+  text-decoration: underline;
+}
+
+.keySectionDescription {
+  font-size: 0.95rem;
+  color: var(--ifm-color-secondary-darkest);
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+}
+
+.keySectionButton {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

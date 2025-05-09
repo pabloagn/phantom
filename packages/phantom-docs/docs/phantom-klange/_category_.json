@@ -1,0 +1,8 @@
+{
+  "label": "Phantom Klänge",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Documentation for the phantom-klange package."
+  }
+}
