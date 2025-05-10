@@ -7,16 +7,12 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    // 'plugin:react/recommended', // REMOVED
-    // 'plugin:react-hooks/recommended', // <<< REMOVED
     'plugin:jsx-a11y/recommended',
     'prettier',
   ],
   parser: '@typescript-eslint/parser',
   plugins: [
     '@typescript-eslint',
-    // 'react', // REMOVED
-    // 'react-hooks', // <<< REMOVED
     'jsx-a11y',
     'import',
   ],

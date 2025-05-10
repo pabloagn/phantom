@@ -6,7 +6,7 @@
       and Tailwind's base (which should be minimally disruptive if preflight
       is off in docs' Tailwind config).
    ========================================================================== */
-/* @import '@phantom/core/global.css'; */
+@import '@phantom/core/global.css';
 
 /* ==========================================================================
       2. Map Phantom Core Theme Variables to Docusaurus (Infima)

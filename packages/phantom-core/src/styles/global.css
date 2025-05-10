@@ -97,45 +97,6 @@
   }
 }
 
-/* Component styles */
-@layer components {
-  /* Any globally available component styles would go here */
-  .container {
-    @apply mx-auto px-4;
-    max-width: 100%;
-  }
-
-  @screen sm {
-    .container {
-      max-width: var(--container-sm);
-    }
-  }
-
-  @screen md {
-    .container {
-      max-width: var(--container-md);
-    }
-  }
-
-  @screen lg {
-    .container {
-      max-width: var(--container-lg);
-    }
-  }
-
-  @screen xl {
-    .container {
-      max-width: var(--container-xl);
-    }
-  }
-
-  @screen 2xl {
-    .container {
-      max-width: var(--container-2xl);
-    }
-  }
-}
-
 /* Utility classes */
 @layer utilities {
   .content-auto {

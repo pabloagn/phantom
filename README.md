@@ -62,29 +62,75 @@ The Phantom ecosystem consists of the following components:
 
 ## Getting Started
 
-This project uses pnpm for package management and Turborepo for task running. To get started:
+This project uses pnpm for package management and Turborepo for task running.
+
+### Workflow 1: Initial Setup / After Major Dependency Changes
+
+#### Clean
+
+From monorepo root:
+
+```bash
+# Clean all packages from root directly
+pnpm run clean
+```
+
+#### Install
+
+From monorepo root:
 
 ```bash
 # Install dependencies
 pnpm install
+```
 
-# Run development server for all packages
-pnpm run dev
+#### Run
 
-# Build all packages using monorepo build command
+From monorepo root:
+
+```bash
 pnpm run build
 ```
 
-## Documentation
+### Workflow 2: Development - Working on @phantom/docs (with Hot Reload for Docs & Core)
 
-The documentation for Phantom is organized into the following sections:
+#### Run
 
-- **[Architecture](./docs/architecture/)**: System architecture, design decisions, and technical specifications
-- **[Packages](./docs/packages/)**: Documentation for individual packages in the monorepo
-- **[Guides](./docs/guides/)**: Developer guides, tutorials, and how-to documentation
-- **[API](./docs/api/)**: API documentation and reference
+From monorepo root, and in one terminal:
 
-For full documentation, see the [docs directory](./docs/).
+```bash
+# Run phantom-core in watch mode
+pnpm --filter @phantom/core run watch:all
+```
+
+In another terminal:
+
+```bash
+# Run phantom-docs in watch mode
+pnpm --filter @phantom/docs dev
+```
+
+### Workflow 3: Development - Working on phantomklange (with Hot Reload for Klange & Core)
+
+From monorepo root, and in one terminal:
+
+```bash
+# Run phantomklange with core in watch mode
+pnpm --filter phantomklange run dev:with-core
+```
+
+This ensures `@phantom/core` is built first, then `@phantom/docs` and `phantomklange` are built using the latest artifacts from `@phantom/core`.
+
+
+
+### Workflow 4: Building for Production/Preview
+
+From monorepo root:
+
+```bash
+# Build all packages
+pnpm run build
+```
 
 ## License
 
