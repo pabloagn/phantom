@@ -8,12 +8,12 @@ The styles system applies the tokens defined in the tokens/ directory.
 */
 
 // Import the Tailwind config directly
-import tailwindConfig from './tailwind.config';
+import tailwindConfig from './tailwind.config.js';
 
 // Export it as a named export
 export { tailwindConfig };
 
-// Export paths to CSS files 
+// Export paths to CSS files
 export const cssFiles = {
   global: './global.css',
 };

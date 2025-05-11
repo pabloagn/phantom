@@ -229,6 +229,7 @@ export default async function PersonPage({ params }) {
                             imageSrc={content.poster_image}
                             imageAlt={`Poster for ${content.title}`}
                             variant="default"
+                            ImageComponent={NextImage}
                           />
                         </Link>
                       );

@@ -2,8 +2,8 @@
 
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { useInView } from '../../hooks';
-import { cn } from '../../utils';
+import { useInView } from '../../hooks/useInView.js';
+import { cn } from '../../utils/index.js';
 
 // Use a CSSProperties type to ensure compatibility
 import type { CSSProperties } from 'react';

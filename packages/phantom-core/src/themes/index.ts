@@ -11,4 +11,4 @@ It includes:
 - ThemeContext for theme state management
 */
 
-export * from './ThemeProvider';
+export { ThemeProvider, type ThemeKey } from './ThemeProvider.js';

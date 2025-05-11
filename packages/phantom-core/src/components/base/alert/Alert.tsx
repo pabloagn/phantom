@@ -1,5 +1,4 @@
 // packages/phantom-core/src/components/base/alert/Alert.tsx
-// @ts-nocheck
 
 'use client';
 

@@ -5,7 +5,7 @@
  */
 
 // Import theme and utility types
-import type { Theme, ColorMode } from './theme-types';
+import type { Theme, ColorMode } from './theme-types.js';
 import type {
   Size,
   ColorVariant,
@@ -13,7 +13,7 @@ import type {
   Shadow,
   Breakpoint,
   ResponsiveValue
-} from './utility-types';
+} from './utility-types.js';
 
 // Global Phantom system namespace
 declare global {

@@ -10,7 +10,7 @@ PHANTOM THEME SYSTEM
 :root {
   /* UI ELEMENT COLORS - Default Theme (Dark) */
   --theme-background: var(--color-carbon-990);
-  --theme-foreground: var(--color-neutral-50);
+  --theme-foreground: var(--color-carbon-300);
 
   /* Primary interface colors */
   --theme-primary: var(--color-primary-400);

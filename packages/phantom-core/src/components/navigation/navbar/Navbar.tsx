@@ -6,64 +6,19 @@ import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 export interface NavbarProps extends React.HTMLAttributes<HTMLElement> {
-  /**
-   * Logo or brand element to display in the navbar
-   */
   logo?: React.ReactNode;
-
-  /**
-   * Links to display in the navbar
-   */
   links?: {
     label: string;
     href: string;
     active?: boolean;
   }[];
-
-  /**
-   * Items to display on the right side of the navbar
-   */
   rightSection?: React.ReactNode;
-
-  /**
-   * Whether to stick the navbar to the top of the screen
-   * @default false
-   */
   sticky?: boolean;
-
-  /**
-   * Whether to add a shadow to the navbar
-   * @default false
-   */
   withShadow?: boolean;
-
-  /**
-   * Whether to add a border to the navbar
-   * @default true
-   */
   withBorder?: boolean;
-
-  /**
-   * Size of the navbar
-   * @default 'md'
-   */
   size?: 'sm' | 'md' | 'lg';
-
-  /**
-   * Background color variant
-   * @default 'default'
-   */
   variant?: 'default' | 'transparent' | 'filled';
-
-  /**
-   * Whether to show the mobile menu
-   * @default false
-   */
   expandOnMobile?: boolean;
-
-  /**
-   * Additional className for the navbar
-   */
   className?: string;
 }
 
@@ -83,21 +38,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Height configuration based on size
   const heightClasses = {
     sm: 'h-12',
     md: 'h-16',
     lg: 'h-20',
   };
 
-  // Padding configuration based on size
   const paddingClasses = {
     sm: 'px-3',
     md: 'px-4',
     lg: 'px-6',
   };
 
-  // Background configuration based on variant
   const backgroundClasses = {
     default: 'bg-white dark:bg-gray-800',
     transparent: 'bg-transparent',
@@ -109,7 +61,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const shadowClass = withShadow ? 'shadow-md' : '';
   const borderClass = withBorder ? 'border-b border-gray-200 dark:border-gray-700' : '';
 
-  // Combine all classes
   const navbarClasses = [
     heightClasses[size],
     paddingClasses[size],
@@ -204,5 +155,3 @@ export const Navbar: React.FC<NavbarProps> = ({
     </nav>
   );
 };
-
-export default Navbar;

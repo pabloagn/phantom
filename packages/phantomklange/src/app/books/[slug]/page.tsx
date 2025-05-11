@@ -8,6 +8,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getBookBySlug, getPersonById, getRelatedContent } from '@/data';
 import { ContentImage } from '@/components/common';
 import siteConfig from '@/config/site';
+import NextImage from 'next/image';
 
 export async function generateMetadata({ params }) {
   const params_data = await params;
@@ -189,6 +190,7 @@ export default async function BookPage({ params }) {
                             imageSrc={content.poster_image}
                             imageAlt={`Poster for ${content.title}`}
                             variant="default"
+                            ImageComponent={NextImage}
                           />
                         </Link>
                       );

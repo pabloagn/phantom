@@ -1,69 +1,30 @@
-// packages/phantom-core/src//components/composite/related-item-card/RelatedItemCard.tsx
-// @ts-nocheck
+// packages/phantom-core/src/components/composite/related-item-card/RelatedItemCard.tsx
 
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
-import { Card, Heading, Paragraph, Badge } from '../../base';
+import React, { type ElementType } from 'react';
+import { Card, Heading, Paragraph, Badge } from '../../base/index.js';
+import { cn } from '../../../utils/index.js';
 
 export interface RelatedItemCardProps {
-  /**
-   * The title of the related item
-   */
   title: string;
-
-  /**
-   * Optional excerpt or description
-   */
   excerpt?: string;
-
-  /**
-   * Content type (e.g., "Book", "Film", "Essay")
-   */
   contentType?: string;
-
-  /**
-   * Path to the image to display
-   */
   imageSrc?: string;
-
-  /**
-   * Alternative text for the image
-   */
   imageAlt?: string;
-
-  /**
-   * Card variant
-   * @default 'default'
-   */
   variant?: 'default' | 'minimal';
-
-  /**
-   * Additional classes to apply to the card
-   */
   className?: string;
-
-  /**
-   * Image aspect ratio
-   * @default 'video'
-   */
-  imageAspectRatio?: 'video' | 'square' | '4/3';
-
-  /**
-   * Component children (additional content)
-   */
+  imageAspectRatio?: 'video' | 'square' | '4/3'; // e.g., '16/9' (video), '1/1' (square)
   children?: React.ReactNode;
-
-  /**
-   * Click handler for the card
-   */
   onClick?: () => void;
+  /**
+   * Optional custom Image component (e.g., next/image).
+   * If not provided, a regular <img> tag will be used.
+   * It should accept props like src, alt, fill (boolean), className.
+   */
+  ImageComponent?: ElementType;
 }
 
-/**
- * RelatedItemCard component for displaying related content items
- */
 export const RelatedItemCard: React.FC<RelatedItemCardProps> = ({
   title,
   excerpt,
@@ -72,21 +33,18 @@ export const RelatedItemCard: React.FC<RelatedItemCardProps> = ({
   imageAlt,
   variant = 'default',
   className = '',
-  imageAspectRatio = 'video',
+  imageAspectRatio = 'video', // Default to '16/9'
   children,
   onClick,
+  ImageComponent = 'img', // Default to standard HTML <img> tag
 }) => {
-  // Determine aspect ratio class
-  const aspectRatioClass =
-    imageAspectRatio === 'video'
-      ? 'aspect-video'
-      : imageAspectRatio === 'square'
-        ? 'aspect-square'
-        : imageAspectRatio === '4/3'
-          ? 'aspect-[4/3]'
-          : 'aspect-video';
+  const aspectRatioClasses: Record<typeof imageAspectRatio, string> = {
+    'video': 'aspect-video', // Typically 16/9
+    'square': 'aspect-square', // 1/1
+    '4/3': 'aspect-[4/3]',
+  };
+  const aspectRatioClass = aspectRatioClasses[imageAspectRatio];
 
-  // Define variant styles
   const variantStyles = {
     default:
       'border-phantom-neutral-800 bg-phantom-carbon-980 hover:bg-phantom-carbon-950 transition-colors',
@@ -94,19 +52,30 @@ export const RelatedItemCard: React.FC<RelatedItemCardProps> = ({
       'border-phantom-carbon-900 bg-phantom-carbon-950 hover:border-phantom-carbon-800 transition-all duration-300',
   };
 
+  // Props for the image component
+  const imageProps = {
+    src: imageSrc || '',
+    alt: imageAlt || title,
+    className: "object-cover", // Ensure this is sufficient, or add w-full h-full if needed for standard img
+    ...(ImageComponent !== 'img' && { fill: true }), // Add fill prop only if it's a custom component (likely NextImage)
+    ...(ImageComponent === 'img' && { style: { width: '100%', height: '100%' }}) // Ensure img fills container
+  };
+
   return (
     <Card
-      className={`h-full overflow-hidden ${className} ${variantStyles[variant]}`}
+      className={cn(`h-full overflow-hidden group`, className, variantStyles[variant])} // Added 'group'
       padding={false}
       onClick={onClick}
     >
       {imageSrc && (
         <div
-          className={`relative w-full ${aspectRatioClass} overflow-hidden bg-phantom-carbon-980`}
+          className={cn(
+            `relative w-full overflow-hidden bg-phantom-carbon-980`,
+            aspectRatioClass
+          )}
         >
-          <Image src={imageSrc} alt={imageAlt || title} fill className="object-cover" />
+          <ImageComponent {...imageProps} /> {/* Use ImageComponent prop */}
 
-          {/* Optional badge for content type */}
           {contentType && variant === 'minimal' && (
             <div className="absolute top-3 right-3 z-10">
               <Badge variant="primary" className="text-xs uppercase tracking-wider font-medium">
@@ -117,10 +86,10 @@ export const RelatedItemCard: React.FC<RelatedItemCardProps> = ({
         </div>
       )}
 
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-grow"> {/* Added flex-grow to push content down if no image */}
         <Heading
-          level={3}
-          className="text-base font-medium mb-1 text-phantom-neutral-100 hover:text-phantom-neutral-50 transition-colors"
+          level={3} // Assuming Heading component has a level prop
+          className="text-base font-medium mb-1 text-phantom-neutral-100 group-hover:text-phantom-neutral-50 transition-colors"
         >
           {title}
         </Heading>
@@ -133,10 +102,11 @@ export const RelatedItemCard: React.FC<RelatedItemCardProps> = ({
           <Paragraph className="text-sm text-phantom-neutral-300 line-clamp-2">{excerpt}</Paragraph>
         )}
 
-        {children}
+        {children && <div className="mt-2 flex-grow">{children}</div>} {/* Allow children to take space */}
       </div>
     </Card>
   );
 };
 
 export default RelatedItemCard;
+

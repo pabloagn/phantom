@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Pagination } from './Pagination';
+import { Pagination } from './index.js';
 
 describe('Pagination', () => {
   it('renders the correct number of page buttons', () => {

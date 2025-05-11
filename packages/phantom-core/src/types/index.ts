@@ -6,16 +6,16 @@
  */
 
 // Export utility types (used across the library)
-export * from './utility-types';
+export * from './utility-types.js';
 
 // Export theme-related types
-export * from './theme-types';
+export * from './theme-types.js';
 
 // Export Tailwind integration types
-export type { PhantomTailwindTheme, PhantomTailwindPlugin } from './tailwind';
+export type { PhantomTailwindTheme, PhantomTailwindPlugin } from './tailwind.js';
 
 // Export design token types
-export type { PhantomDesignTokens } from './phantom-global';
+export type { PhantomDesignTokens } from './phantom-global.js';
 
 // Export common types that might be used by consumers
 export type {
@@ -30,7 +30,7 @@ export type {
   EventHandler,
   PolymorphicComponentProps,
   PolymorphicComponentPropsWithRef
-} from './utility-types';
+} from './utility-types.js';
 
 export type {
   Theme,
@@ -38,4 +38,4 @@ export type {
   ThemeProviderProps,
   ColorMode,
   ColorModeContextType
-} from './theme-types';
+} from './theme-types.js';

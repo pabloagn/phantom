@@ -13,16 +13,16 @@ import { Calendar, Clock, User, BookOpen } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 
 // Import phantom-core components
-import { Heading } from '../../base/typography/Heading';
-import { Paragraph } from '../../base/typography/Paragraph';
-import { Badge } from '../../base/badge/Badge';
-import { colors } from '../../../tokens/colors';
+import { Heading } from '../../base/typography/Heading.js';
+import { Paragraph } from '../../base/typography/Paragraph.js';
+import { Badge } from '../../base/badge/Badge.js';
+import { colors } from '../../../tokens/colors.js';
 
 // Import local components
-import { MarkdownRendererProps, HeadingItem } from './types';
-import { CodeBlock } from './components/CodeBlock';
-import { Callout } from './components/Callout';
-import { References } from './components/References';
+import { MarkdownRendererProps, HeadingItem } from './types.js';
+import { CodeBlock } from './components/CodeBlock.js';
+import { Callout } from './components/Callout.js';
+import { References } from './components/References.js';
 // import { TableOfContents } from './components/TableOfContents';
 
 export function MarkdownRenderer({

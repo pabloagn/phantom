@@ -4,21 +4,14 @@
 // packages/phantom-core/src/index.ts
 
 /**
- * Phantom Core Design System
+ * Phantom Core
  *
  * This module exports all components, utilities, and tokens
- * for the Phantom Core design system.
+ * for the Phantom Core library.
  */
 
-// Export components
-export * from './components';
-
-// Export tokens and themes
-export * from './tokens';
-export * from './themes';
-
-// Export utilities if available
-export * from './utils';
-
-// Export hooks
-export * from './hooks';
+export * from './components/index.js';
+export * from './hooks/index.js';
+export * from './themes/index.js';
+export * from './tokens/index.js';
+export * from './utils/index.js';

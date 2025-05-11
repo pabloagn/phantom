@@ -8,3 +8,4 @@ export * from './Parallax.js';
 export * from './Float.js';
 export * from './Motion.js';
 export * from './Transition.js';
+export * from './Reveal.js';

@@ -1,10 +1,9 @@
 // packages/phantom-core/src/components/composite/essay-card/EssayCard.tsx
-// @ts-nocheck
 
 'use client';
 
 import React from 'react';
-import { Card, Heading, Paragraph, Badge } from '@phantom/core';
+import { Card, Heading, Paragraph, Badge } from '../../base/index.js';
 
 export interface EssayCardProps {
   /**

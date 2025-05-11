@@ -1,3 +1,3 @@
 // packages/phantom-core/src/components/navigation/navbar/index.ts
 
-export * from './Navbar.js';
+export { Navbar, type NavbarProps } from './Navbar.js';

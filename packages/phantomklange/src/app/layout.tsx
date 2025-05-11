@@ -3,9 +3,9 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
 import siteConfig from '../config/site';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import { ThemeProvider } from '@phantom/core';
+import { KlangeHeader } from '../components/layout/header';
+import { Footer } from '@phantom/core/components/layout';
+import { ThemeProvider } from '@phantom/core/themes';
 
 //  Site Metadata
 export const metadata: Metadata = {
@@ -53,11 +53,11 @@ export default function RootLayout({
         <body className="min-h-screen flex flex-col bg-phantom-carbon-990">
           <ThemeProvider initialTheme={siteConfig.colorScheme}>
             <div className="flex flex-col min-h-screen">
-              <Header />
+              <KlangeHeader />
               <main className="flex-grow">
                 {children}
               </main>
-              <Footer />
+              <Footer siteName={siteConfig.name} />
             </div>
           </ThemeProvider>
         </body>

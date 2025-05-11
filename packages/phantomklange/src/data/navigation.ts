@@ -1,5 +1,4 @@
 // packages/phantomklange/src/data/navigation.ts
-// @ts-nocheck
 
 /**
  * Navigation configuration for the website

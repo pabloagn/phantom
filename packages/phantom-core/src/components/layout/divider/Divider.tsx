@@ -1,7 +1,5 @@
 // packages/phantom-core/src/components/layout/divider/Divider.tsx
 
-// DONE: Implement Divider component
-
 'use client';
 
 import React, { forwardRef } from 'react';
@@ -10,51 +8,18 @@ export type DividerOrientation = 'horizontal' | 'vertical';
 export type DividerThickness = 'thin' | 'medium' | 'thick';
 export type DividerVariant = 'default' | 'subtle' | 'emphasis';
 
+// Divider Props
 export interface DividerProps extends Omit<React.HTMLAttributes<HTMLHRElement>, 'children'> {
-  /**
-   * Orientation of the divider
-   * @default 'horizontal'
-   */
   orientation?: DividerOrientation;
-
-  /**
-   * Thickness of the divider
-   * @default 'thin'
-   */
   thickness?: DividerThickness;
-
-  /**
-   * Color variant of the divider
-   * @default 'default'
-   */
   variant?: DividerVariant;
-
-  /**
-   * Whether to add margin around the divider
-   * @default true
-   */
   withMargin?: boolean;
-
-  /**
-   * Label to show in the divider
-   */
   label?: React.ReactNode;
-
-  /**
-   * Alignment of the label
-   * @default 'center'
-   */
   labelAlignment?: 'start' | 'center' | 'end';
-
-  /**
-   * Additional CSS classes for the label
-   */
   labelClassName?: string;
 }
 
-/**
- * Divider component for separating content sections
- */
+// Divider Component
 export const Divider = forwardRef<HTMLHRElement, DividerProps>(
   (
     {
@@ -154,5 +119,3 @@ export const Divider = forwardRef<HTMLHRElement, DividerProps>(
     );
   }
 );
-
-Divider.displayName = 'Divider';

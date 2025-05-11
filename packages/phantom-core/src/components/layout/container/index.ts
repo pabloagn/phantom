@@ -1,3 +1,3 @@
 // packages/phantom-core/src/components/layout/container/index.ts
 
-export * from './Container.js';
+export { Container, type ContainerProps } from './Container.js';

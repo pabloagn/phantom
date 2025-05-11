@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { Motion, MotionProps } from './Motion';
+import { Motion, MotionProps } from './Motion.js';
 
 export interface FadeInProps extends Omit<MotionProps, 'initialClasses' | 'finalClasses'> {
   /**

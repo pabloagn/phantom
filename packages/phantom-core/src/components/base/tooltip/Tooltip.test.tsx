@@ -1,9 +1,9 @@
-// packages/phantom-core/src//components/base/tooltip/Tooltip.test.tsx
+// packages/phantom-core/src/components/base/tooltip/Tooltip.test.tsx
 // @ts-nocheck
 
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
-import { Tooltip } from './Tooltip';
+import { Tooltip } from './Tooltip.js';
 
 // Mock the FloatingPortal to avoid issues with portal rendering in tests
 jest.mock('@floating-ui/react', () => ({

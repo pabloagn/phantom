@@ -1,54 +1,17 @@
 // packages/phantom-core/src/components/layout/grid/Grid.tsx
-// @ts-nocheck
 
 'use client';
 
 import React, { forwardRef } from 'react';
 
 export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Number of columns in the grid
-   * @default 2
-   */
   columns?: number;
-
-  /**
-   * Gap between grid items (applies to both row and column gaps)
-   * @default 4
-   */
   gap?: number;
-
-  /**
-   * Gap between rows if different from column gap
-   */
   rowGap?: number;
-
-  /**
-   * Gap between columns if different from row gap
-   */
   columnGap?: number;
-
-  /**
-   * Auto-fit columns to container width
-   * @default false
-   */
   autoFit?: boolean;
-
-  /**
-   * Minimum width for auto-fit columns
-   * @default '250px'
-   */
   minColumnWidth?: string;
-
-  /**
-   * Whether grid items should have equal height
-   * @default false
-   */
   equalHeight?: boolean;
-
-  /**
-   * Responsive column configuration
-   */
   responsive?: {
     sm?: number;
     md?: number;
@@ -57,20 +20,14 @@ export interface GridProps extends React.HTMLAttributes<HTMLDivElement> {
     '2xl'?: number;
   };
 
-  /**
-   * Content alignment along the horizontal axis
-   */
+  // Content alignment along the horizontal axis
   justifyContent?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly';
 
-  /**
-   * Content alignment along the vertical axis
-   */
+  // Content alignment along the vertical axis
   alignItems?: 'start' | 'end' | 'center' | 'stretch' | 'baseline';
 }
 
-/**
- * Grid component for two-dimensional layouts
- */
+// Grid Component
 export const Grid = forwardRef<HTMLDivElement, GridProps>(
   (
     {
@@ -199,35 +156,15 @@ export const Grid = forwardRef<HTMLDivElement, GridProps>(
   }
 );
 
-Grid.displayName = 'Grid';
-
-export default Grid;
-
-// GridItem component for explicit column/row spanning
+// GridItem Props
 export interface GridItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  /**
-   * Number of columns the item should span
-   * @default 1
-   */
   colSpan?: number;
-
-  /**
-   * Number of rows the item should span
-   * @default 1
-   */
   rowSpan?: number;
-
-  /**
-   * Starting column line
-   */
   colStart?: number;
-
-  /**
-   * Starting row line
-   */
   rowStart?: number;
 }
 
+// GridItem Component
 export const GridItem = forwardRef<HTMLDivElement, GridItemProps>(
   (
     {
@@ -257,5 +194,3 @@ export const GridItem = forwardRef<HTMLDivElement, GridItemProps>(
     );
   }
 );
-
-GridItem.displayName = 'GridItem';

@@ -99,15 +99,7 @@ pnpm run build
 From monorepo root, and in one terminal:
 
 ```bash
-# Run phantom-core in watch mode
-pnpm --filter @phantom/core run watch:all
-```
-
-In another terminal:
-
-```bash
-# Run phantom-docs in watch mode
-pnpm --filter @phantom/docs dev
+pnpm run dev:docs
 ```
 
 ### Workflow 3: Development - Working on phantomklange (with Hot Reload for Klange & Core)
@@ -115,13 +107,10 @@ pnpm --filter @phantom/docs dev
 From monorepo root, and in one terminal:
 
 ```bash
-# Run phantomklange with core in watch mode
-pnpm --filter phantomklange run dev:with-core
+pnpm run dev:klange
 ```
 
 This ensures `@phantom/core` is built first, then `@phantom/docs` and `phantomklange` are built using the latest artifacts from `@phantom/core`.
-
-
 
 ### Workflow 4: Building for Production/Preview
 

@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Link2 } from 'lucide-react';
-import { ReferencesProps } from '../types';
-import { Heading } from '../../../base/typography/Heading';
+import { ReferencesProps } from '../types.js';
+import { Heading } from '../../../base/typography/Heading.js';
 
 export function References({ references }: ReferencesProps) {
   if (!references || references.length === 0) return null;

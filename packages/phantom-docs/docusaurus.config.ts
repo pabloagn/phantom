@@ -67,10 +67,6 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        // TODO: Add links to the footer
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Phantom.`,
     },
     prism: {
       theme: prismThemes.github,

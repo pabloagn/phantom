@@ -1,12 +1,12 @@
 // packages/phantomklange/src/components/home/featured-objects.tsx
 // @ts-nocheck
-
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { Heading, Paragraph, Container, Separator } from '@phantom/core';
 import { FeatureCard } from '@phantom/core';
+import NextImage from 'next/image';
 import { FadeIn, SlideIn, Stagger } from '@phantom/core';
 import {
   getBookById,
@@ -108,6 +108,7 @@ const FeaturedObjects: React.FC = () => {
                     title={item.title}
                     subtext={creator}
                     imageSrc={item.poster_image}
+                    ImageComponent={NextImage}
                     imageAlt={item.title}
                     badgeText={contentType}
                     year={item.year}

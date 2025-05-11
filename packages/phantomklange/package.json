@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:with-core": "concurrently \"next dev\" \"pnpm --filter @phantom/core watch:all\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

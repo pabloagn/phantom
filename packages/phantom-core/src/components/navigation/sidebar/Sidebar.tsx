@@ -7,102 +7,26 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export interface SidebarItemProps {
-  /**
-   * Label for the sidebar item
-   */
   label: string;
-
-  /**
-   * Icon to display before the label
-   */
   icon?: React.ReactNode;
-
-  /**
-   * URL for the sidebar item (for link items)
-   */
   href?: string;
-
-  /**
-   * Whether the item is currently active
-   */
   active?: boolean;
-
-  /**
-   * Whether the item is disabled
-   */
   disabled?: boolean;
-
-  /**
-   * Click handler for the sidebar item
-   */
   onClick?: () => void;
-
-  /**
-   * Child items (for collapsible sections)
-   */
   children?: SidebarItemProps[];
 }
 
 export interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
-  /**
-   * Items to display in the sidebar
-   */
   items?: SidebarItemProps[];
-
-  /**
-   * Header content for the sidebar
-   */
   header?: React.ReactNode;
-
-  /**
-   * Footer content for the sidebar
-   */
   footer?: React.ReactNode;
-
-  /**
-   * Whether the sidebar is collapsed
-   * @default false
-   */
   collapsed?: boolean;
-
-  /**
-   * Callback when the sidebar is toggled (if collapsible)
-   */
   onToggle?: () => void;
-
-  /**
-   * Whether to show a toggle button
-   * @default false
-   */
   collapsible?: boolean;
-
-  /**
-   * Width of the expanded sidebar
-   * @default '16rem'
-   */
   width?: string;
-
-  /**
-   * Width of the collapsed sidebar
-   * @default '4rem'
-   */
   collapsedWidth?: string;
-
-  /**
-   * Whether the sidebar has a border
-   * @default true
-   */
   withBorder?: boolean;
-
-  /**
-   * Whether the sidebar has a shadow
-   * @default false
-   */
   withShadow?: boolean;
-
-  /**
-   * Additional className for the sidebar
-   */
   className?: string;
 }
 
@@ -296,5 +220,3 @@ export const Sidebar: React.FC<SidebarProps> = ({
     </aside>
   );
 };
-
-export default Sidebar;

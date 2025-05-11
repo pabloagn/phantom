@@ -1,4 +1,4 @@
-// packages/phantom-core/src//components/base/toggle/Toggle.tsx
+// packages/phantom-core/src/components/base/toggle/Toggle.tsx
 
 'use client';
 

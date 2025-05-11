@@ -1,3 +1,3 @@
 // packages/phantom-core/src/components/navigation/sidebar/index.ts
 
-export * from './Sidebar.js';
+export { Sidebar, type SidebarItemProps, type SidebarProps } from './Sidebar.js';

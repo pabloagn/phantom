@@ -214,6 +214,7 @@ export default async function FilmPage({ params }) {
                             imageSrc={content.poster_image}
                             imageAlt={`Poster for ${content.title}`}
                             variant="default"
+                            ImageComponent={NextImage}
                           />
                         </Link>
                       );

@@ -4,7 +4,7 @@
  * Site configuration
  */
 
-import { ThemeKey } from "@phantom/core";
+import { type ThemeKey } from "@phantom/core/themes";
 
 export const siteConfig = {
     // Site Metadata
@@ -24,11 +24,9 @@ export const siteConfig = {
     titleTemplate: "%s | Phantomklänge",
     defaultTitle: "Phantomklänge",
     defaultDescription: "A digital archive of human art and thought.",
-    
+
     // Styles
     colorScheme: "dark" as ThemeKey
 };
 
-export type SiteConfig = typeof siteConfig;
-
-export default siteConfig;
+// export type SiteConfig = typeof siteConfig;

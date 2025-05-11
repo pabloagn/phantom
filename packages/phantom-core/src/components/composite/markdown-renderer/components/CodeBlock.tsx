@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { Check, Copy } from 'lucide-react';
-import { CodeBlockProps } from '../types';
-import { colors } from '../../../../tokens/colors';
+import { CodeBlockProps } from '../types.js';
+import { colors } from '../../../../tokens/colors.js';
 
 export function CodeBlock({ language, value }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);

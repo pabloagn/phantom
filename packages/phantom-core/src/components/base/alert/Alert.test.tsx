@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Alert } from './Alert';
+import { Alert } from './Alert.js';
 
 describe('Alert', () => {
   it('renders correctly with default props', () => {

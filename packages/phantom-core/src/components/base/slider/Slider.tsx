@@ -1,4 +1,4 @@
-// packages/phantom-core/src//components/base/slider/Slider.tsx
+// packages/phantom-core/src/components/base/slider/Slider.tsx
 // @ts-nocheck
 
 'use client';

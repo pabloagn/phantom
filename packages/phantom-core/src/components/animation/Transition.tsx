@@ -2,7 +2,7 @@
 'use client'; // Keep if you use React Server Components features, otherwise remove if not needed.
 
 import React, { useState, useEffect, useMemo } from 'react'; // Added useMemo
-import { cn } from '../../utils'; // Assuming cn is a utility like clsx
+import { cn } from '../../utils/index.js'; // Assuming cn is a utility like clsx
 
 export interface TransitionProps {
   children: React.ReactNode;
@@ -52,7 +52,7 @@ export const Transition: React.FC<TransitionProps> = ({
       setTransitionState('in'); // Ensure it's considered 'in'
       return;
     }
-    
+
     // Trigger 'out' animation
     setTransitionState('out');
 

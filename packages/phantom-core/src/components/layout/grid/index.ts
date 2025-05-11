@@ -1,3 +1,3 @@
 // packages/phantom-core/src/components/layout/grid/index.ts
 
-export * from './Grid.js';
+export { Grid, type GridProps, GridItem, type GridItemProps } from './Grid.js';

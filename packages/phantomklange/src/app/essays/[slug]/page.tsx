@@ -296,6 +296,7 @@ export default async function EssayPage({ params }) {
                                  excerpt={content.excerpt ? content.excerpt.substring(0, 80) + '...' : ''}
                                  contentType={displayType}
                                  imageSrc={content.poster_image || `/images/placeholders/essays/placeholder-poster.jpg`}
+                                 ImageComponent={NextImage}
                                  imageAlt={`Poster for ${content.title}`}
                                  variant="minimal"
                                  imageAspectRatio="4/3" children={undefined} onClick={undefined} icons={undefined}

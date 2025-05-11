@@ -65,7 +65,7 @@ pkgs.mkShell {
   ]);
   shellHook = ''
     export POETRY_VIRTUALENVS_IN_PROJECT=true
-    echo "Phantom Visuals Nix Env Ready!"
+    echo "Phantom Nix Env Ready!"
     echo "- Python: $(python --version) (from $(which python))"
     echo "- Poetry: $(poetry --version)"
     echo "- Node  : $(node -v)"

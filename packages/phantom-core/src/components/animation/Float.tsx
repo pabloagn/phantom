@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useRef, JSX } from 'react';
-import { cn } from '../../utils';
+import { cn } from '../../utils/index.js';
 
 export interface FloatProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

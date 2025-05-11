@@ -6,74 +6,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export interface MenuItem {
-  /**
-   * Label for the menu item
-   */
   label: string;
-
-  /**
-   * URL for the menu item (for link items)
-   */
   href?: string;
-
-  /**
-   * Icon to display before the label
-   */
   icon?: React.ReactNode;
-
-  /**
-   * Whether the item is currently active
-   */
   active?: boolean;
-
-  /**
-   * Whether the item is disabled
-   */
   disabled?: boolean;
-
-  /**
-   * Click handler for the menu item
-   */
   onClick?: () => void;
-
-  /**
-   * Submenu items
-   */
   items?: MenuItem[];
 }
 
 export interface MenuProps {
-  /**
-   * Menu items to display
-   */
   items: MenuItem[];
-
-  /**
-   * Visual variant of the menu
-   * @default 'default'
-   */
   variant?: 'default' | 'bordered' | 'pill';
-
-  /**
-   * Orientation of the menu
-   * @default 'vertical'
-   */
   orientation?: 'horizontal' | 'vertical';
-
-  /**
-   * Size of the menu items
-   * @default 'md'
-   */
   size?: 'sm' | 'md' | 'lg';
-
-  /**
-   * Additional CSS class name
-   */
   className?: string;
-
-  /**
-   * Callback when a menu item is selected
-   */
   onSelect?: (item: MenuItem) => void;
 }
 
@@ -175,7 +122,6 @@ export const Menu: React.FC<MenuProps> = ({
       }
     };
 
-    // Render content for menu item
     const renderItemContent = () => (
       <>
         {item.icon && <span className="mr-2">{item.icon}</span>}
@@ -188,7 +134,6 @@ export const Menu: React.FC<MenuProps> = ({
       </>
     );
 
-    // Render the appropriate element based on whether it's a link or action
     const renderItemElement = () => {
       if (item.href && !item.disabled) {
         return (
@@ -212,7 +157,6 @@ export const Menu: React.FC<MenuProps> = ({
       );
     };
 
-    // For horizontal orientation with submenu, we need to position differently
     const submenuPosition = orientation === 'horizontal'
       ? 'absolute top-full left-0 mt-1 z-10'
       : 'ml-4 mt-1';
@@ -230,7 +174,6 @@ export const Menu: React.FC<MenuProps> = ({
             <ul className="flex flex-col">
               {item.items!.map((subitem, subindex) => (
                 <li key={`${subitem.label}-${subindex}`}>
-                  {/* For simplicity, we're just rendering a basic version for subitems */}
                   {subitem.href ? (
                     <a
                       href={subitem.href}
@@ -278,5 +221,3 @@ export const Menu: React.FC<MenuProps> = ({
     </ul>
   );
 };
-
-export default Menu;

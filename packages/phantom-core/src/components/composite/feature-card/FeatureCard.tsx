@@ -1,74 +1,31 @@
 // packages/phantom-core/src/components/composite/feature-card/FeatureCard.tsx
 // @ts-nocheck
-
 'use client';
 
-import React from 'react';
-import Image from 'next/image';
-import { Card, Heading, Paragraph, Badge } from '../../base';
+import React, { type ElementType } from 'react';
+import { Card, Heading, Paragraph, Badge } from '../../base/index.js';
+import { cn } from '../../../utils/index.js';
 
 export interface FeatureCardProps {
-  /**
-   * The title of the feature card
-   */
   title: string;
-
-  /**
-   * Optional subtext or creator information
-   */
   subtext?: string;
-
-  /**
-   * Path to the image to display
-   */
   imageSrc?: string;
-
-  /**
-   * Alternative text for the image
-   */
   imageAlt?: string;
-
-  /**
-   * Optional badge text to display on the card
-   */
   badgeText?: string;
-
-  /**
-   * Optional year or date information
-   */
   year?: string | number;
-
-  /**
-   * Additional classes to apply to the card
-   */
   className?: string;
-
-  /**
-   * Card aspect ratio
-   * @default '2/3'
-   */
-  imageAspectRatio?: string;
-
-  /**
-   * Whether to apply grayscale to the image
-   * @default true
-   */
+  imageAspectRatio?: string; // e.g., '2/3', '16/9'
   grayscaleImage?: boolean;
-
-  /**
-   * Component children (additional content)
-   */
   children?: React.ReactNode;
-
-  /**
-   * Click handler for the card
-   */
   onClick?: () => void;
+  /**
+   * Optional custom Image component (e.g., next/image).
+   * If not provided, a regular <img> tag will be used.
+   * It should accept props like src, alt, fill (boolean), className.
+   */
+  ImageComponent?: ElementType; // This will be 'img' or NextImage
 }
 
-/**
- * FeatureCard component for displaying featured content items in an elegant card format
- */
 export const FeatureCard: React.FC<FeatureCardProps> = ({
   title,
   subtext,
@@ -81,26 +38,39 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   grayscaleImage = true,
   children,
   onClick,
+  ImageComponent = 'img', // Default to standard HTML <img> tag
 }) => {
-  // Handle aspect ratio class
-  const aspectRatioClass = `aspect-[${imageAspectRatio}]`;
+  const aspectRatioClass = `aspect-[${imageAspectRatio.replace('/', '-')}]`; // Tailwind needs aspect-w-x aspect-h-y or aspect-[w/h]
+
+  // Props for the image component (standard img or Next.js Image)
+  const imageProps = {
+    src: imageSrc || '', // Ensure src is never undefined for NextImage
+    alt: imageAlt || title,
+    className: cn(
+      `object-cover transition-transform duration-700 group-hover:scale-105 filter contrast-105`,
+      grayscaleImage ? 'grayscale-[30%]' : ''
+    ),
+    // For Next.js <Image> with fill, parent needs to be relative and w/h specified or fill on parent.
+    // If using standard <img>, you might need width="100%" height="100%" for object-cover to work well.
+    // Next.js Image with `fill` handles this better.
+    ...(ImageComponent !== 'img' && { fill: true }), // Add fill prop only if it's a custom component (likely NextImage)
+    ...(ImageComponent === 'img' && { style: { width: '100%', height: '100%' }}) // Ensure img fills container
+  };
+
 
   return (
     <Card
-      className={`h-full overflow-hidden flex flex-col gothic-card ${className} bg-black border border-phantom-neutral-900 transition-all duration-500 hover:border-phantom-neutral-800 shadow-sm`}
+      className={cn(
+        `h-full overflow-hidden flex flex-col gothic-card bg-black border border-phantom-neutral-900 transition-all duration-500 hover:border-phantom-neutral-800 shadow-sm group`, // Added 'group' for group-hover
+        className
+      )}
       padding={false}
       onClick={onClick}
     >
-      <div className={`relative w-full ${aspectRatioClass} bg-black overflow-hidden`}>
+      <div className={cn(`relative w-full bg-black overflow-hidden`, aspectRatioClass)}>
         {imageSrc ? (
-          <div className="relative w-full h-full overflow-hidden">
-            <Image
-              src={imageSrc}
-              alt={imageAlt || title}
-              fill
-              className={`object-cover transition-transform duration-700 group-hover:scale-105 filter ${grayscaleImage ? 'grayscale-[30%]' : ''} contrast-105`}
-            />
-            {/* Subtle gradient overlay */}
+          <div className="relative w-full h-full overflow-hidden"> {/* This div becomes the sizing context for fill Image */}
+            <ImageComponent {...imageProps} />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-70 transition-opacity duration-500" />
           </div>
         ) : (
@@ -109,11 +79,10 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           </div>
         )}
 
-        {/* Elegant minimal badge */}
         {badgeText && (
           <div className="absolute top-3 right-3 z-10">
             <Badge
-              variant="minimal"
+              variant="minimal" // Assuming Badge has a variant prop
               className="text-xs uppercase tracking-widest font-light bg-black/80 backdrop-blur-sm border border-phantom-neutral-800 px-3 py-1"
             >
               {badgeText}
@@ -124,7 +93,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 
       <div className="p-6 flex flex-col flex-grow bg-black border-t border-phantom-neutral-900/30">
         <Heading
-          level={3}
+          level={3} // Assuming Heading has a level prop
           weight="light"
           className="text-xl mb-2 text-phantom-neutral-100 group-hover:text-white transition-colors duration-300 font-serif-alt"
         >
@@ -139,7 +108,6 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 
         {children}
 
-        {/* Year information with minimal styling */}
         {year && (
           <div className="mt-auto pt-3 border-t border-phantom-neutral-900/20">
             <Paragraph className="text-phantom-neutral-600 text-xs font-sans-alt tracking-wider group-hover:text-phantom-neutral-500 transition-colors duration-300">

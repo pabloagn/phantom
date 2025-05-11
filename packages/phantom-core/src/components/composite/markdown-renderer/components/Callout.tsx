@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AlertTriangle, Info, AlertCircle, FileText } from 'lucide-react';
-import { CalloutProps } from '../types';
+import { CalloutProps } from '../types.js';
 
 export function Callout({ children, type = 'info' }: CalloutProps) {
   let icon;

@@ -1,3 +1,3 @@
 // packages/phantom-core/src/components/navigation/menu/index.ts
 
-export * from './Menu.js';
+export { Menu, type MenuItem, type MenuProps } from './Menu.js';

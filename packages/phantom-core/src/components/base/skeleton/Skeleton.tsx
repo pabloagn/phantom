@@ -1,4 +1,4 @@
-// packages/phantom-core/src//components/base/skeleton/Skeleton.tsx
+// packages/phantom-core/src/components/base/skeleton/Skeleton.tsx
 
 'use client';
 

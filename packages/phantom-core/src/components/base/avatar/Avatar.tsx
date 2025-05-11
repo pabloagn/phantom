@@ -1,9 +1,6 @@
 // packages/phantom-core/src/components/base/avatar/Avatar.tsx
 // @ts-nocheck
-
 'use client';
-
-// DONE: Implement Avatar component
 
 import React, { forwardRef } from 'react';
 

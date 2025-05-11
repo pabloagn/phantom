@@ -1,12 +1,14 @@
 // packages/docs/src/pages/index.tsx
 
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import Heading from '@theme/Heading';
+import { Button as PhantomButton } from '@phantom/core';
+import DocusaurusLink from '@docusaurus/Link';
 
 import styles from './index.module.css';
 
@@ -20,11 +22,9 @@ function HomepageHeader() {
         </Heading>
         <p className={clsx('hero__subtitle', styles.heroSubtitle)}>{siteConfig.tagline}</p>
         <div className={styles.buttons}>
-          <Link
-            className={clsx('button button--primary button--lg', styles.heroButton)}
-            to="/introduction">
-            Get Started
-          </Link>
+          <DocusaurusLink to="/introduction">
+            <PhantomButton variant="outline">Get Started</PhantomButton>
+          </DocusaurusLink>
         </div>
       </div>
     </header>
@@ -73,8 +73,12 @@ function KeySections() {
                 </Heading>
                 <p className={styles.keySectionDescription}>{section.description}</p>
                 <Link
-                  className={clsx('button button--outline button--secondary button--sm', styles.keySectionButton)}
-                  to={section.link}>
+                  className={clsx(
+                    'button button--outline button--secondary button--sm',
+                    styles.keySectionButton
+                  )}
+                  to={section.link}
+                >
                   Learn More →
                 </Link>
               </div>
@@ -89,10 +93,7 @@ function KeySections() {
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout
-      title="Home"
-      description={siteConfig.tagline}
-    >
+    <Layout title="Home" description={siteConfig.tagline}>
       <HomepageHeader />
       <main>
         {/* Remove HomepageFeatures if you're not using the default one */}

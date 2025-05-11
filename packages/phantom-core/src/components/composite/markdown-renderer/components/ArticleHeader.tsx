@@ -3,8 +3,8 @@
 
 import React from 'react';
 import { Calendar, Clock, User, Users } from 'lucide-react';
-import { Badge } from '../../../base/badge/Badge';
-import { ArticleHeaderProps } from '../types';
+import { Badge } from '../../../base/badge/Badge.js';
+import { ArticleHeaderProps } from '../types.js';
 
 export function ArticleHeader({
   title,
@@ -21,7 +21,7 @@ export function ArticleHeader({
     month: 'long',
     day: 'numeric'
   }) : null;
-  
+
   const formattedLastUpdated = lastUpdated ? new Date(lastUpdated).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -40,20 +40,20 @@ export function ArticleHeader({
           ))}
         </div>
       )}
-      
+
       {/* Title and subtitle */}
       {title && (
         <h1 className="text-5xl md:text-6xl font-serif-alt font-light tracking-wide text-phantom-neutral-100 mb-4">
           {title}
         </h1>
       )}
-      
+
       {excerpt && (
         <p className="text-xl md:text-2xl font-serif-alt text-phantom-neutral-300 mb-8 leading-relaxed">
           {excerpt}
         </p>
       )}
-      
+
       {/* Metadata row */}
       <div className="flex flex-wrap gap-y-4 gap-x-8 items-center text-phantom-neutral-400 text-sm border-t border-b border-phantom-carbon-800 py-4">
         {/* Publication date */}
@@ -63,7 +63,7 @@ export function ArticleHeader({
             <span>Published {formattedPublishDate}</span>
           </div>
         )}
-        
+
         {/* Last updated */}
         {formattedLastUpdated && formattedLastUpdated !== formattedPublishDate && (
           <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export function ArticleHeader({
             <span>Updated {formattedLastUpdated}</span>
           </div>
         )}
-        
+
         {/* Reading time */}
         {readingTime && (
           <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function ArticleHeader({
             <span>{readingTime} min read</span>
           </div>
         )}
-        
+
         {/* Contributors */}
         {contributors && contributors.length > 0 && (
           <div className="flex items-center gap-2 ml-auto">

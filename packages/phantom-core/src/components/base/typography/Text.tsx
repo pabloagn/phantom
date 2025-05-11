@@ -3,8 +3,6 @@
 
 'use client';
 
-// DONE: Implement Text component
-
 import React, { forwardRef } from 'react';
 
 export type TextSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl';

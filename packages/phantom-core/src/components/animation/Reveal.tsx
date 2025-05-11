@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { cn } from '../../utils';
+import { cn } from '../../utils/index.js';
 
 export interface RevealProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

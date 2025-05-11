@@ -1,6 +1,8 @@
 // packages/phantomklange/src/components/ui/not-found.tsx
 // @ts-nocheck
 
+// TODO: Do we need this?
+
 "use client";
 
 import React, { useEffect } from 'react';

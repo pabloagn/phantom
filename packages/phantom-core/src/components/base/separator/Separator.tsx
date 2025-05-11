@@ -1,20 +1,12 @@
 // packages/phantom-core/src/components/base/separator/Separator.tsx
+// TODO: This will be decomisioned in favor of the Divider component
 
 'use client';
 
 import React from 'react';
 
 export interface SeparatorProps {
-  /**
-   * Width of the separator
-   * @default 'full'
-   */
   width?: string;
-
-  /**
-   * Margin top and bottom
-   * @default '8'
-   */
   margin?: string;
 
   /**
